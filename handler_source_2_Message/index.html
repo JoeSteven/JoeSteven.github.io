@@ -1,0 +1,466 @@
+
+ <!DOCTYPE HTML>
+<html lang="Chinese">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Handler源码学习（二）Message对象池 | Joe is a thin man</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Joe">
+    
+
+    
+    <meta name="description" content="Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队消息池是全系统共用，上限为50个
+1private static final int MAX_POOL_SIZE = 50;
+1234567891011121314151617181920212223242526272829303132333435363738">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Handler源码学习（二）Message对象池">
+<meta property="og:url" content="https://joesteven.github.io/handler_source_2_Message/index.html">
+<meta property="og:site_name" content="Joe is a thin man">
+<meta property="og:description" content="Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队消息池是全系统共用，上限为50个
+1private static final int MAX_POOL_SIZE = 50;
+1234567891011121314151617181920212223242526272829303132333435363738">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-2c0dcf654d397a72.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-600f714bdbc236f8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-3557f637c794f14b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2016-07-22T16:04:35.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Handler源码学习（二）Message对象池">
+<meta name="twitter:description" content="Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队消息池是全系统共用，上限为50个
+1private static final int MAX_POOL_SIZE = 50;
+1234567891011121314151617181920212223242526272829303132333435363738">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1473110-2c0dcf654d397a72.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+    
+    <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/avatar.png">
+    
+    
+    <link rel="apple-touch-icon" href="/img/profile.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/profile.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
+				<h2 class="blog-motto">写代码的民谣歌手</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:joesteven.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/handler_source_2_Message/" title="Handler源码学习（二）Message对象池" itemprop="url">Handler源码学习（二）Message对象池</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
+		
+  <p class="article-time">
+    <time datetime="2016-07-16T10:18:57.000Z" itemprop="datePublished"> 发表于 2016-07-16</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Obtain-–-复用"><span class="toc-number">1.</span> <span class="toc-text">Obtain() – 复用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#recycleUnchecked-–-回收"><span class="toc-number">2.</span> <span class="toc-text">recycleUnchecked() – 回收</span></a></li></ol>
+		
+		</div>
+		
+		<p><a href="https://joesteven.github.io/#/post/2016/7/15/Handler源码学习（一）流程">Handler源码学习（一）流程</a><br>Handler源码学习（二）Message对象池<br><a href="https://joesteven.github.io/#/post/2016/7/22/Handler源码学习（三）MessageQueue入队插队">Handler源码学习（三）MessageQueue入队插队</a><br>消息池是全系统共用，上限为50个</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_POOL_SIZE = <span class="number">50</span>;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// sometimes we store linked lists of these things</span></div><div class="line"><span class="comment">/*package*/</span> Message next;</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> Message sPool;</div><div class="line"></div><div class="line"><span class="comment">//假设现在消息池为空，从new message开始，到这个message被取出使用后，准备回收</span></div><div class="line"><span class="comment">//准备工作：拿到同步锁，避免线程不安全</span></div><div class="line"><span class="comment">//1.next ＝ sPool,因为池中是空的，所以此时sPool其实是null</span></div><div class="line"><span class="comment">//2.spool = this,将当前这个message作为池中下一个应该被复用的对象</span></div><div class="line"><span class="comment">//3.sPoolSize ++;将池子中的数量增加一，这个数量依然是全系统共享</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">recycleUnchecked</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">synchronized</span> (sPoolSync) &#123;</div><div class="line">            <span class="keyword">if</span> (sPoolSize &lt; MAX_POOL_SIZE) &#123;</div><div class="line">                next = sPool;</div><div class="line">                sPool = <span class="keyword">this</span>;</div><div class="line">                sPoolSize++;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"><span class="comment">//上面已经回收了一个message，在这里来获取message，看看会发生什么</span></div><div class="line"><span class="comment">//同样进入同步代码块</span></div><div class="line"><span class="comment">//1.判断sPool是否是为空，如果池子为空，就直接new一个message</span></div><div class="line"><span class="comment">//上面已经回收过一个message了，这里应该不为空</span></div><div class="line"><span class="comment">//m ＝sPool；把池子里的这个message取出来</span></div><div class="line"><span class="comment">//2.sPool = m.next 将池中下一个复用的对象赋值为m.next,但是我们通过上面的代码发现这个是null，先</span></div><div class="line"><span class="comment">//不管</span></div><div class="line"><span class="comment">//3.将m.next置为空,m.flags = 0 给了一个标记使用中</span></div><div class="line"><span class="comment">//4.从池子中减去</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Message <span class="title">obtain</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">synchronized</span> (sPoolSync) &#123;</div><div class="line">        <span class="keyword">if</span> (sPool != <span class="keyword">null</span>) &#123;</div><div class="line">            Message m = sPool;</div><div class="line">            sPool = m.next;</div><div class="line">            m.next = <span class="keyword">null</span>;</div><div class="line">            m.flags = <span class="number">0</span>; <span class="comment">// clear in-use flag</span></div><div class="line">            sPoolSize--;</div><div class="line">            <span class="keyword">return</span> m;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Message();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的过程只有一个mesage，详细解释一下sPool和next，将sPool看成一个指针，通过next来将对象组成了一个链表，因为每次只需要从池子里拿一个对象，所以不需要关心池子里具体有多少个对象，而是拿出当前这个sPool所指向的这个对象就可以了，sPool从思路上理解就是通过左右移动来完成复用和回收</p>
+<h4 id="Obtain-–-复用"><a href="#Obtain-–-复用" class="headerlink" title="Obtain() – 复用"></a>Obtain() – 复用</h4><p><img src="http://upload-images.jianshu.io/upload_images/1473110-2c0dcf654d397a72.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MessageObtain(1).jpg"></p>
+<p>当调用Obtain()的时候让sPool＝next，因为第一个message.next就等于第二个message，从图上看相当于sPool这个指针向后移动了一位，随后会将第一个message.next的值置为空</p>
+<p>如下图<br><img src="http://upload-images.jianshu.io/upload_images/1473110-600f714bdbc236f8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MessageObtain(2).jpg"></p>
+<p>现在这个链表看上去就断了，如果in-use这个message使用完毕了，怎么回到链表中？</p>
+<h4 id="recycleUnchecked-–-回收"><a href="#recycleUnchecked-–-回收" class="headerlink" title="recycleUnchecked() – 回收"></a>recycleUnchecked() – 回收</h4><p>再看回收的方法中的代码，next ＝ sPool，将当前sPool所指向的message对象赋值给in－use的next，然后sPool = this，将sPool指向第一个message对象<br><img src="http://upload-images.jianshu.io/upload_images/1473110-3557f637c794f14b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MessageRecycle.jpg"></p>
+<p>这样，就将链表又恢复了～，而且不管是复用还是回收都是保证线程同步的，所以始终会形成一条链式结构</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android源码学习/">Android源码学习</a>
+</div>
+
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/handler_source_3_MessageQueue/" title="Handler源码学习（三）MessageQueue入队插队">
+  <span>
+  Handler源码学习（三）MessageQueue入队插队</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/handler_source_1/"  title="Handler源码学习（一）流程">
+ <span>Handler源码学习（一）流程
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="handler_source_2_Message/" data-title="Handler源码学习（二）Message对象池" data-url="https://joesteven.github.io/handler_source_2_Message/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info" class="clearfix">
+		
+		<a href="http://weibo.com/2750146463" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/JoeSteven" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/qiao-xi-28" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		
+		<a href="mailto:qiaoxiaoxi621@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>4</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://laobie.github.io/" target="_blank" title="写代码的猴子">写代码的猴子</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://brucezz.github.io/" target="_blank" title="Brucezz">Brucezz</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://allenwu.itscoder.com/" target="_blank" title="allen">allen</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="大M">大M</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2016 
+		
+		<a href="/about" target="_blank" title="Joe">Joe</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"extremej"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
