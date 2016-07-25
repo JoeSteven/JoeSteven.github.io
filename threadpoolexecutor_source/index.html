@@ -12,66 +12,36 @@
 
     
     <meta name="description" content="转载请附原文链接：ThreadPoolExecutor源码学习笔记
-
-线程池的获取
-
-
-任务的执行
-
-
-线程池的回收及终止
-
-
-总结
-
+大部分分析以注释形式写在源码中
 本篇笔记将从 ThreadPoolExecutor 的一次使用上来分析源码，主要涉及线程池创建，execute 的步骤，任务添加到阻塞队列，线程从阻塞队列中拿取任务执行，线程的回收，线程池的终止。
 涉及到的类有
 
 Executors — 获取线程池
-ThreadP">
+
+ThreadPoolExecutor — 线程池">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ThreadPoolExecutor源码学习笔记">
 <meta property="og:url" content="https://joesteven.github.io/threadpoolexecutor_source/index.html">
 <meta property="og:site_name" content="Joe is a thin man">
 <meta property="og:description" content="转载请附原文链接：ThreadPoolExecutor源码学习笔记
-
-线程池的获取
-
-
-任务的执行
-
-
-线程池的回收及终止
-
-
-总结
-
+大部分分析以注释形式写在源码中
 本篇笔记将从 ThreadPoolExecutor 的一次使用上来分析源码，主要涉及线程池创建，execute 的步骤，任务添加到阻塞队列，线程从阻塞队列中拿取任务执行，线程的回收，线程池的终止。
 涉及到的类有
 
 Executors — 获取线程池
-ThreadP">
-<meta property="og:updated_time" content="2016-07-24T05:27:56.000Z">
+
+ThreadPoolExecutor — 线程池">
+<meta property="og:updated_time" content="2016-07-25T14:13:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ThreadPoolExecutor源码学习笔记">
 <meta name="twitter:description" content="转载请附原文链接：ThreadPoolExecutor源码学习笔记
-
-线程池的获取
-
-
-任务的执行
-
-
-线程池的回收及终止
-
-
-总结
-
+大部分分析以注释形式写在源码中
 本篇笔记将从 ThreadPoolExecutor 的一次使用上来分析源码，主要涉及线程池创建，execute 的步骤，任务添加到阻塞队列，线程从阻塞队列中拿取任务执行，线程的回收，线程池的终止。
 涉及到的类有
 
 Executors — 获取线程池
-ThreadP">
+
+ThreadPoolExecutor — 线程池">
 
     
     <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
@@ -95,7 +65,7 @@ ThreadP">
 				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
 				<h2 class="blog-motto">写代码的民谣歌手</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -111,7 +81,7 @@ ThreadP">
  					
 					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
 						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
 						<input type="hidden" name="q" value="site:joesteven.github.io">
 					</form>
 					
@@ -134,41 +104,37 @@ ThreadP">
 		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
 		
   <p class="article-time">
-    <time datetime="2016-07-24T05:06:08.000Z" itemprop="datePublished"> 发表于 2016-07-24</time>
+    <time datetime="2016-07-24T05:06:08.000Z" itemprop="datePublished"> Published 2016-07-24</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
+			<strong class="toc-title">Contents</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-线程池的获取"><span class="toc-number">1.</span> <span class="toc-text">1.线程池的获取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-任务的执行"><span class="toc-number">2.</span> <span class="toc-text">2.任务的执行</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#A-状态属性"><span class="toc-number">2.1.</span> <span class="toc-text">A.状态属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#B-execute-Runnable-command"><span class="toc-number">2.2.</span> <span class="toc-text">B.execute(Runnable command)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#C-addWorker"><span class="toc-number">2.3.</span> <span class="toc-text">C .addWorker()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#D-Worker"><span class="toc-number">2.4.</span> <span class="toc-text">D.Worker</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#E-LinkedBlockingQueue-—-阻塞队列"><span class="toc-number">2.5.</span> <span class="toc-text">E.LinkedBlockingQueue — 阻塞队列</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-线程池的回收及终止"><span class="toc-number">3.</span> <span class="toc-text">3.线程池的回收及终止</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-总结"><span class="toc-number">4.</span> <span class="toc-text">4.总结</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#线程池的获取"><span class="toc-number">1.</span> <span class="toc-text">线程池的获取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#任务的执行"><span class="toc-number">2.</span> <span class="toc-text">任务的执行</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#A-状态属性"><span class="toc-number">2.1.</span> <span class="toc-text">A.状态属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#B-execute-Runnable-command"><span class="toc-number">2.2.</span> <span class="toc-text">B.execute(Runnable command)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#C-addWorker"><span class="toc-number">2.3.</span> <span class="toc-text">C .addWorker()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#D-Worker"><span class="toc-number">2.4.</span> <span class="toc-text">D.Worker</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#E-LinkedBlockingQueue-—-阻塞队列"><span class="toc-number">2.5.</span> <span class="toc-text">E.LinkedBlockingQueue — 阻塞队列</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线程池的回收及终止"><span class="toc-number">3.</span> <span class="toc-text">线程池的回收及终止</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#异常处理"><span class="toc-number">4.</span> <span class="toc-text">异常处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
 		
 		</div>
 		
 		<p>转载请附原文链接：<a href="http://extremej.itscoder.com/#/post/2016/7/24/ThreadPoolExecutor源码学习笔记" target="_blank" rel="external">ThreadPoolExecutor源码学习笔记</a></p>
-<ul>
-<li><a href="#1.线程池的获取">线程池的获取</a></li>
-</ul>
-<ul>
-<li><a href="#2.任务的执行">任务的执行</a></li>
-</ul>
-<ul>
-<li><a href="#3.线程池的回收及终止">线程池的回收及终止</a></li>
-</ul>
-<ul>
-<li><a href="#4.总结">总结</a></li>
-</ul>
+<p><strong>大部分分析以注释形式写在源码中</strong></p>
 <p>本篇笔记将从 ThreadPoolExecutor 的一次使用上来分析源码，主要涉及线程池创建，execute 的步骤，任务添加到阻塞队列，线程从阻塞队列中拿取任务执行，线程的回收，线程池的终止。</p>
 <p>涉及到的类有</p>
 <ul>
-<li>Executors — 获取线程池</li>
-<li>ThreadPoolExecutor — 线程池</li>
-<li>Worker — 工作线程</li>
-<li>LinkedBlockingQueue — 阻塞队列</li>
+<li><p>Executors — 获取线程池</p>
+</li>
+<li><p>ThreadPoolExecutor — 线程池</p>
+</li>
+<li><p>Worker — 工作线程</p>
+</li>
+<li><p>LinkedBlockingQueue — 阻塞队列</p>
+</li>
+<li><p>RejectedExecutionHandler — 任务拒绝处理器（实在不知道什么翻译～）</p>
+<p>​</p>
+</li>
 </ul>
-<h3 id="1-线程池的获取"><a href="#1-线程池的获取" class="headerlink" title="1.线程池的获取"></a>1.线程池的获取</h3><p>我们知道可以通过 Executors 来获取不同类型的线程池，那么就从 Executors 来开始看它是如何返回不同类型的线程池的，看看我们常用的一些方法</p>
+<h3 id="线程池的获取"><a href="#线程池的获取" class="headerlink" title="线程池的获取"></a>线程池的获取</h3><p>我们知道可以通过 Executors 来获取不同类型的线程池，那么就从 Executors 来开始看它是如何返回不同类型的线程池的，看看我们常用的一些方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//获取一个固定线程池</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newFixedThreadPool</span><span class="params">(<span class="keyword">int</span> nThreads, ThreadFactory threadFactory)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(nThreads, nThreads,</div><div class="line">                                  <span class="number">0L</span>, TimeUnit.MILLISECONDS,</div><div class="line">                                  <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;(),</div><div class="line">                                  threadFactory);</div><div class="line">&#125;</div><div class="line"><span class="comment">//获取只有一个线程的池子</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newSingleThreadExecutor</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> FinalizableDelegatedExecutorService</div><div class="line">            (<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1</span>, <span class="number">1</span>,</div><div class="line">                                    <span class="number">0L</span>, TimeUnit.MILLISECONDS,</div><div class="line">                                    <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));</div><div class="line">    &#125;</div><div class="line"><span class="comment">//获取一个缓存线程池，可变</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newCachedThreadPool</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">0</span>, Integer.MAX_VALUE,</div><div class="line">                                      <span class="number">60L</span>, TimeUnit.SECONDS,</div><div class="line">                                      <span class="keyword">new</span> SynchronousQueue&lt;Runnable&gt;());</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
 <p>从上面的三个方法可以发现其实都是 new 了一个 ThreadPoolExecutor ，但是传入的参数不同，我们进到这个构造方法中去一探究竟，看看不同的参数到底代表了什么</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//构造方法</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></div><div class="line">                          <span class="keyword">int</span> maximumPoolSize,</div><div class="line">                          <span class="keyword">long</span> keepAliveTime,</div><div class="line">                          TimeUnit unit,</div><div class="line">                          BlockingQueue&lt;Runnable&gt; workQueue,</div><div class="line">                          ThreadFactory threadFactory,</div><div class="line">                          RejectedExecutionHandler handler) &#123;</div><div class="line">    <span class="keyword">if</span> (corePoolSize &lt; <span class="number">0</span> ||</div><div class="line">        maximumPoolSize &lt;= <span class="number">0</span> ||</div><div class="line">        maximumPoolSize &lt; corePoolSize ||</div><div class="line">        keepAliveTime &lt; <span class="number">0</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</div><div class="line">    <span class="keyword">if</span> (workQueue == <span class="keyword">null</span> || threadFactory == <span class="keyword">null</span> || handler == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</div><div class="line">    <span class="keyword">this</span>.corePoolSize = corePoolSize;</div><div class="line">    <span class="keyword">this</span>.maximumPoolSize = maximumPoolSize;</div><div class="line">    <span class="keyword">this</span>.workQueue = workQueue;</div><div class="line">    <span class="keyword">this</span>.keepAliveTime = unit.toNanos(keepAliveTime);</div><div class="line">    <span class="keyword">this</span>.threadFactory = threadFactory;</div><div class="line">    <span class="keyword">this</span>.handler = handler;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -184,7 +150,7 @@ ThreadP">
 </ul>
 <p>这里要明白一件事情，<strong>核心线程只是通过数目来判断，而不是说先创建的线程就是核心线程</strong></p>
 <p>在构造方法里面初始化了成员变量值，通过构造方法应该明白了不同类型的线程获取的原理。</p>
-<h3 id="2-任务的执行"><a href="#2-任务的执行" class="headerlink" title="2.任务的执行"></a>2.任务的执行</h3><h4 id="A-状态属性"><a href="#A-状态属性" class="headerlink" title="A.状态属性"></a>A.状态属性</h4><p>在看源码之前先了解一下 ThreadPoolExecutor的几个状态属性，这对后面的源码阅读有很重要的作用，ThreadPoolExecutor 有五种状态</p>
+<h3 id="任务的执行"><a href="#任务的执行" class="headerlink" title="任务的执行"></a>任务的执行</h3><h4 id="A-状态属性"><a href="#A-状态属性" class="headerlink" title="A.状态属性"></a>A.状态属性</h4><p>在看源码之前先了解一下 ThreadPoolExecutor的几个状态属性，这对后面的源码阅读有很重要的作用，ThreadPoolExecutor 有五种状态</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RUNNING    = -<span class="number">1</span> &lt;&lt; COUNT_BITS; </div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SHUTDOWN   =  <span class="number">0</span> &lt;&lt; COUNT_BITS;</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> STOP       =  <span class="number">1</span> &lt;&lt; COUNT_BITS;</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TIDYING    =  <span class="number">2</span> &lt;&lt; COUNT_BITS;</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TERMINATED =  <span class="number">3</span> &lt;&lt; COUNT_BITS;</div></pre></td></tr></table></figure>
 <p>从上到下依次是</p>
 <ul>
@@ -225,7 +191,7 @@ ThreadP">
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Worker(Runnable firstTask) &#123;</div><div class="line">    setState(-<span class="number">1</span>); <span class="comment">// inhibit interrupts until runWorker</span></div><div class="line">    <span class="keyword">this</span>.firstTask = firstTask;</div><div class="line">    <span class="keyword">this</span>.thread = getThreadFactory().newThread(<span class="keyword">this</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>可以看到这里将 Worker 作为 Runnable 参数创建了一个新的线程，我们知道 Thread 接收一个 Runnable 对象后 start 运行的是 Runnable 的 run 方法，Worker 的 run 方法调用了 runWorker ,这个方法里面就是取出任务执行的逻辑</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">    runWorker(<span class="keyword">this</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">runWorker</span><span class="params">(Worker w)</span> </span>&#123;</div><div class="line">        Thread wt = Thread.currentThread();</div><div class="line">        Runnable task = w.firstTask; <span class="comment">// 获取到 worker 的第一个任务</span></div><div class="line">        w.firstTask = <span class="keyword">null</span>;</div><div class="line">        w.unlock(); <span class="comment">// 标记为闲置，还没有开始任务 允许打断</span></div><div class="line">        <span class="keyword">boolean</span> completedAbruptly = <span class="keyword">true</span>; <span class="comment">// 异常退出标记</span></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">          <span class="comment">// 循环取出任务，如果第一个任务不为空，或者从队列中拿到了任务</span></div><div class="line">          <span class="comment">// 只要这两个条件满足，会一直循环，直到没有任务，正常退出，或者异常退出</span></div><div class="line">            <span class="keyword">while</span> (task != <span class="keyword">null</span> || (task = getTask()) != <span class="keyword">null</span>) &#123;</div><div class="line">                w.lock();<span class="comment">// 该线程标记为非闲置</span></div><div class="line">                <span class="comment">// If pool is stopping, ensure thread is interrupted;</span></div><div class="line">                <span class="comment">// if not, ensure thread is not interrupted.  This</span></div><div class="line">                <span class="comment">// requires a recheck in second case to deal with</span></div><div class="line">                <span class="comment">// shutdownNow race while clearing interrupt</span></div><div class="line">              <span class="comment">// 翻译注释：1.如果线程池STOPPING状态，需要中断线程</span></div><div class="line">              <span class="comment">// 2.Thread.interrupted()是一个native方法，返回当前线程是否有被等待中断的请求</span></div><div class="line">              <span class="comment">// 3.第二个条件成立时，检查线程池状态，如果为STOP，并且没有被中断，则中断线程</span></div><div class="line">                <span class="keyword">if</span> ((runStateAtLeast(ctl.get(), STOP) ||</div><div class="line">                     (Thread.interrupted() &amp;&amp;</div><div class="line">                      runStateAtLeast(ctl.get(), STOP))) &amp;&amp;</div><div class="line">                    !wt.isInterrupted())</div><div class="line">                    wt.interrupt();</div><div class="line">              <span class="comment">// 执行任务</span></div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    beforeExecute(wt, task);<span class="comment">// 执行前</span></div><div class="line">                    Throwable thrown = <span class="keyword">null</span>;</div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        task.run(); <span class="comment">// 执行任务</span></div><div class="line">                    &#125; <span class="keyword">catch</span> (RuntimeException x) &#123;</div><div class="line">                        thrown = x; <span class="keyword">throw</span> x;</div><div class="line">                    &#125; <span class="keyword">catch</span> (Error x) &#123;</div><div class="line">                        thrown = x; <span class="keyword">throw</span> x;</div><div class="line">                    &#125; <span class="keyword">catch</span> (Throwable x) &#123;</div><div class="line">                        thrown = x; <span class="keyword">throw</span> <span class="keyword">new</span> Error(x);</div><div class="line">                    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                        afterExecute(task, thrown); <span class="comment">// 执行结束</span></div><div class="line">                    &#125;</div><div class="line">                &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                    task = <span class="keyword">null</span>; <span class="comment">// 将 worker 的任务置空</span></div><div class="line">                    w.completedTasks++; </div><div class="line">                    w.unlock(); <span class="comment">// 释放锁，进入闲置状态</span></div><div class="line">                &#125;</div><div class="line">            &#125;<span class="comment">// 循环结束</span></div><div class="line">            completedAbruptly = <span class="keyword">false</span>; <span class="comment">// 标记为正常退出</span></div><div class="line">        &#125; <span class="keyword">finally</span> &#123;</div><div class="line">          <span class="comment">// 干掉 worker</span></div><div class="line">            processWorkerExit(w, completedAbruptly);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>上面代码的逻辑不算难懂，这里弄清楚了一件事情，进入循环准备执行任务时，worker 加锁标记为非闲置，任务执行完毕或者出现异常，worker 释放锁，进入闲置状态。</p>
+<p>这里弄清楚了一件事情，进入循环准备执行任务时，worker 加锁标记为非闲置，任务执行完毕或者出现异常，worker 释放锁，进入闲置状态。</p>
 <p><strong>也就是当一个 worker 执行任务前或者执行完任务，到取出下一个任务期间，都是闲置状态可以被打断</strong></p>
 <p>上面取出任务调用了 getTask() ，诶～为什么有一个死循环，别着急，慢慢看来。上面的代码可以知道如果 getTask 返回任务则执行，如果返回为 null 则 worker 需要被回收</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Runnable <span class="title">getTask</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="comment">// 标记取任务是否超时</span></div><div class="line">    <span class="keyword">boolean</span> timedOut = <span class="keyword">false</span>; <span class="comment">// Did the last poll() time out?</span></div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">        <span class="keyword">int</span> c = ctl.get();</div><div class="line">        <span class="keyword">int</span> rs = runStateOf(c);</div><div class="line"></div><div class="line">        <span class="comment">// Check if queue empty only if necessary.</span></div><div class="line">      	<span class="comment">// 如果线程池状态为 STOP 或者 SHUTDOWN 并且队列已经为空，回收 wroker</span></div><div class="line">        <span class="keyword">if</span> (rs &gt;= SHUTDOWN &amp;&amp; (rs &gt;= STOP || workQueue.isEmpty())) &#123;</div><div class="line">            decrementWorkerCount();</div><div class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">		<span class="comment">//获取当前有效线程数</span></div><div class="line">        <span class="keyword">int</span> wc = workerCountOf(c);</div><div class="line"></div><div class="line">        <span class="comment">// Are workers subject to culling?</span></div><div class="line">      	<span class="comment">// timed 用来标记当前的 worker 是否设置超时时间，</span></div><div class="line">      	<span class="comment">// 还记得获取线程池的时候 可以设置核心线程超时时间</span></div><div class="line">      	<span class="comment">//1.允许核心线程超时回收(即所有线程) 2.当前有效线程超过核心线程数(需要回收)</span></div><div class="line">      	<span class="comment">// 如果timed == false 则该worker不会被回收，如果没有取到任务 会一直阻塞</span></div><div class="line">        <span class="keyword">boolean</span> timed = allowCoreThreadTimeOut || wc &gt; corePoolSize;</div><div class="line">		</div><div class="line">      	<span class="comment">// 回收线程条件</span></div><div class="line">      	<span class="comment">// 1. 有效线程数已经大于了线程池的最大线程数或者设置了超时回收并且已经超时</span></div><div class="line">      	<span class="comment">// 2. 有效线程数大于1或者队列任务已经为空</span></div><div class="line">      	<span class="comment">// 只有当上面1和2 同时满足时 则试图回收线程</span></div><div class="line">        <span class="keyword">if</span> ((wc &gt; maximumPoolSize || (timed &amp;&amp; timedOut))</div><div class="line">            &amp;&amp; (wc &gt; <span class="number">1</span> || workQueue.isEmpty())) &#123;</div><div class="line">          <span class="comment">// 如果减少workercount成功 直接回收</span></div><div class="line">            <span class="keyword">if</span> (compareAndDecrementWorkerCount(c))</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">          <span class="comment">// 否则重走循环，从第一个判断条件处回收</span></div><div class="line">            <span class="keyword">continue</span>;</div><div class="line">        &#125;</div><div class="line">		<span class="comment">// 取任务</span></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">          <span class="comment">// 根据是否设置超时回收来选择不同的取任务的方式</span></div><div class="line">          <span class="comment">// poll 方法取任务会有超时时间，超过时间则返回null</span></div><div class="line">          <span class="comment">// take 方法没有超时时间，阻塞式方法</span></div><div class="line">            Runnable r = timed ?</div><div class="line">                workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :</div><div class="line">                workQueue.take();</div><div class="line">          <span class="comment">// 如果任务不为空返回任务</span></div><div class="line">            <span class="keyword">if</span> (r != <span class="keyword">null</span>)</div><div class="line">                <span class="keyword">return</span> r;</div><div class="line">          <span class="comment">// 否则标记超时 进入下一次循环等待回收</span></div><div class="line">            timedOut = <span class="keyword">true</span>;</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException retry) &#123;</div><div class="line">          <span class="comment">// 如果出现异常，试图重试</span></div><div class="line">            timedOut = <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -236,7 +202,7 @@ ThreadP">
 <p>上面的代码可以知道 take 方法会一直阻塞直到队列有新的任务为止</p>
 <p>接下来是 poll 方法，可以看到几乎与 take 方法相同，唯一的区别是在阻塞的循环代码块里面加了时间判断，如果超时则直接返回为空，不会一直阻塞下去</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> E <span class="title">poll</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</div><div class="line">    E x = <span class="keyword">null</span>; <span class="comment">// 存放的任务</span></div><div class="line">    <span class="keyword">int</span> c = -<span class="number">1</span>; </div><div class="line">    <span class="keyword">long</span> nanos = unit.toNanos(timeout); <span class="comment">// 超时时间</span></div><div class="line">    <span class="keyword">final</span> AtomicInteger count = <span class="keyword">this</span>.count; <span class="comment">// 队列中的数量</span></div><div class="line">    <span class="keyword">final</span> ReentrantLock takeLock = <span class="keyword">this</span>.takeLock; <span class="comment">// 加锁防止并发</span></div><div class="line">    takeLock.lockInterruptibly();</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      <span class="comment">// 如果队列为空，则不断的循环</span></div><div class="line">        <span class="keyword">while</span> (count.get() == <span class="number">0</span>) &#123;</div><div class="line">          <span class="comment">// 如果当倒计时小于0 即超时时间到 则返回空</span></div><div class="line">            <span class="keyword">if</span> (nanos &lt;= <span class="number">0</span>)</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">          <span class="comment">// 让线程等待</span></div><div class="line">            nanos = notEmpty.awaitNanos(nanos);</div><div class="line">        &#125;</div><div class="line">        x = dequeue(); <span class="comment">// 取出一个任务</span></div><div class="line">        c = count.getAndDecrement(); <span class="comment">// 取出后的队列数量</span></div><div class="line">        <span class="keyword">if</span> (c &gt; <span class="number">1</span>)</div><div class="line">            notEmpty.signal(); <span class="comment">// 标记非空</span></div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        takeLock.unlock(); <span class="comment">// 释放锁</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (c == capacity)</div><div class="line">        signalNotFull(); <span class="comment">// 标记队列已满</span></div><div class="line">    <span class="keyword">return</span> x; <span class="comment">// 返回任务</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="3-线程池的回收及终止"><a href="#3-线程池的回收及终止" class="headerlink" title="3.线程池的回收及终止"></a>3.线程池的回收及终止</h3><p>前一节分析了任务的执行流程及原理，也留下了一个问题，worker 是如何被回收的呢？线程池该如何管理呢？回到上一节的 runWorker() 方法中，还记得最后调用了一个方法</p>
+<h3 id="线程池的回收及终止"><a href="#线程池的回收及终止" class="headerlink" title="线程池的回收及终止"></a>线程池的回收及终止</h3><p>前一节分析了任务的执行流程及原理，也留下了一个问题，worker 是如何被回收的呢？线程池该如何管理呢？回到上一节的 runWorker() 方法中，还记得最后调用了一个方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">processWorkerExit(w, completedAbruptly);</div></pre></td></tr></table></figure>
 <p>这个方法传入了两个参数，第一个是当前的 Woker ,第二个是标记异常退出的标识</p>
 <p>首先判断是否为异常退出，如果是异常退出的话需要手动调整线程数量，如果是正常回收的，getTask 方法里面已经手动调整过了，不记得的小伙伴可以看看前文的代码，找找 decrementWorkerCount(),</p>
@@ -249,7 +215,28 @@ ThreadP">
 <p>有同学开始装逼了，说我们是好奇宝宝，t.interrupt() 方法也应该看，嗯～没错，但这里是调用了 native 方法，会 c 的可以去看看装逼，我就算了～</p>
 <p>好了，再来看看 terminate, 是不是很坑爹？ terminated 里面神！马！也！没！干！。。。淡定，其实这个方法类似于 Activity 的生命周期方法，允许你在被终止时做一些事情，默认的线程池没有什么要做的事情，当然什么也没写啦～</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Method invoked when the Executor has terminated.  Default</div><div class="line"> * implementation does nothing. Note: To properly nest multiple</div><div class="line"> * overridings, subclasses should generally invoke</div><div class="line"> * &#123;<span class="doctag">@code</span> super.terminated&#125; within this method.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">terminated</span><span class="params">()</span> </span>&#123; &#125;</div></pre></td></tr></table></figure>
-<h3 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h3><p>其实我不想做任何概念性的总结，原因是我之前没有开始学习源码的时候也看过很多源码分析的文章，大部分文章都会总结一些概念，这些概念本身可能是没有错的，起码是作者自己对源码的理解，但是文字所传达的思想真的是有限的，有时候因为概念的模糊，反而会被带入一个误区，并且长时间的无法转变。</p>
+<h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><p>还记得前面讲到，出现各种异常情况，添加队列失败等等，只是笼统的说了一句扔掉，当然代码实现不可能是简单一句扔掉就完了。回到 execute() 方法中找到 reject() 任务，看看究竟是怎么处理的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">reject</span><span class="params">(Runnable command)</span> </span>&#123;</div><div class="line">    handler.rejectedExecution(command, <span class="keyword">this</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>还记得在创建线程池的时候，初始化了一个 handler — RejectedExecutionHandler</p>
+<p>这是一个接口，只有一个方法,接收两个参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor executor)</span></span>;</div></pre></td></tr></table></figure>
+<p>既然是一个接口，那么肯定有他的实现类，我们先不急着看所有实现类，先来看看这里的 handler 可能是什么，记得在使用 Executors 获取线程池调用构造方法的时候并没有传入 handler 参数，那么 ThreadPoolExecutor 应该会有一个默认的 handler</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> RejectedExecutionHandler defaultHandler =</div><div class="line">    <span class="keyword">new</span> AbortPolicy();</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AbortPolicy</span> <span class="keyword">implements</span> <span class="title">RejectedExecutionHandler</span> </span>&#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">AbortPolicy</span><span class="params">()</span> </span>&#123; &#125;</div><div class="line"></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RejectedExecutionException(<span class="string">"Task "</span> + r.toString() +</div><div class="line">                                                 <span class="string">" rejected from "</span> +</div><div class="line">                                                 e.toString());</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>默认 handler 是 AbortPolicy ,这个类实现了 rejectedExecution() 方法，抛了一个 Runtime 异常，也就是说当任务添加失败，就会抛出异常。这个类在 AsyncTask 引发了一场血案～所以在 API19 以后修改了 AsyncTask 的部分代码逻辑，这里就不细说啦，会在下一篇 AsyncTask 的笔记中分析。</p>
+<p>实际上，在 ThreadPoolExecutor 中除了 AbortPolicy 外还实现了三种不同类型的 handler</p>
+<ul>
+<li>CallerRunsPolicy — 在 线程池没有 shutdown 的前提下，会直接在执行 execute 方法的线程里执行这个任务</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!e.isShutdown()) &#123;</div><div class="line">        r.run();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>DiscardPolicy — 啥也不干，默默地丢掉任务～不信你看</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>DiscardOldestPolicy — 丢弃掉队列中未执行的，最老的任务，也就是任务队列排头的任务，然后再试图在执行一次</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">rejectedExecution</span><span class="params">(Runnable r, ThreadPoolExecutor e)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!e.isShutdown()) &#123;</div><div class="line">        e.getQueue().poll();</div><div class="line">        e.execute(r);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>其实我不想做任何概念性的总结，原因是我之前没有开始学习源码的时候也看过很多源码分析的文章，大部分文章都会总结一些概念，这些概念本身可能是没有错的，起码是作者自己对源码的理解，但是文字所传达的思想真的是有限的，有时候因为概念的模糊，反而会被带入一个误区，并且长时间的无法转变。</p>
 <p>我自己一开始对线程池的理解其实是有偏差的，宏观上可能没有大的问题，但在细节上有很大的误区，通过自己耐心的阅读源码分析后学习到了很多东西。</p>
 <p>非要总结的话就给一点我阅读源码的小思路吧：</p>
 <ul>
@@ -301,10 +288,10 @@ ThreadP">
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
 <aside class="clearfix">
 <div id="authorInfo">
 	
@@ -336,7 +323,7 @@ ThreadP">
 
   
 <div class="categorieslist">
-	<p class="asidetitle">分类</p>
+	<p class="asidetitle">Categories</p>
 		<ul>
 		
 		  
@@ -348,7 +335,7 @@ ThreadP">
 
 
   <div class="linkslist">
-  <p class="asidetitle">链接</p>
+  <p class="asidetitle">Links</p>
     <ul>
         
           <li>
@@ -585,7 +572,7 @@ $(document).ready(function(){
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 
