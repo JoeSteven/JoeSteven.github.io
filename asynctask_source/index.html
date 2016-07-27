@@ -1,0 +1,559 @@
+
+ <!DOCTYPE HTML>
+<html lang="Chinese">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>AsyncTask源码学习笔记 | Joe is a thin man</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Joe">
+    
+
+    
+    <meta name="description" content="转载请附原文链接： AsyncTask 源码学习笔记
+上一篇笔记分析了线程池的源码  ThreadPoolExecutor源码学习笔记
+作为 Android 开发者不得不说说 Android 中的系统级异步框架 — AysncTask
+几乎大部分 Android 开发者都用过AysncTask。这是一个专注于其他线程与 UI 线程通信的一个框架。官方的介绍：
+123AsyncTask enable">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AsyncTask源码学习笔记">
+<meta property="og:url" content="https://joesteven.github.io/asynctask_source/index.html">
+<meta property="og:site_name" content="Joe is a thin man">
+<meta property="og:description" content="转载请附原文链接： AsyncTask 源码学习笔记
+上一篇笔记分析了线程池的源码  ThreadPoolExecutor源码学习笔记
+作为 Android 开发者不得不说说 Android 中的系统级异步框架 — AysncTask
+几乎大部分 Android 开发者都用过AysncTask。这是一个专注于其他线程与 UI 线程通信的一个框架。官方的介绍：
+123AsyncTask enable">
+<meta property="og:updated_time" content="2016-07-27T13:58:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AsyncTask源码学习笔记">
+<meta name="twitter:description" content="转载请附原文链接： AsyncTask 源码学习笔记
+上一篇笔记分析了线程池的源码  ThreadPoolExecutor源码学习笔记
+作为 Android 开发者不得不说说 Android 中的系统级异步框架 — AysncTask
+几乎大部分 Android 开发者都用过AysncTask。这是一个专注于其他线程与 UI 线程通信的一个框架。官方的介绍：
+123AsyncTask enable">
+
+    
+    <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/avatar.png">
+    
+    
+    <link rel="apple-touch-icon" href="/img/profile.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/profile.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
+				<h2 class="blog-motto">写代码的民谣歌手</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:joesteven.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/asynctask_source/" title="AsyncTask源码学习笔记" itemprop="url">AsyncTask源码学习笔记</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
+		
+  <p class="article-time">
+    <time datetime="2016-07-25T13:53:40.000Z" itemprop="datePublished"> Published 2016-07-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#AsyncTask使用"><span class="toc-number">1.</span> <span class="toc-text">AsyncTask使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AsyncTask-的几种状态"><span class="toc-number">2.</span> <span class="toc-text">AsyncTask 的几种状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建"><span class="toc-number">3.</span> <span class="toc-text">创建</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#线程数与-CPU-核数的关系"><span class="toc-number">3.1.</span> <span class="toc-text">线程数与 CPU 核数的关系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AsyncTask-的一个坑"><span class="toc-number">3.2.</span> <span class="toc-text">AsyncTask 的一个坑</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#构造方法"><span class="toc-number">3.3.</span> <span class="toc-text">构造方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#任务执行"><span class="toc-number">4.</span> <span class="toc-text">任务执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FutureTask"><span class="toc-number">5.</span> <span class="toc-text">FutureTask</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息传递"><span class="toc-number">6.</span> <span class="toc-text">消息传递</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#execute-Runnable"><span class="toc-number">7.</span> <span class="toc-text">execute(Runnable)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+		
+		</div>
+		
+		<p>转载请附原文链接： <a href="http://extremej.itscoder.com/asynctask_source/" target="_blank" rel="external">AsyncTask 源码学习笔记</a></p>
+<p>上一篇笔记分析了线程池的源码  <a href="http://extremej.itscoder.com/threadpoolexecutor_source/" target="_blank" rel="external">ThreadPoolExecutor源码学习笔记</a></p>
+<p>作为 Android 开发者不得不说说 Android 中的系统级异步框架 — AysncTask</p>
+<p>几乎大部分 Android 开发者都用过AysncTask。这是一个专注于其他线程与 UI 线程通信的一个框架。官方的介绍：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">AsyncTask enables proper and easy use of the UI thread. This class allows to</div><div class="line">perform background operations and publish results on the UI thread without</div><div class="line">having to manipulate threads and/or handlers.</div></pre></td></tr></table></figure>
+<p>本篇笔记依然会按照我的一贯风格从使用作为主线，捋一捋 AysncTask 的逻辑流程。</p>
+<p>主要涉及到的类有（不包含内部类）：</p>
+<ul>
+<li>AsyncTask</li>
+<li>Futuretask</li>
+</ul>
+<h3 id="AsyncTask使用"><a href="#AsyncTask使用" class="headerlink" title="AsyncTask使用"></a>AsyncTask使用</h3><p>AsyncTask 是一个抽象类，在使用的时候需要继承这个类。</p>
+<ul>
+<li>doInBackground — 必须实现，异步代码在这里面执行</li>
+<li>onPostExecute(Result) — 在 UI 线程回调，传递数据</li>
+<li>onProgressUpdate(Progress) — 任务执行时回调当前进度</li>
+</ul>
+<p>以上是经常被重写的方法，AsyncTask 中其实在整个任务执行周期都有相应方法</p>
+<ul>
+<li>onPreExecute — 执行前准备工作</li>
+<li>onCancelled — 任务取消</li>
+</ul>
+<p>AsyncTask 指定三个泛型，分别是异步任务所需要的参数，进度，和结果。通过 execute() 方法开始执行任务。</p>
+<h3 id="AsyncTask-的几种状态"><a href="#AsyncTask-的几种状态" class="headerlink" title="AsyncTask 的几种状态"></a>AsyncTask 的几种状态</h3><p>AsyncTask 有一个内部类，用于标记当前状态</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Status &#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Indicates that the task has not been executed yet.</div><div class="line">     */</div><div class="line">    PENDING,<span class="comment">//当前任务等待中</span></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Indicates that the task is running.</div><div class="line">     */</div><div class="line">    RUNNING,<span class="comment">//当前任务执行中</span></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Indicates that &#123;<span class="doctag">@link</span> AsyncTask#onPostExecute&#125; has finished.</div><div class="line">     */</div><div class="line">    FINISHED,<span class="comment">//执行完毕</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h3><p>十分简单的介绍了一下使用，准备进入源码的世界吧。按照一贯风格，先来看看 AsyncTask 在被创建的时候发生了什么事。首先来看几个比较重要的静态成员变量（常量）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// cpu核数</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CPU_COUNT = Runtime.getRuntime().availableProcessors();</div><div class="line"><span class="comment">// 核心线程数 ＝ cpu核数＋1</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CORE_POOL_SIZE = CPU_COUNT + <span class="number">1</span>;</div><div class="line"><span class="comment">// 最大线程数 ＝ cpu核数＊2 ＋1</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAXIMUM_POOL_SIZE = CPU_COUNT * <span class="number">2</span> + <span class="number">1</span>;</div><div class="line"><span class="comment">// 线程闲置超时时间 1s</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> KEEP_ALIVE = <span class="number">1</span>;</div><div class="line"><span class="comment">//当前状态为等待</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> Status mStatus = Status.PENDING;</div><div class="line"><span class="comment">// 任务队列</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> BlockingQueue&lt;Runnable&gt; sPoolWorkQueue =</div><div class="line">            <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;(<span class="number">128</span>);</div><div class="line"><span class="comment">// 创建一个线程池</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Executor THREAD_POOL_EXECUTOR</div><div class="line">            = <span class="keyword">new</span> ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,</div><div class="line">                    TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);</div></pre></td></tr></table></figure>
+<p>可以看到创建了一个线程池，指定了核心线程数，最大线程数，任务队列等等。到这儿应该要理解一件事情</p>
+<ul>
+<li><strong>这里的线程池是一个全局静态，也就是所有的AsyncTask使用的其实是同一个线程池</strong></li>
+<li><strong>AsyncTask 应该理解为一个单一的异步任务，本身并不维护线程池，事实上因为 execute() 方法的重载，严格来说应该理解为是一个异步任务队列的调度器</strong></li>
+</ul>
+<p>这里提一个内容外的问题，为什么核心线程数是 cpu 核数＋1，而不是 cpu 核数？或者＋2，＋3等等。很惭愧，半路出家，对于这种问题我也没有特别好的理解，这里简单提一下线程数的设计吧</p>
+<h4 id="线程数与-CPU-核数的关系"><a href="#线程数与-CPU-核数的关系" class="headerlink" title="线程数与 CPU 核数的关系"></a>线程数与 CPU 核数的关系</h4><p>cpu 的核数代表了同一时间能够同时运行的线程数，比如双核的 cpu 在同一个时间内是可以运行两个线程的，对于程序而言，如果 cpu 是多核的，而我们还在使用单线程编程，那么就有其他几个 cpu 是空闲的，这样对于资源是极大的浪费。</p>
+<p>但如果线程数特别的多远超出 cpu 的核数，也会导致线程切换带来较大的开销，一样是不合理的。因此线程数的设计应该考虑在完全利用 cpu 资源的情况下减少线程的切换 。需要注意的是<strong>并不是所有的线程都是占用 CPU 资源的</strong>,这里就要讲到两个概念</p>
+<ul>
+<li>CPU密集型 — 在程序中有大量处理逻辑运算的需求，这样的操作是需要占用 CPU 资源的</li>
+<li>IO密集型 — 有大量的 IO 操作，这样的操作是不需要占用 CPU 资源的</li>
+</ul>
+<p>假设有一个四核的 CPU ，我们创建四个线程，其中有三个线程在执行运算工作，还有一个在做 IO 操作，这个时候 CPU 有一个其实是空闲的，也就是浪费了 CPU 的资源。我忘了是在哪儿看到过一句话，即便是 CPU再密集,也会有那么一点 IO 操作，所以对应设计一个 IO 线程是很有必要的。</p>
+<p>另外线程除了执行时间，还有等待时间，在等待时间里面，CPU 其实也是处于空闲状态的。有一个公式来设计线程数</p>
+<blockquote>
+<p>线程数 ＝ ()(任务执行时间＋等待时间)／任务执行时间)＊cpu核数</p>
+</blockquote>
+<p>因为 AsyncTask 核心线程是需要长时间运行不会被回收，因此减少线程的切换开销，将数量设计为核数＋1，也就不难理解了。而最大线程数可以根据上面的公式算出一个理论的最大值。</p>
+<h4 id="AsyncTask-的一个坑"><a href="#AsyncTask-的一个坑" class="headerlink" title="AsyncTask 的一个坑"></a>AsyncTask 的一个坑</h4><p>我在上一篇文章 <a href="http://extremej.itscoder.com/threadpoolexecutor_source/#异常处理" target="_blank" rel="external">ThreadPoolExecutor源码学习笔记</a> 中在讲 AbortPolicy 的时候说过，在 AysncTask 中引发了血崩，现在来看看是为什么。</p>
+<p>在初始化的源码中可以看到，任务队列的容量设计是128个，在 API19 以前的 AsyncTask 设计的是并行，同时会有5个线程在工作。假设现在有一个多任务需求，很容易就超过了128个，猜猜会发生什么？</p>
+<p>还记得在线程池中如果无法加入队列中的时候会调用 reject 方法，而这里创建的线程池并没有传入自己的 handler ，因此用的是默认的 handler — AbortPolicy ,这个类会直接抛一个运行时异常，于是就这样华丽丽的崩溃了。因此在之后修改了 AsyncTask 的策略，默认为串行，只有一个线程在运行，一次执行一个任务，具体实现在后面的源码中来看。</p>
+<h4 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h4><p>前面说了许多题外话，现在才开始真正进入到源码中来～</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">AsyncTask</span><span class="params">()</span> </span>&#123;</div><div class="line">    mWorker = <span class="keyword">new</span> WorkerRunnable&lt;Params, Result&gt;() &#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> Result <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            mTaskInvoked.set(<span class="keyword">true</span>);</div><div class="line"></div><div class="line">            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);</div><div class="line">            <span class="comment">//noinspection unchecked</span></div><div class="line">            Result result = doInBackground(mParams);</div><div class="line">            Binder.flushPendingCommands();</div><div class="line">            <span class="keyword">return</span> postResult(result);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    mFuture = <span class="keyword">new</span> FutureTask&lt;Result&gt;(mWorker) &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">done</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                postResultIfNotInvoked(get());</div><div class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                android.util.Log.w(LOG_TAG, e);</div><div class="line">            &#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"An error occurred while executing doInBackground()"</span>,</div><div class="line">                        e.getCause());</div><div class="line">            &#125; <span class="keyword">catch</span> (CancellationException e) &#123;</div><div class="line">                postResultIfNotInvoked(<span class="keyword">null</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面是 AsyncTask 的构造方法，看起来长长的代码，我一句注释也没写，因为现在看到的这段代码貌似没有任何的突破口，可以看到初始化了两个变量，mWorker 和 mFuture。注意这里的 Worker 就不是线程池里的那个啦～</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">WorkerRunnable</span>&lt;<span class="title">Params</span>, <span class="title">Result</span>&gt; <span class="keyword">implements</span> <span class="title">Callable</span>&lt;<span class="title">Result</span>&gt; </span>&#123;</div><div class="line">    Params[] mParams;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>WorkerRunnanble 是一个抽像类实现了 Callable 接口，这个接口中只有一个方法 call 返回指定的泛型对象，知道这个就可以啦。</p>
+<p>创建的代码基本就告一段落了，后面我们还会回来～接下来看看任务的执行</p>
+<h3 id="任务执行"><a href="#任务执行" class="headerlink" title="任务执行"></a>任务执行</h3><p>执行任务最先想到的就是 execute() 方法，这个方法有一个重载，先来看最常用的这个，也就是传入可变参数，注意这个方法只能在主线程调用，原因很简单，文章一开头就说了这个框架是为了与 UI 线程通信的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@MainThread</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> AsyncTask&lt;Params, Progress, Result&gt; <span class="title">execute</span><span class="params">(Params... params)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> executeOnExecutor(sDefaultExecutor, params);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>调用了 executeOnExecutor() 传入两个参数，第一从字面看是默认的任务执行器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> Executor sDefaultExecutor = SERIAL_EXECUTOR;</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Executor SERIAL_EXECUTOR = <span class="keyword">new</span> SerialExecutor();</div></pre></td></tr></table></figure>
+<p>SerialExecutor 是个什么鬼？这里打住，别着急点击去看，先把大体逻辑捋清楚，来看 executeOnExecutor()，这个方法同样也是需要在主线程中调用。代码稍微有点多，一句一句来看。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@MainThread</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> AsyncTask&lt;Params, Progress, Result&gt; <span class="title">executeOnExecutor</span><span class="params">(Executor exec,</span></span></div><div class="line">        Params... params) &#123;</div><div class="line">  <span class="comment">// 前面提到过 AsyncTask 的状态，如果状态不是等待中，则根据状态的不同抛出不同的异常</span></div><div class="line">    <span class="keyword">if</span> (mStatus != Status.PENDING) &#123;</div><div class="line">        <span class="keyword">switch</span> (mStatus) &#123;</div><div class="line">            <span class="keyword">case</span> RUNNING:</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Cannot execute task:"</span></div><div class="line">                        + <span class="string">" the task is already running."</span>);</div><div class="line">            <span class="keyword">case</span> FINISHED:</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Cannot execute task:"</span></div><div class="line">                        + <span class="string">" the task has already been executed "</span></div><div class="line">                        + <span class="string">"(a task can be executed only once)"</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">  	<span class="comment">// 状态标记为执行中</span></div><div class="line">    mStatus = Status.RUNNING;</div><div class="line">	<span class="comment">// 调用准备方法</span></div><div class="line">    onPreExecute();</div><div class="line">	<span class="comment">// 参数赋值给 mWorker</span></div><div class="line">    mWorker.mParams = params;</div><div class="line">  	<span class="comment">// 执行起开始执行，传入mFuture</span></div><div class="line">    exec.execute(mFuture);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先判断了当前的状态，只有处于等待中的时候才会向下执行，<strong>也就是说 execute(params) 这个方法只应该被调用一次</strong>, 为什么把参数赋值给 mWorker 的成员变量后执行器使用的是 mFuture 呢？</p>
+<p>还记得前面打住的那个地方，exec 就是 SerialExecutor，这会儿就可以看看它干了啥，做好心理准备，这段代码一开始我看的时候其实是拒绝的，对角懵逼。还是老方法，一句句来，先试试把逻辑理清。</p>
+<p>该类实现了 Executor 接口，重写 execute 方法。参数是一个 Runnable 对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SerialExecutor</span> <span class="keyword">implements</span> <span class="title">Executor</span> </span>&#123;</div><div class="line">   	<span class="comment">// 任务队列</span></div><div class="line">    <span class="keyword">final</span> ArrayDeque&lt;Runnable&gt; mTasks = <span class="keyword">new</span> ArrayDeque&lt;Runnable&gt;();</div><div class="line">    <span class="comment">// 当前正在执行run方法的Runnable任务</span></div><div class="line">  	Runnable mActive;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(<span class="keyword">final</span> Runnable r)</span> </span>&#123;</div><div class="line">      	<span class="comment">//拆开看，1.将一个Runnable对象插入到队列中去</span></div><div class="line">      	<span class="comment">// 2.这个Runnanble对象重写了 run方法，调用了 r.run() </span></div><div class="line">      	<span class="comment">// r 也就是从上一步中传入的 mFuture(按照上文的流程，实际按照传入的为准)</span></div><div class="line">      	<span class="comment">// 3.最终执行 scheduleNext()方法</span></div><div class="line">        mTasks.offer(<span class="keyword">new</span> Runnable() &#123;</div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    r.run();</div><div class="line">                &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                    scheduleNext();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">      <span class="comment">// 判断如果当前正在执行的任务为空，调用scheduleNext方法</span></div><div class="line">        <span class="keyword">if</span> (mActive == <span class="keyword">null</span>) &#123;</div><div class="line">            scheduleNext();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">scheduleNext</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="comment">// 1.mActivite 从mTasks里面取出第一个任务，如果不为空，交给线程池处理</span></div><div class="line">        <span class="keyword">if</span> ((mActive = mTasks.poll()) != <span class="keyword">null</span>) &#123;</div><div class="line">            THREAD_POOL_EXECUTOR.execute(mActive);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码不是那么好懂，再来捋一下逻辑，在执行 execute 的时候，</p>
+<p><strong>1.首先将任务添加到了队列中，这个队列是执行器的队列，并不是线程池的队列</strong></p>
+<p><strong>2.接下来判断 mActive 是否为空，第一次执行时当然是空，就会执行 scheduleNext 方法</strong></p>
+<p><strong>3.从队列中拿出第一个任务，并赋值给 mActive，如果不为空则交给线程池进行处理</strong></p>
+<p><strong>4.当 mActive 所指向的这个 Runnable 执行完run方法，无论如何都会再次调用 scheduleNext 方法</strong></p>
+<p>通过这一套流程，实现了任务的串行</p>
+<p><strong>注意:这个默认的 Executor 也是全局静态，只要是使用默认的方法，就可以保证任务串行，线程池只有一个线程在运行</strong></p>
+<p>问题来了，doInBackground() 去哪儿了？别着急，我们从 mFuture 入手</p>
+<h3 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h3><p>mFuture 是一个 FutureTask 对象，实现了 RunnableFuture 接口，有一个方法 run()，先来看它的构造方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">FutureTask</span><span class="params">(Callable&lt;V&gt; callable)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (callable == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</div><div class="line">    <span class="keyword">this</span>.callable = callable;</div><div class="line">    <span class="keyword">this</span>.state = NEW;       <span class="comment">// ensure visibility of callable</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>构造方法接收一个 callable 对象，并赋值给成员变量 callable，诶，想想 mFuture 初始化的地方，这里又得贴一次 AsyncTask 的构造方法代码，传入 mFuture 中的正是 mWorker 对象，而 doInBackground() 方法正是在 mWorker 的 call() 方法中调用的，看到这里先打住，这段代码我们后面还要再看(囧)～</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">AsyncTask</span><span class="params">()</span> </span>&#123;</div><div class="line">    mWorker = <span class="keyword">new</span> WorkerRunnable&lt;Params, Result&gt;() &#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> Result <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</div><div class="line">            mTaskInvoked.set(<span class="keyword">true</span>);</div><div class="line"></div><div class="line">            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);</div><div class="line">            <span class="comment">//noinspection unchecked</span></div><div class="line">            Result result = doInBackground(mParams);</div><div class="line">            Binder.flushPendingCommands();</div><div class="line">            <span class="keyword">return</span> postResult(result);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    mFuture = <span class="keyword">new</span> FutureTask&lt;Result&gt;(mWorker) &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">done</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                postResultIfNotInvoked(get());</div><div class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                android.util.Log.w(LOG_TAG, e);</div><div class="line">            &#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"An error occurred while executing doInBackground()"</span>,</div><div class="line">                        e.getCause());</div><div class="line">            &#125; <span class="keyword">catch</span> (CancellationException e) &#123;</div><div class="line">                postResultIfNotInvoked(<span class="keyword">null</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>回到 FutureTask 中来看看 run() 中的代码，为了简洁，只贴部分核心代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">Callable&lt;V&gt; c = callable;<span class="comment">// 获取到这个 callable 对象</span></div><div class="line"><span class="keyword">if</span> (c != <span class="keyword">null</span> &amp;&amp; state == NEW) &#123; <span class="comment">// 如果不为空，并且状态为新任务</span></div><div class="line">    V result;</div><div class="line">    <span class="keyword">boolean</span> ran;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        result = c.call(); <span class="comment">// 调用call方法获取到result</span></div><div class="line">        ran = <span class="keyword">true</span>;</div><div class="line">    &#125; <span class="keyword">catch</span> (Throwable ex) &#123;</div><div class="line">        result = <span class="keyword">null</span>;</div><div class="line">        ran = <span class="keyword">false</span>;</div><div class="line">        setException(ex);</div><div class="line">    &#125;</div><div class="line">   	<span class="comment">// 执行成功</span></div><div class="line">    <span class="keyword">if</span> (ran)</div><div class="line">        set(result);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再追 set(result)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(V v)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (U.compareAndSwapInt(<span class="keyword">this</span>, STATE, NEW, COMPLETING)) &#123;</div><div class="line">        <span class="comment">// 将结果赋值给要输出的值</span></div><div class="line">      	outcome = v;</div><div class="line">        U.putOrderedInt(<span class="keyword">this</span>, STATE, NORMAL); <span class="comment">// final state</span></div><div class="line">      	<span class="comment">// 结束</span></div><div class="line">      	finishCompletion();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 注意只贴了部分代码</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">finishCompletion</span><span class="params">()</span> </span>&#123;</div><div class="line">  	done();</div><div class="line"></div><div class="line">    callable = <span class="keyword">null</span>;        <span class="comment">// to reduce footprint</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">done</span><span class="params">()</span> </span>&#123; &#125;</div></pre></td></tr></table></figure>
+<p>最后调用了 done() 方法，还得看之前的构造方法中的代码，初始化时重写了 done() 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">done</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">              	<span class="comment">// 将结果发布出去</span></div><div class="line">                postResultIfNotInvoked(get());</div><div class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                android.util.Log.w(LOG_TAG, e);</div><div class="line">            &#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"An error occurred while executing doInBackground()"</span>,</div><div class="line">                        e.getCause());</div><div class="line">            &#125; <span class="keyword">catch</span> (CancellationException e) &#123;</div><div class="line">                postResultIfNotInvoked(<span class="keyword">null</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div></pre></td></tr></table></figure>
+<p>又调用了一个方法 postResultIfNotInvoked(get()) ，如果我直接告诉你 get() 是获取到上面那个 outcome 你信么？。。。还是贴代码吧，严谨一点</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, ExecutionException </span>&#123;</div><div class="line">    <span class="keyword">int</span> s = state;</div><div class="line">    <span class="keyword">if</span> (s &lt;= COMPLETING)</div><div class="line">        s = awaitDone(<span class="keyword">false</span>, <span class="number">0L</span>);</div><div class="line">    <span class="keyword">return</span> report(s);</div><div class="line">&#125; </div><div class="line"><span class="function"><span class="keyword">private</span> V <span class="title">report</span><span class="params">(<span class="keyword">int</span> s)</span> <span class="keyword">throws</span> ExecutionException </span>&#123;</div><div class="line">        Object x = outcome;</div><div class="line">        <span class="keyword">if</span> (s == NORMAL)</div><div class="line">            <span class="keyword">return</span> (V)x;</div><div class="line">        <span class="keyword">if</span> (s &gt;= CANCELLED)</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> CancellationException();</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ExecutionException((Throwable)x);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>没骗你吧。。。FutureTask 中的任务就完成了，又要回到 AsyncTask 中去</p>
+<h3 id="消息传递"><a href="#消息传递" class="headerlink" title="消息传递"></a>消息传递</h3><p>上一节 mFuture 把接力棒扔给了postResultIfNotInvoked() ，此时任务执行完毕，但还是在子线程中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">postResultIfNotInvoked</span><span class="params">(Result result)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> wasTaskInvoked = mTaskInvoked.get();</div><div class="line">    <span class="keyword">if</span> (!wasTaskInvoked) &#123;</div><div class="line">        postResult(result);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> Result <span class="title">postResult</span><span class="params">(Result result)</span> </span>&#123;</div><div class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</div><div class="line">    Message message = getHandler().obtainMessage(MESSAGE_POST_RESULT,</div><div class="line">            <span class="keyword">new</span> AsyncTaskResult&lt;Result&gt;(<span class="keyword">this</span>, result));</div><div class="line">    message.sendToTarget();</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的代码出现了熟悉的对象，Message，既然有 Message 基本可以判断是使用 Handler 进行线程间通信</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Handler <span class="title">getHandler</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">synchronized</span> (AsyncTask.class) &#123;</div><div class="line">        <span class="keyword">if</span> (sHandler == <span class="keyword">null</span>) &#123;</div><div class="line">            sHandler = <span class="keyword">new</span> InternalHandler();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> sHandler;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">InternalHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">InternalHandler</span><span class="params">()</span> </span>&#123;</div><div class="line">          	<span class="comment">//绑定了住线程的 Looper</span></div><div class="line">            <span class="keyword">super</span>(Looper.getMainLooper());</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"unchecked"</span>, <span class="string">"RawUseOfParameterizedType"</span>&#125;)</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">            AsyncTaskResult&lt;?&gt; result = (AsyncTaskResult&lt;?&gt;) msg.obj;</div><div class="line">            <span class="keyword">switch</span> (msg.what) &#123;</div><div class="line">                <span class="keyword">case</span> MESSAGE_POST_RESULT:</div><div class="line">                    <span class="comment">// There is only one result</span></div><div class="line">                    result.mTask.finish(result.mData[<span class="number">0</span>]);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                <span class="keyword">case</span> MESSAGE_POST_PROGRESS:</div><div class="line">                    result.mTask.onProgressUpdate(result.mData);</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">finish</span><span class="params">(Result result)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (isCancelled()) &#123;</div><div class="line">            onCancelled(result);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            onPostExecute(result);</div><div class="line">        &#125;</div><div class="line">        mStatus = Status.FINISHED;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>看到熟悉的 onPostExecute() ，莫名的激动，这条路可算是走通了。别忘了还有一个 execute(Runnable) 方法的重载</p>
+<h3 id="execute-Runnable"><a href="#execute-Runnable" class="headerlink" title="execute(Runnable)"></a>execute(Runnable)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@MainThread</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable runnable)</span> </span>&#123;</div><div class="line">    sDefaultExecutor.execute(runnable);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>就这么点，没啥可说的。。。另外用 AsyncTask 用得早的同学还记得有一个 setDefaultExecutor() 的方法来指定默认执行器，这个方法现在也被 hide 了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/** <span class="doctag">@hide</span> */</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setDefaultExecutor</span><span class="params">(Executor exec)</span> </span>&#123;</div><div class="line">    sDefaultExecutor = exec;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>有的同学说了那我就是想用自己的 Executor 怎么办？executeOnExecutor() 传入你自己的 Executor 就行。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>AsyncTask 只负责任务的调度和通信，其余工作由线程池来做</li>
+<li>API19以后默认情况下 AsyncTask 任务是串行</li>
+<li>AsyncTask 使用 Handler 进行通信</li>
+</ul>
+<p>网上也有很多对 AsyncTask 的总结，今天的分析就结束了。希望在读源码的道路上越走越远～</p>
+<p>如果你有不同的理解欢迎交流探讨，不喜请喷～欢迎来喷</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/threadpoolexecutor_source/"  title="ThreadPoolExecutor源码学习笔记">
+ <span>ThreadPoolExecutor源码学习笔记
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="asynctask_source/" data-title="AsyncTask源码学习笔记" data-url="https://joesteven.github.io/asynctask_source/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info" class="clearfix">
+		
+		<a href="http://weibo.com/2750146463" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/JoeSteven" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/qiao-xi-28" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		
+		<a href="mailto:qiaoxiaoxi621@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>4</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://laobie.github.io/" target="_blank" title="写代码的猴子">写代码的猴子</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://brucezz.github.io/" target="_blank" title="Brucezz">Brucezz</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://allenwu.itscoder.com/" target="_blank" title="allen">allen</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="大M">大M</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://solart.cc/" target="_blank" title="imilk">imilk</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://yongyu0102.github.io/" target="_blank" title="用语">用语</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2016 
+		
+		<a href="/about" target="_blank" title="Joe">Joe</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"extremej"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
