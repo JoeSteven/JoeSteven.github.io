@@ -1,0 +1,527 @@
+
+ <!DOCTYPE HTML>
+<html lang="Chinese">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Volley 中的ImageLoader源码学习笔记 | Joe is a thin man</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Joe">
+    
+
+    
+    <meta name="description" content="转载请附原文链接： Volley 中的ImageLoader源码学习笔记
+本篇笔记建立在上一篇分析 Volley 源码的基础上，如果你对 Volley 的源码还不了解可以看看上一篇笔记， 传送门
+在 Android 中还有一大头疼的问题就是图片的加载， Volley 中封装了一个 ImageLoader 的类可以用来加载图片。本篇笔记就来分析一下 Volley 是如何处理图片加载的。
+主要涉及的类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Volley 中的ImageLoader源码学习笔记">
+<meta property="og:url" content="https://joesteven.github.io/volley_imageloader_source/index.html">
+<meta property="og:site_name" content="Joe is a thin man">
+<meta property="og:description" content="转载请附原文链接： Volley 中的ImageLoader源码学习笔记
+本篇笔记建立在上一篇分析 Volley 源码的基础上，如果你对 Volley 的源码还不了解可以看看上一篇笔记， 传送门
+在 Android 中还有一大头疼的问题就是图片的加载， Volley 中封装了一个 ImageLoader 的类可以用来加载图片。本篇笔记就来分析一下 Volley 是如何处理图片加载的。
+主要涉及的类">
+<meta property="og:updated_time" content="2016-07-28T12:53:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Volley 中的ImageLoader源码学习笔记">
+<meta name="twitter:description" content="转载请附原文链接： Volley 中的ImageLoader源码学习笔记
+本篇笔记建立在上一篇分析 Volley 源码的基础上，如果你对 Volley 的源码还不了解可以看看上一篇笔记， 传送门
+在 Android 中还有一大头疼的问题就是图片的加载， Volley 中封装了一个 ImageLoader 的类可以用来加载图片。本篇笔记就来分析一下 Volley 是如何处理图片加载的。
+主要涉及的类">
+
+    
+    <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/avatar.png">
+    
+    
+    <link rel="apple-touch-icon" href="/img/profile.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/profile.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
+				<h2 class="blog-motto">写代码的民谣歌手</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:joesteven.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/volley_imageloader_source/" title="Volley 中的ImageLoader源码学习笔记" itemprop="url">Volley 中的ImageLoader源码学习笔记</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
+		
+  <p class="article-time">
+    <time datetime="2016-07-28T02:14:37.000Z" itemprop="datePublished"> Published 2016-07-28</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#创建-ImageLoader"><span class="toc-number">1.</span> <span class="toc-text">创建 ImageLoader</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取图片"><span class="toc-number">2.</span> <span class="toc-text">获取图片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ImageContainer-图片数据容器"><span class="toc-number">3.</span> <span class="toc-text">ImageContainer 图片数据容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#getImageListener-默认的监听加载"><span class="toc-number">4.</span> <span class="toc-text">getImageListener 默认的监听加载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#图片的处理"><span class="toc-number">5.</span> <span class="toc-text">图片的处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结语"><span class="toc-number">6.</span> <span class="toc-text">结语</span></a></li></ol>
+		
+		</div>
+		
+		<p>转载请附原文链接： <a href="http://extremej.itscoder.com/volley_imageloader_source/" target="_blank" rel="external">Volley 中的ImageLoader源码学习笔记</a></p>
+<p>本篇笔记建立在上一篇分析 Volley 源码的基础上，如果你对 Volley 的源码还不了解可以看看上一篇笔记， <a href="http://extremej.itscoder.com/volley_source/" target="_blank" rel="external">传送门</a></p>
+<p>在 Android 中还有一大头疼的问题就是图片的加载， Volley 中封装了一个 ImageLoader 的类可以用来加载图片。本篇笔记就来分析一下 Volley 是如何处理图片加载的。</p>
+<p>主要涉及的类：</p>
+<ul>
+<li>ImageLoader  (Volley中的)</li>
+<li>ImageRequest</li>
+</ul>
+<h3 id="创建-ImageLoader"><a href="#创建-ImageLoader" class="headerlink" title="创建 ImageLoader"></a>创建 ImageLoader</h3><p>使用首先要创建一个 ImageLoader 对象，传入一个 请求队列，和一个 ImageCache。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ImageLoader</span><span class="params">(RequestQueue queue, ImageCache imageCache)</span> </span>&#123;</div><div class="line">    mRequestQueue = queue;</div><div class="line">    mCache = imageCache;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>ImageCache 是一个接口，里面有两个方法，一个从缓存中获取图片，另一个将图片放入缓存中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ImageCache</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> Bitmap <span class="title">getBitmap</span><span class="params">(String url)</span></span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">putBitmap</span><span class="params">(String url, Bitmap bitmap)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>作者在这里写了一个注释，建议使用 LruCache 来实现这个接口。</p>
+<p><strong>ImageCache 作为三级缓存中的第一级缓存，也就是内存缓存</strong></p>
+<h3 id="获取图片"><a href="#获取图片" class="headerlink" title="获取图片"></a>获取图片</h3><p>通过 get() 方法可以传入一个图片的 url 并通过 ImageListener 来获取图片。这里再提一嘴，Volley 的作者注释真的写得很清楚啊，基本上把逻辑都说的很明白。这个方法要求在主线程调用，因为显示图片需要在主线程嘛</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> ImageContainer <span class="title">get</span><span class="params">(String requestUrl, ImageListener imageListener,</span></span></div><div class="line">        <span class="keyword">int</span> maxWidth, <span class="keyword">int</span> maxHeight, ScaleType scaleType) &#123;</div><div class="line"></div><div class="line">    <span class="comment">// only fulfill requests that were initiated from the main thread.</span></div><div class="line">  	<span class="comment">// 如果不在主线程调用，抛异常</span></div><div class="line">    throwIfNotOnMainThread();</div><div class="line">	<span class="comment">// 获取到缓存的 key(Volley 自己拼的字符串作为唯一的 key)</span></div><div class="line">    <span class="keyword">final</span> String cacheKey = getCacheKey(requestUrl, maxWidth, maxHeight, scaleType);</div><div class="line"></div><div class="line">    <span class="comment">// Try to look up the request in the cache of remote images.</span></div><div class="line">  	<span class="comment">// 在一级缓存中去找图片</span></div><div class="line">    Bitmap cachedBitmap = mCache.getBitmap(cacheKey);</div><div class="line">    <span class="keyword">if</span> (cachedBitmap != <span class="keyword">null</span>) &#123;</div><div class="line">      	<span class="comment">// 找到了图片，将图片放到 ImageContainer里面，回调监听</span></div><div class="line">        <span class="comment">// Return the cached bitmap.</span></div><div class="line">        ImageContainer container = <span class="keyword">new</span> ImageContainer(cachedBitmap, requestUrl, <span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line">        imageListener.onResponse(container, <span class="keyword">true</span>);</div><div class="line">        <span class="keyword">return</span> container;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// The bitmap did not exist in the cache, fetch it!</span></div><div class="line">  	<span class="comment">// 到这里说明一级缓存里面是没有图片的，创建一个新的 ImageContainer</span></div><div class="line">  	<span class="comment">// 这时候按照三级缓存的步骤应该去磁盘上寻找图片</span></div><div class="line">    ImageContainer imageContainer =</div><div class="line">            <span class="keyword">new</span> ImageContainer(<span class="keyword">null</span>, requestUrl, cacheKey, imageListener);</div><div class="line"></div><div class="line">    <span class="comment">// Update the caller to let them know that they should use the default bitmap.</span></div><div class="line">  	<span class="comment">// 这里回调的原因，是为了告诉调用者没有在内存中找到图片</span></div><div class="line">  	<span class="comment">// 需要从本地或者网络获取图片，回调可以设置一个 placeholder 占位图</span></div><div class="line">    imageListener.onResponse(imageContainer, <span class="keyword">true</span>);</div><div class="line"></div><div class="line">    <span class="comment">// Check to see if a request is already in-flight.</span></div><div class="line">  	<span class="comment">// 检查是否已经有一个相同的请求正在等待处理(加载同一张图片)</span></div><div class="line">    BatchedImageRequest request = mInFlightRequests.get(cacheKey);</div><div class="line">    <span class="keyword">if</span> (request != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// If it is, add this request to the list of listeners.</span></div><div class="line">      	<span class="comment">// 如果有，则将该 imageContainer 加入到这个请求的监听列表中去</span></div><div class="line">        request.addContainer(imageContainer);</div><div class="line">        <span class="keyword">return</span> imageContainer;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// The request is not already in flight. Send the new request to the network and</span></div><div class="line">    <span class="comment">// track it.</span></div><div class="line">  	<span class="comment">// 到这里说明没有重复的请求，那么就要创建一个新的请求了</span></div><div class="line">    Request&lt;Bitmap&gt; newRequest = makeImageRequest(requestUrl, maxWidth, maxHeight, scaleType,cacheKey);</div><div class="line">	<span class="comment">// 添加到请求队列中，剩下的事情就跟上一篇分析Volley中的处理流程一样的</span></div><div class="line">   	<span class="comment">// 也就是剩下的两级缓存</span></div><div class="line">    mRequestQueue.add(newRequest);</div><div class="line">  	<span class="comment">// 添加到正在处理的集合中</span></div><div class="line">    mInFlightRequests.put(cacheKey,</div><div class="line">            <span class="keyword">new</span> BatchedImageRequest(newRequest, imageContainer));</div><div class="line">    <span class="keyword">return</span> imageContainer;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果没有在一级缓存中获取到图片会创建一个请求</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> Request&lt;Bitmap&gt; <span class="title">makeImageRequest</span><span class="params">(String requestUrl, <span class="keyword">int</span> maxWidth, <span class="keyword">int</span> maxHeight,</span></span></div><div class="line">        ScaleType scaleType, <span class="keyword">final</span> String cacheKey) &#123;</div><div class="line">  	<span class="comment">// 创建一个 ImageRequest</span></div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ImageRequest(requestUrl, <span class="keyword">new</span> Listener&lt;Bitmap&gt;() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(Bitmap response)</span> </span>&#123;</div><div class="line">          	<span class="comment">// 成功后回调</span></div><div class="line">            onGetImageSuccess(cacheKey, response);</div><div class="line">        &#125;</div><div class="line">    &#125;, maxWidth, maxHeight, scaleType, Config.RGB_565, <span class="keyword">new</span> ErrorListener() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onErrorResponse</span><span class="params">(VolleyError error)</span> </span>&#123;</div><div class="line">            onGetImageError(cacheKey, error);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当成功获取到图片后，首先把图片放到内存缓存中去</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onGetImageSuccess</span><span class="params">(String cacheKey, Bitmap response)</span> </span>&#123;</div><div class="line">    <span class="comment">// cache the image that was fetched.</span></div><div class="line">    mCache.putBitmap(cacheKey, response);</div><div class="line"></div><div class="line">    <span class="comment">// remove the request from the list of in-flight requests.</span></div><div class="line">  	<span class="comment">// 把这个请求从正在处理的集合中移除</span></div><div class="line">    BatchedImageRequest request = mInFlightRequests.remove(cacheKey);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (request != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// Update the response bitmap.</span></div><div class="line">      	<span class="comment">// 获取到图片</span></div><div class="line">        request.mResponseBitmap = response;</div><div class="line"></div><div class="line">        <span class="comment">// Send the batched response</span></div><div class="line">        batchResponse(cacheKey, request);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来就是将图片发送到各个监听中去。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">batchResponse</span><span class="params">(String cacheKey, BatchedImageRequest request)</span> </span>&#123;</div><div class="line">    mBatchedResponses.put(cacheKey, request);</div><div class="line">    <span class="comment">// If we don't already have a batch delivery runnable in flight, make a new one.</span></div><div class="line">    <span class="comment">// Note that this will be used to deliver responses to all callers in mBatchedResponses.</span></div><div class="line">    <span class="keyword">if</span> (mRunnable == <span class="keyword">null</span>) &#123;</div><div class="line">        mRunnable = <span class="keyword">new</span> Runnable() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">for</span> (BatchedImageRequest bir : mBatchedResponses.values()) &#123;</div><div class="line">                    <span class="keyword">for</span> (ImageContainer container : bir.mContainers) &#123;</div><div class="line">                        <span class="comment">// If one of the callers in the batched request canceled the request</span></div><div class="line">                        <span class="comment">// after the response was received but before it was delivered,</span></div><div class="line">                        <span class="comment">// skip them.</span></div><div class="line">                        <span class="keyword">if</span> (container.mListener == <span class="keyword">null</span>) &#123;</div><div class="line">                            <span class="keyword">continue</span>;</div><div class="line">                        &#125;</div><div class="line">                        <span class="keyword">if</span> (bir.getError() == <span class="keyword">null</span>) &#123;</div><div class="line">                            container.mBitmap = bir.mResponseBitmap;</div><div class="line">                            container.mListener.onResponse(container, <span class="keyword">false</span>);</div><div class="line">                        &#125; <span class="keyword">else</span> &#123;</div><div class="line">                            container.mListener.onErrorResponse(bir.getError());</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                mBatchedResponses.clear();</div><div class="line">                mRunnable = <span class="keyword">null</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;;</div><div class="line">        <span class="comment">// Post the runnable.</span></div><div class="line">        mHandler.postDelayed(mRunnable, mBatchResponseDelayMs);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="ImageContainer-图片数据容器"><a href="#ImageContainer-图片数据容器" class="headerlink" title="ImageContainer 图片数据容器"></a>ImageContainer 图片数据容器</h3><p>一次加载图片会出现多种情况，可能从三级缓存中的任意一级中获取，这样就会有多种数据，因此封装了一个 ImageContainer 来为一次单独的加载请求持有所有的数据。</p>
+<ul>
+<li>mBitmap — 图片</li>
+<li>mListener — 监听</li>
+<li>mCacheKey — 缓存key</li>
+<li>mRequestUrl — 请求url</li>
+</ul>
+<p>有三个方法分别是获取图片，获取url，和取消请求。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancelRequest</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mListener == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    BatchedImageRequest request = mInFlightRequests.get(mCacheKey);</div><div class="line">    <span class="keyword">if</span> (request != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">boolean</span> canceled = request.removeContainerAndCancelIfNecessary(<span class="keyword">this</span>);</div><div class="line">        <span class="keyword">if</span> (canceled) &#123;</div><div class="line">            mInFlightRequests.remove(mCacheKey);</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">// check to see if it is already batched for delivery.</span></div><div class="line">        request = mBatchedResponses.get(mCacheKey);</div><div class="line">        <span class="keyword">if</span> (request != <span class="keyword">null</span>) &#123;</div><div class="line">            request.removeContainerAndCancelIfNecessary(<span class="keyword">this</span>);</div><div class="line">            <span class="keyword">if</span> (request.mContainers.size() == <span class="number">0</span>) &#123;</div><div class="line">                mBatchedResponses.remove(mCacheKey);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="getImageListener-默认的监听加载"><a href="#getImageListener-默认的监听加载" class="headerlink" title="getImageListener 默认的监听加载"></a>getImageListener 默认的监听加载</h3><p>就贴个代码凑字数～没什么好说的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ImageListener <span class="title">getImageListener</span><span class="params">(<span class="keyword">final</span> ImageView view,</span></span></div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> defaultImageResId, <span class="keyword">final</span> <span class="keyword">int</span> errorImageResId) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ImageListener() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onErrorResponse</span><span class="params">(VolleyError error)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (errorImageResId != <span class="number">0</span>) &#123;</div><div class="line">                view.setImageResource(errorImageResId);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(ImageContainer response, <span class="keyword">boolean</span> isImmediate)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (response.getBitmap() != <span class="keyword">null</span>) &#123;</div><div class="line">                view.setImageBitmap(response.getBitmap());</div><div class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (defaultImageResId != <span class="number">0</span>) &#123;</div><div class="line">                view.setImageResource(defaultImageResId);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="图片的处理"><a href="#图片的处理" class="headerlink" title="图片的处理"></a>图片的处理</h3><p>我们知道在 Android 中加载图片，很容易发生 OOM 的情况，所以对图片的处理是非常有必要的。在 ImageLoader 中似乎没有看到任何处理图片的代码。实际上是在 ImageRequest 里面处理的，在拿到 Response 后就对图片进行了处理。</p>
+<p>有时候我们可能只需要展示100*100 大小的图片，但是原图可能非常大，如果全部加载到内存中必然是浪费了空间并且可能造成内存溢出。所以我们可以根据要展示的实际大小来缩放图片，这样可以节省很大一部分内存空间。</p>
+<p>首先科普一个小技巧，我们知道可以通过 BitmapFactory 来创建一个 Bitmap 对象，但是 BitmapFactory 会预先将这个 Bitmap 加载到内存中，实际上我们还需要对 Bitmap 进行处理，这样占用了无效的内存。BitmapFactory 在创建的时候可以传入一个 Options 对象来改变一些参数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">BitmapFactory.Options decodeOptions = <span class="keyword">new</span> BitmapFactory.Options();</div><div class="line">decodeOptions.inJustDecodeBounds = <span class="keyword">true</span>;</div></pre></td></tr></table></figure>
+<p>这个对象有一个属性是 inJustDecodeBounds ，从字面理解是只解码边界。这个属性设置为 true 后，BitmapFactory 返回的 Bitmap 为 null,并没有解码，但是图片的宽高等属性是可以获取到的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> actualWidth = decodeOptions.outWidth;</div><div class="line"><span class="keyword">int</span> actualHeight = decodeOptions.outHeight;</div></pre></td></tr></table></figure>
+<p>这个技巧可以允许我们在不占用内存的情况下获取到图片的实际宽高，从而进行缩放。Options 中还有一个参数</p>
+<p><strong>inSampleSize</strong> — 采样率，默认为1。表示从 n 个像素中获取一个像素</p>
+<p>这个参数需要注意几点</p>
+<ul>
+<li>值越大，缩放越小。</li>
+</ul>
+<ul>
+<li>如果这个值小于1，在处理的时候会设置为1。（因为不可能从一个像素中取半个吧，囧）</li>
+<li>值尽可能接近 2 的倍数，因为如果不是 2 的倍数，在底层方法中会向下取值为 2 的倍数</li>
+</ul>
+<p>知道这个技术后就可以通过图片的实际宽高和需要展示的宽高算出缩放比（采样率）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Response&lt;Bitmap&gt; <span class="title">doParse</span><span class="params">(NetworkResponse response)</span> </span>&#123;</div><div class="line">    <span class="keyword">byte</span>[] data = response.data;</div><div class="line">    BitmapFactory.Options decodeOptions = <span class="keyword">new</span> BitmapFactory.Options();</div><div class="line">    Bitmap bitmap = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">if</span> (mMaxWidth == <span class="number">0</span> &amp;&amp; mMaxHeight == <span class="number">0</span>) &#123;</div><div class="line">        decodeOptions.inPreferredConfig = mDecodeConfig;</div><div class="line">        bitmap = BitmapFactory.decodeByteArray(data, <span class="number">0</span>, data.length, decodeOptions);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">// If we have to resize this image, first get the natural bounds.</span></div><div class="line">        decodeOptions.inJustDecodeBounds = <span class="keyword">true</span>;</div><div class="line">        BitmapFactory.decodeByteArray(data, <span class="number">0</span>, data.length, decodeOptions);</div><div class="line">        <span class="keyword">int</span> actualWidth = decodeOptions.outWidth;</div><div class="line">        <span class="keyword">int</span> actualHeight = decodeOptions.outHeight;</div><div class="line"></div><div class="line">        <span class="comment">// Then compute the dimensions we would ideally like to decode to.</span></div><div class="line">      	<span class="comment">// 计算调整后的图片尺寸(根据 ScaleType 等)</span></div><div class="line">        <span class="keyword">int</span> desiredWidth = getResizedDimension(mMaxWidth, mMaxHeight,</div><div class="line">                actualWidth, actualHeight, mScaleType);</div><div class="line">        <span class="keyword">int</span> desiredHeight = getResizedDimension(mMaxHeight, mMaxWidth,</div><div class="line">                actualHeight, actualWidth, mScaleType);</div><div class="line"></div><div class="line">        <span class="comment">// Decode to the nearest power of two scaling factor.</span></div><div class="line">        decodeOptions.inJustDecodeBounds = <span class="keyword">false</span>;</div><div class="line">        <span class="comment">// TODO(ficus): Do we need this or is it okay since API 8 doesn't support it?</span></div><div class="line">        <span class="comment">// decodeOptions.inPreferQualityOverSpeed = PREFER_QUALITY_OVER_SPEED;</span></div><div class="line">      	<span class="comment">// 根据调整后的尺寸算出采样率</span></div><div class="line">        decodeOptions.inSampleSize =</div><div class="line">            findBestSampleSize(actualWidth, actualHeight, desiredWidth, desiredHeight);</div><div class="line">        Bitmap tempBitmap =</div><div class="line">            BitmapFactory.decodeByteArray(data, <span class="number">0</span>, data.length, decodeOptions);</div><div class="line"></div><div class="line">        <span class="comment">// If necessary, scale down to the maximal acceptable size.</span></div><div class="line">      	<span class="comment">// 如果调整后的图片还是大于了目标尺寸，再缩放一次</span></div><div class="line">        <span class="keyword">if</span> (tempBitmap != <span class="keyword">null</span> &amp;&amp; (tempBitmap.getWidth() &gt; desiredWidth ||</div><div class="line">                tempBitmap.getHeight() &gt; desiredHeight)) &#123;</div><div class="line">            bitmap = Bitmap.createScaledBitmap(tempBitmap,</div><div class="line">                    desiredWidth, desiredHeight, <span class="keyword">true</span>);</div><div class="line">            tempBitmap.recycle();</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            bitmap = tempBitmap;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (bitmap == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> Response.error(<span class="keyword">new</span> ParseError(response));</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> Response.success(bitmap, HttpHeaderParser.parseCacheHeaders(response));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>看看 Volley 是怎么计算目标尺寸的，这个方法传入五个参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getResizedDimension</span><span class="params">(<span class="keyword">int</span> maxPrimary, <span class="keyword">int</span> maxSecondary, <span class="keyword">int</span> actualPrimary,<span class="keyword">int</span> actualSecondary, ScaleType scaleType)</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">// If no dominant value at all, just return the actual.</span></div><div class="line">  	<span class="comment">// 没有调整</span></div><div class="line">    <span class="keyword">if</span> ((maxPrimary == <span class="number">0</span>) &amp;&amp; (maxSecondary == <span class="number">0</span>)) &#123;</div><div class="line">        <span class="keyword">return</span> actualPrimary;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// If ScaleType.FIT_XY fill the whole rectangle, ignore ratio.</span></div><div class="line">  	<span class="comment">// 如果是 fit_xy ,则直接返回尺寸，忽略掉比率</span></div><div class="line">    <span class="keyword">if</span> (scaleType == ScaleType.FIT_XY) &#123;</div><div class="line">        <span class="keyword">if</span> (maxPrimary == <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">return</span> actualPrimary;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> maxPrimary;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// If primary is unspecified, scale primary to match secondary's scaling ratio.</span></div><div class="line">   	<span class="comment">// 如果最大的主值为空，用第二个值来计算比率，再计算尺寸</span></div><div class="line">    <span class="keyword">if</span> (maxPrimary == <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">double</span> ratio = (<span class="keyword">double</span>) maxSecondary / (<span class="keyword">double</span>) actualSecondary;</div><div class="line">        <span class="keyword">return</span> (<span class="keyword">int</span>) (actualPrimary * ratio);</div><div class="line">    &#125;</div><div class="line">	<span class="comment">// 如果第二个值为空，直接返回最大值</span></div><div class="line">    <span class="keyword">if</span> (maxSecondary == <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> maxPrimary;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">double</span> ratio = (<span class="keyword">double</span>) actualSecondary / (<span class="keyword">double</span>) actualPrimary;</div><div class="line">    <span class="keyword">int</span> resized = maxPrimary;</div><div class="line"></div><div class="line">    <span class="comment">// If ScaleType.CENTER_CROP fill the whole rectangle, preserve aspect ratio.</span></div><div class="line">  	<span class="comment">// 如果缩放类型是 center_crop，则要保持宽高比</span></div><div class="line">    <span class="keyword">if</span> (scaleType == ScaleType.CENTER_CROP) &#123;</div><div class="line">        <span class="keyword">if</span> ((resized * ratio) &lt; maxSecondary) &#123;</div><div class="line">            resized = (<span class="keyword">int</span>) (maxSecondary / ratio);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> resized;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((resized * ratio) &gt; maxSecondary) &#123;</div><div class="line">        resized = (<span class="keyword">int</span>) (maxSecondary / ratio);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> resized;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后是计算采样率的方法，用实际的宽高分别计算比率，取最小的那个值，并且尽量接近2的倍数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">findBestSampleSize</span><span class="params">(</span></span></div><div class="line">        <span class="keyword">int</span> actualWidth, <span class="keyword">int</span> actualHeight, <span class="keyword">int</span> desiredWidth, <span class="keyword">int</span> desiredHeight) &#123;</div><div class="line">    <span class="keyword">double</span> wr = (<span class="keyword">double</span>) actualWidth / desiredWidth;</div><div class="line">    <span class="keyword">double</span> hr = (<span class="keyword">double</span>) actualHeight / desiredHeight;</div><div class="line">    <span class="keyword">double</span> ratio = Math.min(wr, hr);</div><div class="line">    <span class="keyword">float</span> n = <span class="number">1.0f</span>;</div><div class="line">    <span class="keyword">while</span> ((n * <span class="number">2</span>) &lt;= ratio) &#123;</div><div class="line">        n *= <span class="number">2</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>) n;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>通过学习 Volley 中的 ImageLoader 源码，对于图片的处理的理解更加深入，相信就算是自己来写图片加载，也不会有原来那么头疼。在本篇笔记中提到了 LruCache，这是 Android 官方提倡的缓存方式，因为现在对于软引用和弱饮用也会直接回收，不再可靠。在下一篇源码中将分析 LruCache 源码，看它是如果来解决缓存问题的。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android源码学习/">Android源码学习</a>
+</div>
+
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/lrucache_source/" title="LruCache 源码学习笔记">
+  <span>
+  LruCache 源码学习笔记</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/volley_source/"  title="Volley源码学习笔记">
+ <span>Volley源码学习笔记
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="volley_imageloader_source/" data-title="Volley 中的ImageLoader源码学习笔记" data-url="https://joesteven.github.io/volley_imageloader_source/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info" class="clearfix">
+		
+		<a href="http://weibo.com/2750146463" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/JoeSteven" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/qiao-xi-28" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		
+		<a href="mailto:qiaoxiaoxi621@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>9</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://laobie.github.io/" target="_blank" title="写代码的猴子">写代码的猴子</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://brucezz.github.io/" target="_blank" title="Brucezz">Brucezz</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://allenwu.itscoder.com/" target="_blank" title="allen">allen</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="大M">大M</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://solart.cc/" target="_blank" title="imilk">imilk</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://yongyu0102.github.io/" target="_blank" title="用语">用语</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2016 
+		
+		<a href="/about" target="_blank" title="Joe">Joe</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"extremej"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

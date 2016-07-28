@@ -1,0 +1,546 @@
+
+ <!DOCTYPE HTML>
+<html lang="Chinese">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>RxJava 源码学习笔记 | Joe is a thin man</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Joe">
+    
+
+    
+    <meta name="description" content="转载请附原文链接： RxJava 源码学习笔记
+RxJava 使用简介学习了 RxJava有一段时间了，也在自己的项目中全面替换使用，整个项目的代码结构和质量确实有很大的改观，这么牛逼的一个框架，不仅要知其然，更要知其所以然。阅读源码学习原理也是很有必要的，这篇文章算是学习记录吧，圈内已有很多大神的文章深入分析了RxJava的原理，吾等小辈，不敢造次。
+如果你还在学习RxJava的使用，可以看看我">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RxJava 源码学习笔记">
+<meta property="og:url" content="https://joesteven.github.io/rxjava_source/index.html">
+<meta property="og:site_name" content="Joe is a thin man">
+<meta property="og:description" content="转载请附原文链接： RxJava 源码学习笔记
+RxJava 使用简介学习了 RxJava有一段时间了，也在自己的项目中全面替换使用，整个项目的代码结构和质量确实有很大的改观，这么牛逼的一个框架，不仅要知其然，更要知其所以然。阅读源码学习原理也是很有必要的，这篇文章算是学习记录吧，圈内已有很多大神的文章深入分析了RxJava的原理，吾等小辈，不敢造次。
+如果你还在学习RxJava的使用，可以看看我">
+<meta property="og:updated_time" content="2016-07-28T13:08:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RxJava 源码学习笔记">
+<meta name="twitter:description" content="转载请附原文链接： RxJava 源码学习笔记
+RxJava 使用简介学习了 RxJava有一段时间了，也在自己的项目中全面替换使用，整个项目的代码结构和质量确实有很大的改观，这么牛逼的一个框架，不仅要知其然，更要知其所以然。阅读源码学习原理也是很有必要的，这篇文章算是学习记录吧，圈内已有很多大神的文章深入分析了RxJava的原理，吾等小辈，不敢造次。
+如果你还在学习RxJava的使用，可以看看我">
+
+    
+    <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/avatar.png">
+    
+    
+    <link rel="apple-touch-icon" href="/img/profile.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/profile.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
+				<h2 class="blog-motto">写代码的民谣歌手</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:joesteven.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/rxjava_source/" title="RxJava 源码学习笔记" itemprop="url">RxJava 源码学习笔记</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
+		
+  <p class="article-time">
+    <time datetime="2016-07-07T13:03:14.000Z" itemprop="datePublished"> Published 2016-07-07</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#一次完整订阅"><span class="toc-number">1.</span> <span class="toc-text">一次完整订阅</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Observable的转换-—-lift-compose"><span class="toc-number">2.</span> <span class="toc-text">Observable的转换 — lift(),compose()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#线程转换"><span class="toc-number">3.</span> <span class="toc-text">线程转换</span></a></li></ol>
+		
+		</div>
+		
+		<p>转载请附原文链接： <a href="http://extremej.itscoder.com/rxjava_source/" target="_blank" rel="external">RxJava 源码学习笔记</a></p>
+<p><a href="http://extremej.itscoder.com/how_to_use_rxjava/" target="_blank" rel="external">RxJava 使用简介</a><br>学习了 RxJava有一段时间了，也在自己的项目中全面替换使用，整个项目的代码结构和质量确实有很大的改观，这么牛逼的一个框架，不仅要知其然，更要知其所以然。阅读源码学习原理也是很有必要的，这篇文章算是学习记录吧，圈内已有很多大神的文章深入分析了RxJava的原理，吾等小辈，不敢造次。</p>
+<p>如果你还在学习RxJava的使用，可以看看我上一篇文章，希望能有所帮助</p>
+<h4 id="一次完整订阅"><a href="#一次完整订阅" class="headerlink" title="一次完整订阅"></a>一次完整订阅</h4><p>observable被create创建的时候，传入一个OnSubscribe对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">Observable&lt;T&gt; <span class="title">create</span><span class="params">(OnSubscribe&lt;T&gt; f)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Observable&lt;T&gt;(hook.onCreate(f));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>至于这个hook，是RxJavaObservableExecutionHook，RxJavaPlugins中的一个类，用于插入一些你所需要的代码，记录，测试等，在默认的情况下，没有做任何事情,以下是官方文档给出的解释：</p>
+<blockquote>
+<p>This plugin allows you to register functions that RxJava will call upon certain regular RxJava activities, for instance for logging or metrics-collection purposes. </p>
+</blockquote>
+<p>所以目前不需要管这个钩子。在文章后面如果出现其他类型的hook不再作解释</p>
+<p>来看看OnSubscribe是个什么东西，继承了Action1接口，接口中只有一个方法call，这个方法什么时候被调用，我们慢慢来看。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Invoked when Observable.subscribe is called.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OnSubscribe</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Action1</span>&lt;<span class="title">Subscriber</span>&lt;? <span class="title">super</span> <span class="title">T</span>&gt;&gt; </span>&#123;</div><div class="line">    <span class="comment">// cover for generics insanity</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们知道当调用了Observable的subscribe()方法后，Observable开始发送数据，那call应该就是在subscribe()时调用的，来看代码（onStart前面是判断参数为空抛异常的代码，没有放上来）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">Subscription <span class="title">subscribe</span><span class="params">(Subscriber&lt;? <span class="keyword">super</span> T&gt; subscriber, Observable&lt;T&gt; observable)</span> </span>&#123;</div><div class="line"></div><div class="line">    subscriber.onStart();</div><div class="line">    </div><div class="line">    <span class="keyword">if</span> (!(subscriber <span class="keyword">instanceof</span> SafeSubscriber)) &#123;</div><div class="line">        subscriber = <span class="keyword">new</span> SafeSubscriber&lt;T&gt;(subscriber);</div><div class="line">    &#125;</div><div class="line">  </div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        hook.onSubscribeStart(observable, observable.onSubscribe).call(subscriber);</div><div class="line">        <span class="keyword">return</span> hook.onSubscribeReturn(subscriber);</div><div class="line">    &#125; <span class="keyword">catch</span> (Throwable e) &#123;</div><div class="line">        Exceptions.throwIfFatal(e);</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            subscriber.onError(hook.onSubscribeError(e));</div><div class="line">        &#125; <span class="keyword">catch</span> (Throwable e2) &#123;</div><div class="line">            Exceptions.throwIfFatal(e2);</div><div class="line">            RuntimeException r = <span class="keyword">new</span> RuntimeException(<span class="string">"Error occurred attempting to subscribe ["</span> + e.getMessage() + <span class="string">"] and then again while trying to pass to onError."</span>, e2);</div><div class="line">            hook.onSubscribeError(r);</div><div class="line">            <span class="keyword">throw</span> r;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> Subscriptions.unsubscribed();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先调用了Subscriber的onStart方法，我们的订阅前的准备代码就是在这里执行，接着判断subscriber是否是 SafeSubscriber的子类，如果不是的话，转成这个类，SafeSubscriber又是什么？</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; SafeSubscriber is a wrapper around Subscriber that ensures that the Subscriber complies with the Observable contract</div><div class="line">&gt; http://reactivex.io/documentation/contract.html</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+</blockquote>
+<p>简单翻译，是为了使 Subscriber遵守Observable的某种规则而进行的一次封装，保证onComplete和onError互斥，onNext在onComplete不再发送数据，对异常做了一些操作等等。</p>
+<p>接着往下看调用了OnSubscribe.call(),开始执行call中的代码，并且做了一些异常处理，返回一个Subscription对象用于管理这次订阅</p>
+<p>用过RxJava的同学应该知道，Subscriber是实现自Observer接口的抽象类，在subscribe时也可以就传入一个observer对象，其实RxJava还是会使用一个subscriber去订阅事件，然后将数据简单的向前传递给这个observer，其他的不同参数的subscribe都是同样的处理方式；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Subscription <span class="title">subscribe</span><span class="params">(<span class="keyword">final</span> Observer&lt;? <span class="keyword">super</span> T&gt; observer)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (observer <span class="keyword">instanceof</span> Subscriber) &#123;</div><div class="line">        <span class="keyword">return</span> subscribe((Subscriber&lt;? <span class="keyword">super</span> T&gt;)observer);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> subscribe(<span class="keyword">new</span> Subscriber&lt;T&gt;() &#123;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCompleted</span><span class="params">()</span> </span>&#123;</div><div class="line">            observer.onCompleted();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(Throwable e)</span> </span>&#123;</div><div class="line">            observer.onError(e);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onNext</span><span class="params">(T t)</span> </span>&#123;</div><div class="line">            observer.onNext(t);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>知道了一个完整订阅流程在内部时怎么实现的之后，我们来看一下通过其他的方法创建Observable进行发射数据有什么不同。</p>
+<ul>
+<li>just()<ul>
+<li>一个参数 </li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>多个参数 — 实际是执行了from()</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//一个参数</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">Observable&lt;T&gt; <span class="title">just</span><span class="params">(<span class="keyword">final</span> T value)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> ScalarSynchronousObservable.create(value);</div><div class="line">&#125;</div><div class="line"><span class="comment">//ScalarSynchronousObservable的构造方法</span></div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="title">ScalarSynchronousObservable</span><span class="params">(<span class="keyword">final</span> T t)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(<span class="keyword">new</span> OnSubscribe&lt;T&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Subscriber&lt;? <span class="keyword">super</span> T&gt; s)</span> </span>&#123;</div><div class="line">                s.setProducer(createProducer(s, t));</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        <span class="keyword">this</span>.t = t;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>一颗赛艇，重写了call方法，调用了subscriber.setProducer(),所以这是个什么方法？干什么用的？从方法名上理解，是给当前的 Subscriber设置了一个producer（提供者）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setProducer</span><span class="params">(Producer p)</span> </span>&#123;</div><div class="line">    <span class="keyword">long</span> toRequest;</div><div class="line">    <span class="keyword">boolean</span> passToSubscriber = <span class="keyword">false</span>;</div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        toRequest = requested;</div><div class="line">        producer = p;</div><div class="line">        <span class="keyword">if</span> (subscriber != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">// middle operator ... we pass thru unless a request has been made</span></div><div class="line">            <span class="keyword">if</span> (toRequest == NOT_SET) &#123;</div><div class="line">                <span class="comment">// we pass-thru to the next producer as nothing has been requested</span></div><div class="line">                passToSubscriber = <span class="keyword">true</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// do after releasing lock</span></div><div class="line">    <span class="keyword">if</span> (passToSubscriber) &#123;</div><div class="line">        subscriber.setProducer(producer);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">// we execute the request with whatever has been requested (or Long.MAX_VALUE)</span></div><div class="line">        <span class="keyword">if</span> (toRequest == NOT_SET) &#123;</div><div class="line">            producer.request(Long.MAX_VALUE);<span class="comment">//执行到这句</span></div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            producer.request(toRequest);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从上面的代码会执行到producer.request(Long.MAX_VALUE),Producer是一个接口，里面只有一个方法request(long n) — n 是你希望该Producer所提供数据数量的最大值，我们再回到just()中所用到的SingleProducer来看看它是怎么实现的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**注意这里贴出的只是核心代码，并不是完整的源代码*/</span></div><div class="line"><span class="meta">@Override</span></div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">request</span><span class="params">(<span class="keyword">long</span> n)</span> </span>&#123;</div><div class="line">           <span class="keyword">final</span> Subscriber&lt;? <span class="keyword">super</span> T&gt; c = child;</div><div class="line">           T v = value;</div><div class="line">           <span class="comment">// eagerly check for unsubscription</span></div><div class="line">           <span class="keyword">if</span> (c.isUnsubscribed()) &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">           &#125;</div><div class="line">           <span class="comment">// emit the value</span></div><div class="line">           <span class="keyword">try</span> &#123;</div><div class="line">               c.onNext(v);</div><div class="line">           &#125; <span class="keyword">catch</span> (Throwable e) &#123;</div><div class="line">               Exceptions.throwOrReport(e, c, v);</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">           &#125;</div><div class="line">           <span class="comment">// eagerly check for unsubscription</span></div><div class="line">           <span class="keyword">if</span> (c.isUnsubscribed()) &#123;</div><div class="line">               <span class="keyword">return</span>;</div><div class="line">           &#125;</div><div class="line">           <span class="comment">// complete the child</span></div><div class="line">           c.onCompleted();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>这段代码看懂的难度不大</p>
+<ul>
+<li>from()</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">Observable&lt;T&gt; <span class="title">from</span><span class="params">(T[] array)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> n = array.length;</div><div class="line">    <span class="keyword">if</span> (n == <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> empty();</div><div class="line">    &#125; <span class="keyword">else</span></div><div class="line">    <span class="keyword">if</span> (n == <span class="number">1</span>) &#123;</div><div class="line">        <span class="keyword">return</span> just(array[<span class="number">0</span>]);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> create(<span class="keyword">new</span> OnSubscribeFromArray&lt;T&gt;(array));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>from方法传入一个数组，如果数组长度为0，则返回empty()— 一个不发射数据的Observable,如果数组只有一个元素，就返回just方法创建的Observable，我们稍后看just，最后一句代码，create时创建了一个OnSubscribeFromArray对象，这个类是OnSubscribe的一个实现类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Subscriber&lt;? <span class="keyword">super</span> T&gt; child)</span> </span>&#123;</div><div class="line">    child.setProducer(<span class="keyword">new</span> FromArrayProducer&lt;T&gt;(child, array));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>同just()一样也是通过setProducer的方法来发射数据，但是FromArrayProducer的request()方法里面用到了一个BackpressureUtils来处理，关于<a href="http://www.dundunwen.com/article/275b1d92-f9da-4bb8-b111-3aa8a6ace245.html" target="_blank" rel="external">Backpressure</a> ，大概是一种处理堆积消息的策略，有兴趣的可以看看这篇文章。</p>
+<h4 id="Observable的转换-—-lift-compose"><a href="#Observable的转换-—-lift-compose" class="headerlink" title="Observable的转换 — lift(),compose()"></a>Observable的转换 — lift(),compose()</h4><ul>
+<li><p>map()</p>
+<p>先从我们最熟悉的操作符map开始，map实际调用了一个方法lift()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> &lt;R&gt; <span class="function">Observable&lt;R&gt; <span class="title">map</span><span class="params">(Func1&lt;? <span class="keyword">super</span> T, ? extends R&gt; func)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> lift(<span class="keyword">new</span> OperatorMap&lt;T, R&gt;(func));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>flatMap()</p>
+<p>然后来看看flatMap(),调用了merge()，传入了一个参数lift()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> &lt;U, R&gt; <span class="function">Observable&lt;R&gt; <span class="title">flatMap</span><span class="params">(<span class="keyword">final</span> Func1&lt;? <span class="keyword">super</span> T, ? extends Observable&lt;? extends U&gt;&gt; collectionSelector,</span></span></div><div class="line">        <span class="keyword">final</span> Func2&lt;? <span class="keyword">super</span> T, ? <span class="keyword">super</span> U, ? extends R&gt; resultSelector) &#123;</div><div class="line">    <span class="keyword">return</span> merge(lift(<span class="keyword">new</span> OperatorMapPair&lt;T, U, R&gt;(collectionSelector, resultSelector)));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>merge()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">Observable&lt;T&gt; <span class="title">merge</span><span class="params">(Observable&lt;? extends Observable&lt;? extends T&gt;&gt; source)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (source.getClass() == ScalarSynchronousObservable.class) &#123;</div><div class="line">        <span class="keyword">return</span> ((ScalarSynchronousObservable&lt;T&gt;)source).scalarFlatMap((Func1)UtilityFunctions.identity());</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> source.lift(OperatorMerge.&lt;T&gt;instance(<span class="keyword">false</span>));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>merge中也调用了lift()函数，实际上大部分对Observable进行操作的操作符几乎都是用到了这个函数，那么我们来看看lift()到底做了什么</p>
+</li>
+<li><p><strong>lift()</strong> </p>
+<blockquote>
+<p>Lifts a function to the current Observable and returns a new Observable that when subscribed to will pass  the values of the current Observable through the Operator function.</p>
+</blockquote>
+<p>源码中的注释，简单翻译一下，这段话大概的意思是按照这个操作符的规则来将当前的Observable替换为一个新的Observable</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//部分注释被删掉了</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> &lt;R&gt; <span class="function">Observable&lt;R&gt; <span class="title">lift</span><span class="params">(<span class="keyword">final</span> Operator&lt;? extends R, ? <span class="keyword">super</span> T&gt; operator)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Observable&lt;R&gt;(<span class="keyword">new</span> OnSubscribe&lt;R&gt;() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Subscriber&lt;? <span class="keyword">super</span> R&gt; o)</span> </span>&#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                Subscriber&lt;? <span class="keyword">super</span> T&gt; st = hook.onLift(operator).call(o);</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">      <span class="comment">// new Subscriber created and being subscribed with so 'onStart' it</span></div><div class="line">                    st.onStart();</div><div class="line">                    onSubscribe.call(st);</div><div class="line">                &#125; <span class="keyword">catch</span> (Throwable e) &#123;</div><div class="line">                    Exceptions.throwIfFatal(e);</div><div class="line">                    st.onError(e);</div><div class="line">                &#125;</div><div class="line">            &#125; <span class="keyword">catch</span> (Throwable e) &#123;</div><div class="line">                Exceptions.throwIfFatal(e);</div><div class="line">                o.onError(e);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码乍一看一脸懵逼，我们先看看Operator是个什么鬼</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Operator</span>&lt;<span class="title">R</span>, <span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Func1</span>&lt;<span class="title">Subscriber</span>&lt;? <span class="title">super</span> <span class="title">R</span>&gt;, <span class="title">Subscriber</span>&lt;? <span class="title">super</span> <span class="title">T</span>&gt;&gt; </span>&#123;</div><div class="line">    <span class="comment">// cover for generics insanity</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Operator接口继承自Func1接口，做了一件事情，将泛型指定为两个Subscriber,这时候我们再去看lift中的代码，好像明白怎么回事了</p>
+<p>首先new了一个新的OnSubscribe对象，泛型指定为转换后的数据类型，注意了，<strong>operator.call返回了一个Subscriber对象，泛型是原始的Observable所发射的数据，然后调用了原始的Observable中的onSubscribe.call()将数据发射出去</strong>。</p>
+<p>原始的数据发射到哪儿去了呢？来看OperatorMap中的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">OperatorMap</span>&lt;<span class="title">T</span>, <span class="title">R</span>&gt; <span class="keyword">implements</span> <span class="title">Operator</span>&lt;<span class="title">R</span>, <span class="title">T</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">final</span> Func1&lt;? <span class="keyword">super</span> T, ? extends R&gt; transformer;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OperatorMap</span><span class="params">(Func1&lt;? <span class="keyword">super</span> T, ? extends R&gt; transformer)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.transformer = transformer;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="keyword">public</span> Subscriber&lt;? <span class="keyword">super</span> T&gt; call(<span class="keyword">final</span> Subscriber&lt;? <span class="keyword">super</span> R&gt; o) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Subscriber&lt;T&gt;(o) &#123;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCompleted</span><span class="params">()</span> </span>&#123;</div><div class="line">                o.onCompleted();</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(Throwable e)</span> </span>&#123;</div><div class="line">                o.onError(e);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onNext</span><span class="params">(T t)</span> </span>&#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    o.onNext(transformer.call(t));</div><div class="line">                &#125; <span class="keyword">catch</span> (Throwable e) &#123;</div><div class="line">                    Exceptions.throwOrReport(e, <span class="keyword">this</span>, t);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我看到这段代码的时候有种醍醐灌顶的感觉啊，是不是很6，subscriber将数据传递给transformer，让我们在Func1中处理相关逻辑</p>
+</li>
+</ul>
+<p>关于lift的原理，看看扔物线大神的文章<a href="http://gank.io/post/560e15be2dca930e00da1083#toc_19" target="_blank" rel="external">变换的原理</a> ,里面的图解很好的解释了lift的流程</p>
+<ul>
+<li>compose() — 上一篇用法学习的时候已经讲过，不再赘述，<a href="http://extremej.itscoder.com/how_to_use_rxjava/" target="_blank" rel="external">传送门</a> </li>
+</ul>
+<h4 id="线程转换"><a href="#线程转换" class="headerlink" title="线程转换"></a>线程转换</h4><p>线程转换的原理其实也是使用lift()去转换，关于流程原理可以参考<a href="http://gank.io/post/560e15be2dca930e00da1083#toc_22" target="_blank" rel="external">Scheduler的原理</a>,线程转换的内部实现，代码较多，打算放到下一篇文章中，专门分析学习。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android源码学习/">Android源码学习</a>
+</div>
+
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/handler_source_1/" title="Handler源码学习（一）流程">
+  <span>
+  Handler源码学习（一）流程</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/how_to_use_rxjava/"  title="RxJava 使用简介">
+ <span>RxJava 使用简介
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="rxjava_source/" data-title="RxJava 源码学习笔记" data-url="https://joesteven.github.io/rxjava_source/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info" class="clearfix">
+		
+		<a href="http://weibo.com/2750146463" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/JoeSteven" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/qiao-xi-28" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		
+		<a href="mailto:qiaoxiaoxi621@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>9</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://laobie.github.io/" target="_blank" title="写代码的猴子">写代码的猴子</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://brucezz.github.io/" target="_blank" title="Brucezz">Brucezz</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://allenwu.itscoder.com/" target="_blank" title="allen">allen</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="大M">大M</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://solart.cc/" target="_blank" title="imilk">imilk</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://yongyu0102.github.io/" target="_blank" title="用语">用语</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2016 
+		
+		<a href="/about" target="_blank" title="Joe">Joe</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"extremej"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

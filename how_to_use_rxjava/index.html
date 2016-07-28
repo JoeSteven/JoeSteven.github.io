@@ -1,0 +1,696 @@
+
+ <!DOCTYPE HTML>
+<html lang="Chinese">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>RxJava 使用简介 | Joe is a thin man</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Joe">
+    
+
+    
+    <meta name="description" content="注：本系列文章主要用于博主个人学习记录，本文末尾附上了一些较好的文章提供学习。转载请附原文链接： RxJava 使用简介如果你对 RxJava 的原理感兴趣，可以看看下面这篇文章RxJava 源码学习笔记
+RxJava利用响应式编程思想，专注于异步任务的处理，通过操作符进行流式操作，可以极大的去除多层嵌套，达到逻辑的简洁明了。
+ 举个栗子🌰
+RxJava的观察者模式与普通观察者模式有一个区别是分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RxJava 使用简介">
+<meta property="og:url" content="https://joesteven.github.io/how_to_use_rxjava/index.html">
+<meta property="og:site_name" content="Joe is a thin man">
+<meta property="og:description" content="注：本系列文章主要用于博主个人学习记录，本文末尾附上了一些较好的文章提供学习。转载请附原文链接： RxJava 使用简介如果你对 RxJava 的原理感兴趣，可以看看下面这篇文章RxJava 源码学习笔记
+RxJava利用响应式编程思想，专注于异步任务的处理，通过操作符进行流式操作，可以极大的去除多层嵌套，达到逻辑的简洁明了。
+ 举个栗子🌰
+RxJava的观察者模式与普通观察者模式有一个区别是分">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-dfc3c65cfd2e105b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-09d4a6f103b6d962.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-1f554ba2fe1749eb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-7cc126e6e30cea4c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-d323b51bc0b851e8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-af6bb7e1f29150f9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-5484e3bbd2409889.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-e634cb860689553e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-6a500bba9d22f76e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-4c5ae0467e8913cb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-98e0dbff4dba71a1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-26e899c2711b175e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-9eab2cb2f6047c34.JPG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2016-07-28T13:08:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RxJava 使用简介">
+<meta name="twitter:description" content="注：本系列文章主要用于博主个人学习记录，本文末尾附上了一些较好的文章提供学习。转载请附原文链接： RxJava 使用简介如果你对 RxJava 的原理感兴趣，可以看看下面这篇文章RxJava 源码学习笔记
+RxJava利用响应式编程思想，专注于异步任务的处理，通过操作符进行流式操作，可以极大的去除多层嵌套，达到逻辑的简洁明了。
+ 举个栗子🌰
+RxJava的观察者模式与普通观察者模式有一个区别是分">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1473110-dfc3c65cfd2e105b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+    
+    <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/avatar.png">
+    
+    
+    <link rel="apple-touch-icon" href="/img/profile.png">
+    <link rel="apple-touch-icon-precomposed" href="/img/profile.png">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
+				<h2 class="blog-motto">写代码的民谣歌手</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/categories">Categories</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:joesteven.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/how_to_use_rxjava/" title="RxJava 使用简介" itemprop="url">RxJava 使用简介</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
+		
+  <p class="article-time">
+    <time datetime="2016-06-29T12:58:44.000Z" itemprop="datePublished"> Published 2016-06-29</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#基本概念及用法"><span class="toc-number">1.</span> <span class="toc-text">基本概念及用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#线程控制"><span class="toc-number">2.</span> <span class="toc-text">线程控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#操作符"><span class="toc-number">3.</span> <span class="toc-text">操作符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#A-转换操作"><span class="toc-number">3.1.</span> <span class="toc-text">A.转换操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#B-合并操作"><span class="toc-number">3.2.</span> <span class="toc-text">B.合并操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#C-过滤操作"><span class="toc-number">3.3.</span> <span class="toc-text">C.过滤操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#D-异常处理"><span class="toc-number">3.4.</span> <span class="toc-text">D.异常处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#E-doOn"><span class="toc-number">3.5.</span> <span class="toc-text">E.doOn</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#F-封装-compose"><span class="toc-number">3.6.</span> <span class="toc-text">F.封装-compose</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RxBus"><span class="toc-number">4.</span> <span class="toc-text">RxBus</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#资料"><span class="toc-number">5.</span> <span class="toc-text">资料</span></a></li></ol>
+		
+		</div>
+		
+		<p>注：本系列文章主要用于博主个人学习记录，本文末尾附上了一些较好的文章提供学习。<br>转载请附原文链接： <a href="http://extremej.itscoder.com/how_to_use_rxjava/" target="_blank" rel="external">RxJava 使用简介</a><br>如果你对 RxJava 的原理感兴趣，可以看看下面这篇文章<br><a href="http://extremej.itscoder.com/rxjava_source/" target="_blank" rel="external">RxJava 源码学习笔记</a></p>
+<p>RxJava利用响应式编程思想，专注于异步任务的处理，通过操作符进行流式操作，可以极大的去除多层嵌套，达到逻辑的简洁明了。</p>
+<p> 举个栗子🌰<br><img src="http://upload-images.jianshu.io/upload_images/1473110-dfc3c65cfd2e105b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="模拟用户注册请求"></p>
+<p>RxJava的观察者模式与普通观察者模式有一个区别是分为“冷”启动和“热”启动，“热”启动即不管有没有观察者，观察者会按照自己的逻辑发送数据，而“冷”启动则是只有当观察者开启订阅时才开始发送数据。</p>
+<h3 id="基本概念及用法"><a href="#基本概念及用法" class="headerlink" title="基本概念及用法"></a>基本概念及用法</h3><ul>
+<li><p>三个重要的对象</p>
+<ul>
+<li>Observable-数据发送者</li>
+<li>Subscriber-订阅者</li>
+<li>OnSubscribe-事件</li>
+</ul>
+<p>一次事件订阅的流程：Observable持有一个 OnSubscribe对象，事件在OnSubscribe对象中被执行，当有Subscriber订阅了这个 Observable时，OnSubscribe中的事件开始执行，并由Observable发射数据给Subscriber </p>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1473110-09d4a6f103b6d962.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="一次完整订阅"></p>
+<ul>
+<li><p>Subscriber对象</p>
+<p>Subscriber是一个抽象类，需要实现三个方法</p>
+<blockquote>
+<ul>
+<li><code>onCompleted()</code>: 事件队列完结。RxJava 不仅把每个事件单独处理，还会把它们看做一个队列。RxJava 规定，当不会再有新的<code>onNext()</code> 发出时，需要触发 <code>onCompleted()</code> 方法作为标志。</li>
+<li><code>onError()</code>: 事件队列异常。在事件处理过程中出异常时，<code>onError()</code> 会被触发，同时队列自动终止，不允许再有事件发出。</li>
+<li>在一个正确运行的事件序列中, <code>onCompleted()</code> 和 <code>onError()</code> 有且只有一个，并且是事件序列中的最后一个。需要注意的是，<code>onCompleted()</code> 和 <code>onError()</code> 二者也是互斥的，即在队列中调用了其中一个，就不应该再调用另一个。</li>
+</ul>
+<p>引用自扔物线</p>
+</blockquote>
+<p><strong>在代码中调用了onComplete后再调用onNext，依然可以发送数据，onComplete会在发送完所有的数据后才被调用</strong> </p>
+<p><strong>当onError被调用了，即使在出现错误之前调用onNext依然不会成功，只会触发onError</strong></p>
+<p>​</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">Subscriber&lt;String&gt; subscriber = <span class="keyword">new</span> Subscriber&lt;String&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCompleted</span><span class="params">()</span> </span>&#123;</div><div class="line">				<span class="comment">//数据发送完毕</span></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(Throwable e)</span> </span>&#123;</div><div class="line">				<span class="comment">//数据发送出错</span></div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onNext</span><span class="params">(String data)</span> </span>&#123;</div><div class="line">				<span class="comment">//数据发送成功</span></div><div class="line">            &#125;</div><div class="line">        &#125;;</div></pre></td></tr></table></figure>
+<p>通过泛型指定Subscriber所能接收的数据，在onNext 中处理相应的逻辑，此处需要注意的是： <strong>onNext方法调用的次数取决于OnSubscribe中被调用的次数</strong> </p>
+<ul>
+<li><p>Action1<t></t></p>
+<p>在某些情况下我们不需要在每一个回调中都处理逻辑，可能只需要订阅onNext，就可以实现Action1<t></t></p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">new</span> Action1&lt;Object&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Object obj)</span> </span>&#123;</div><div class="line">              <span class="comment">//有参数的回调onError和onNext</span></div><div class="line">            &#125;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">new</span> Action0()&#123;</div><div class="line">  	<span class="meta">@override</span></div><div class="line">  	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">()</span></span>&#123;</div><div class="line">  		<span class="comment">//onComplete</span></div><div class="line">	&#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+<li><p>Observable对象</p>
+<ul>
+<li>Observable.create(OnSubscribe<t> onSubscribe);</t></li>
+</ul>
+<p>create方法传入一个OnSubscribe对象，在call方法中发送数据，这是最基础的创建方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Observable.create(<span class="keyword">new</span> Observable.OnSubscribe&lt;String&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Subscriber&lt;? <span class="keyword">super</span> String&gt; subscriber)</span> </span>&#123;</div><div class="line">                subscriber.onNext(<span class="string">"create success"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
+<ul>
+<li>Observable.just（ T1 t1, T2 t2, T3 t3,…)</li>
+</ul>
+<p>just方法允许快速创建队列，每一个参数会调用onNext方法传递一次(最多10个），且按顺序发送,just在发送完数据后，会调用onComplete</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Observable.just(<span class="string">"one"</span>,<span class="string">"two"</span>,<span class="string">"three"</span>);</div></pre></td></tr></table></figure>
+<ul>
+<li>from</li>
+</ul>
+<p>from可以将数组,Iterable,Future对象转换为 Observable对象，发送数据</p>
+<blockquote>
+<ul>
+<li>Javadoc: <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#from(T%5B%5D" target="_blank" rel="external">from(array)</a>)</li>
+<li>Javadoc: <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#from(java.lang.Iterable" target="_blank" rel="external">from(Iterable)</a>)</li>
+<li>Javadoc: <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#from(java.util.concurrent.Future" target="_blank" rel="external">from(Future)</a>)</li>
+<li>Javadoc: <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#from(java.util.concurrent.Future,%20rx.Scheduler" target="_blank" rel="external">from(Future,Scheduler)</a>)</li>
+<li>Javadoc: <a href="http://reactivex.io/RxJava/javadoc/rx/Observable.html#from(java.util.concurrent.Future,%20long,%20java.util.concurrent.TimeUnit" target="_blank" rel="external">from(Future,timeout, timeUnit)</a>)</li>
+</ul>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String [] array = <span class="keyword">new</span> String[]&#123;<span class="string">"one-from"</span>,<span class="string">"two-from"</span>,<span class="string">"three-from"</span>&#125;;</div><div class="line">Observable.from(array);</div></pre></td></tr></table></figure>
+<p>创建一个Observable的方法有很多，不一一列举<br><img src="http://upload-images.jianshu.io/upload_images/1473110-1f554ba2fe1749eb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="创建Observable"></p>
+</li>
+</ul>
+<ul>
+<li><p>订阅事件</p>
+<ul>
+<li>Observable.subcribe()－－return   Subscription;</li>
+</ul>
+<p>通过subscribe来开启订阅，此时Observable开始发送数据，并且返回一个Subscription对象</p>
+<ul>
+<li>Subscription</li>
+</ul>
+<p>Subscription是一个接口，有两个方法unsubscribe()和isUnsubscribe(),在订阅事件时返回这个对象，可以在需要的时候取消掉订阅，在android开发中能简单有效的避免内存溢出。</p>
+</li>
+</ul>
+<h3 id="线程控制"><a href="#线程控制" class="headerlink" title="线程控制"></a>线程控制</h3><p>上面所提到的订阅会默认在当前线程中执行，然并卵，既然是专注于异步操作，就一定有线程控制的方法</p>
+<ul>
+<li>Schedulers—线程调度<br><img src="http://upload-images.jianshu.io/upload_images/1473110-7cc126e6e30cea4c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Sckedulers的各种线程"></li>
+</ul>
+<ul>
+<li><p>subscribeOn—被观察事件执行线程（事实上，在该方法调用之前，以及调用后，observeOn之前的代码都会在subscribeOn所在的线程中执行）</p>
+</li>
+<li><p>observeOn— 观察线程（可以多次转换，observeOn指定在它之后的代码线程）</p>
+</li>
+<li><p>实践</p>
+<p>该方法只应该被调用一次，如果调用多次，只有第一个会生效 !<br><img src="http://upload-images.jianshu.io/upload_images/1473110-d323b51bc0b851e8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="多次调用subscribeOn"></p>
+</li>
+</ul>
+<p>  如上图，首先指定了subscribeOn的线程为io线程，然后又指定了计算线程，打印日志<br><img src="http://upload-images.jianshu.io/upload_images/1473110-af6bb7e1f29150f9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="logcat 1"></p>
+<p>通过日志打印可以发现，只有第一个subscribeOn生效，并且在observeOn之前的代码也都在io线程中执行，而在observeOn之后的代码，在每一次调用该方法后都改变了线程</p>
+<p>有好事的同学说了，那如果我先调用observeOn再调用subscribeOn呢？虽然没有人这么做，但严谨的我还是要试试<br><img src="http://upload-images.jianshu.io/upload_images/1473110-5484e3bbd2409889.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="observeOn"></p>
+<p>先调用observeOn指定为主线程，然后subscribeOn指定为ui线程<br><img src="http://upload-images.jianshu.io/upload_images/1473110-e634cb860689553e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="E1EB67D4-11D4-42D2-A26F-5AB4282263A1.jpg"></p>
+<p>可以看到第一条日志在io线程中执行，而第二条日志在主线程中，似乎可以得到一个结论</p>
+<p><strong>observeOn指定在它之后的代码的执行线程，而其余代码均在第一个subscribeOn指定的线程中执行</strong></p>
+<h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><h4 id="A-转换操作"><a href="#A-转换操作" class="headerlink" title="A.转换操作"></a>A.转换操作</h4><ul>
+<li><p>map()— 将发射的数据转化为subscriber所需要的数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">Observable.create(<span class="keyword">new</span> Observable.OnSubscribe&lt;Integer&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Subscriber&lt;? <span class="keyword">super</span> Integer&gt; subscriber)</span> </span>&#123;</div><div class="line">                subscriber.onNext(random());</div><div class="line">                subscriber.onCompleted();</div><div class="line">            &#125;</div><div class="line">        &#125;).map(<span class="keyword">new</span> Func1&lt;Integer, String&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> String <span class="title">call</span><span class="params">(Integer integer)</span></span>&#123;</div><div class="line">                <span class="keyword">if</span>(integer == <span class="number">0</span>)&#123;</div><div class="line">                    <span class="keyword">return</span> <span class="string">"the number is 1"</span>;</div><div class="line">                &#125;<span class="keyword">else</span>&#123;</div><div class="line">                    <span class="keyword">return</span> <span class="string">"the number is not 1"</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
+<p>栗子中的代码是在原始的Observable中发射类型为Integer的数据，通过map操作后，subscriber所接收到的数据为 String 类型，map中需要传入Fun1<t,e>,参数1表示<strong>上一个操作符操作后所发送的数据</strong>，一个Observable可以进行多次转化操作，subscriber接收到的数据为最后一次转化发射的数据。</t,e></p>
+<p><strong>注意：map操作转换的是发射的数据，Observable本身并不会被转换</strong></p>
+</li>
+</ul>
+<ul>
+<li><p>flatmap()— 将一个Observable转换为一个新的Observable，并且由这个新的Observable发射数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">Observable.create(<span class="keyword">new</span> Observable.OnSubscribe&lt;Integer&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(Subscriber&lt;? <span class="keyword">super</span> Integer&gt; subscriber)</span> </span>&#123;</div><div class="line">                subscriber.onNext(random());</div><div class="line">                subscriber.onCompleted();</div><div class="line">            &#125;</div><div class="line">        &#125;).flatMap(<span class="keyword">new</span> Func1&lt;Integer, Observable&lt;String&gt;&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> Observable&lt;String&gt; <span class="title">call</span><span class="params">(Integer integer)</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> Observable.just(<span class="string">"new Observable"</span>+integer);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
+<p>flatMap 同样需要传入Func1<t,e> 与map不同的是，返回的是一个Observable对象，而subscriber所订阅的应该是这个新的Observable，flatmap也可以多次调用多次转换，问题来了～subscriber只关心接收到的数据，并不关心订阅的具体是哪一个Observable，那flatMap和map的应用场景是什么呢？</t,e></p>
+</li>
+<li><p>应用场景</p>
+<ul>
+<li>map比较简单，一个Observable可能被多个subscriber订阅，而不同的订阅所需要的最终数据不同，但事件的操作逻辑是相同的，就可以利用map来满足不同的数据需求</li>
+<li>flatmap的用处就比较多了，文章最开头举的栗子，一次复杂的注册逻辑，首先要请求服务器获取token，获取token后注册请求，注册请求完成后，登录请求，每一次请求利用Retrofit封装返回一个 Observable对象.我们只关心最后登录成功后告知用户，并刷新UI。这样原本用回调至少嵌套两次的逻辑，变得清晰明了（这样的注册逻辑本身是有问题的～）<br><img src="http://upload-images.jianshu.io/upload_images/1473110-6a500bba9d22f76e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="模拟一次注册请求"><br>![Uploading 48862518-1B43-457E-B734-36AE6669893C_441752.jpg . . .]</li>
+</ul>
+</li>
+</ul>
+<p><strong>注意：只有每一个Observable都成功发射数据后，才会调用onNext方法，如果出现异常会直接调用onError</strong></p>
+<p>这样看来，好像很鸡肋，后面会讲到错误操作，你会发现RxJava确实是很牛逼的啊～</p>
+<ul>
+<li>其它转换操作<br><img src="http://upload-images.jianshu.io/upload_images/1473110-4c5ae0467e8913cb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="转换操作符"></li>
+</ul>
+<h4 id="B-合并操作"><a href="#B-合并操作" class="headerlink" title="B.合并操作"></a>B.合并操作</h4><ul>
+<li><p>merge— 将多个Observable合并为一个Observable发射数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Observable.merge(observable1,observable2,observable3,observable4);</div></pre></td></tr></table></figure>
+<p>官方文档说明：merge可能会导致交错发射数据，即不是按照合并顺序来发射数据</p>
+<p><strong>同样，一旦有一个Observable发射异常，会立即触发onError，RxJava的实现中有一个mergeDelayError— 只有当所有的数据都发射完毕后才会调用onError</strong></p>
+</li>
+<li><p>concat— 将多个Observable合并为一个Observable并且按顺序发射数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Observable.concat(observable1,observable2,observable3,observable4)</div></pre></td></tr></table></figure>
+</li>
+<li><p>zip— 将多个Observables的发射物结合到一起，基于这个函数的结果为每个结合体发射单个数据项。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Observable.zip(</div><div class="line">                Observable.just(<span class="string">"1"</span>), </div><div class="line">                Observable.just(<span class="string">"2"</span>), </div><div class="line">                Observable.just(<span class="string">"3"</span>), </div><div class="line">                Observable.just(<span class="string">"4"</span>), </div><div class="line">                <span class="keyword">new</span> Func4&lt;String, String, String, String, String&gt;() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> String <span class="title">call</span><span class="params">(String s, String s2, String s3, String s4)</span> </span>&#123;</div><div class="line">                        <span class="keyword">return</span> s+s2+s3+s4;</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div></pre></td></tr></table></figure>
+<p>zip传入需要合并的Observable对象，以及  Func4<t,...,object>,与merge不同的是，zip是将所有发射的数据拿到后，进行整合，最后发射这个整合后的数据。call中的参数是严格按照合并顺序所发射的数据，return的即为最终发射的数据</t,...,object></p>
+<p><strong>zip的不仅可以合并发射源，并且可以根据需要转换最终发射的数据类型</strong></p>
+</li>
+</ul>
+<h4 id="C-过滤操作"><a href="#C-过滤操作" class="headerlink" title="C.过滤操作"></a>C.过滤操作</h4><p>假设这样一种场景，加载数据的时候先向服务器请求，如果成功就显示，如果失败就查找缓存数据。很容易想到可以利用合并操作符来处理，但是合并操作会依次发射数据，这不是我们所希望的。这里就需要用的过滤操作了</p>
+<ul>
+<li><p>filter — 只发射通过了谓词测试的数据项</p>
+<p>filter根据规则去检验数据，只要通过了检验的数据都会被发射，直到检验完最后一个 Observable</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">.filter(<span class="keyword">new</span> Func1&lt;Integer, Boolean&gt;() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(Integer i)</span> </span>&#123;</div><div class="line">                      <span class="comment">//只发射小于等于5的数据</span></div><div class="line">                    	<span class="keyword">return</span> i&lt;=<span class="number">5</span>;</div><div class="line">                    &#125;</div><div class="line">                &#125;)</div></pre></td></tr></table></figure>
+</li>
+<li><p>first — 只发射第一项（或者满足某个条件的第一项）数据</p>
+<p>first类似于filter，不同的是，只发射第一个通过检验的数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">first()<span class="comment">//只发射第一个数据</span></div><div class="line">first(Func1)<span class="comment">//满足某个条件的第一个发射成功的数据</span></div><div class="line">.first(<span class="keyword">new</span> Func1&lt;String, Boolean&gt;() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> Boolean <span class="title">call</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">                        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">                    &#125;</div><div class="line">                &#125;)</div></pre></td></tr></table></figure>
+<p>所有发射的数据，会在call中按照规则进行检验，比如当第一个传过来的字符串不为空时，就认为发射数据成功，那么应该return true，当return为true的时候会调用onNext方法，而还没有发射数据的Observable将不再发射数据，如果return为false，那么会依次检验后面的Observable是否发射数据成功，直到return true或者全部不符合调onError</p>
+</li>
+<li><p>last — 只发射最后一条（或者满足某个条件的最后一项）数据</p>
+<p>last的用法跟frist一毛一样。</p>
+</li>
+<li><p>其它过滤操作<br><img src="http://upload-images.jianshu.io/upload_images/1473110-98e0dbff4dba71a1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="过滤操作符"></p>
+<h4 id="D-异常处理"><a href="#D-异常处理" class="headerlink" title="D.异常处理"></a>D.异常处理</h4><p><img src="http://upload-images.jianshu.io/upload_images/1473110-26e899c2711b175e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="异常处理"></p>
+</li>
+</ul>
+<p>onErrorReturn可以在异常发生时发射一个默认的数据，结合过滤操作，可以发射一个不符合规则的数据，避免中断数据发射</p>
+<h4 id="E-doOn"><a href="#E-doOn" class="headerlink" title="E.doOn"></a>E.doOn</h4><p>有一种场景，比如说请求到数据后写入缓存，但是不希望订阅者去处理，因为如果多处订阅必然会产生重复代码并且可能阻塞主线程，doOn的系列操作就派上了用场</p>
+<ul>
+<li><p>doOnNext —  当数据发射成功时调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Observable.just(<span class="string">"data to shoot"</span>)</div><div class="line">                .doOnNext(<span class="keyword">new</span> Action1&lt;String&gt;() &#123;</div><div class="line">                    <span class="meta">@Override</span></div><div class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">                        <span class="comment">//发射成功后需要的操作</span></div><div class="line">                      	writeToCache(s);</div><div class="line">                    &#125;</div><div class="line">                &#125;)</div></pre></td></tr></table></figure>
+<p>在使用的时候注意判断doOnNext当前在哪个线程执行</p>
+</li>
+</ul>
+<ul>
+<li>doOnError —  当发生异常时调用</li>
+<li>doOnSubscribe — 当被订阅时调用</li>
+<li>doOnTerminate — 发射数据完毕后调用</li>
+</ul>
+<h4 id="F-封装-compose"><a href="#F-封装-compose" class="headerlink" title="F.封装-compose"></a>F.封装-compose</h4><p>当我们真正开始使用RxJava来替换之前的逻辑代码时，我们发现仅用现有的操作符无法做到完全的简洁，依然会出现一些不必要的重复代码和逻辑。适度的封装也是必要的，RxJava早就想到了这点，提供了一个操作符来封装一些通用代码</p>
+<ul>
+<li><p>compose(@NotNull Transformer<t,r>)</t,r></p>
+<p>compose方法需要传入一个变形金刚对象,其中泛型T为原始的Observable所发射的数据类型，R为变形后所发射的数据类型，举个栗子，比如封装一个方法在io线程中发射数据，在ui线程中观察接收数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> &lt;T&gt; Observable.<span class="function">Transformer&lt;T,T&gt; <span class="title">io_main</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Observable.Transformer&lt;T, T&gt;() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> Observable&lt;T&gt; <span class="title">call</span><span class="params">(Observable&lt;T&gt; tObservable)</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> tObservable.subscribeOn(Schedulers.io())</div><div class="line">                        .observeOn(AndroidSchedulers.mainThread());</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>创建一个Transformer对象，需要实现call方法，return一个新的Observable，然后传入到compose（）中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Observable.just(<span class="string">"123"</span>)</div><div class="line">                .compose(<span class="keyword">this</span>.&lt;String&gt;io_main())</div><div class="line">                .subscribe();</div></pre></td></tr></table></figure>
+<p>查看一下compose的源码发现，它其实就做了一件事情，调用 Transformer的call方法，并把当前的Observable对象作为参数传进去，返回call方法得到的新的Observable</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> &lt;R&gt; <span class="function">Observable&lt;R&gt; <span class="title">compose</span><span class="params">(Transformer&lt;? <span class="keyword">super</span> T, ? extends R&gt; transformer)</span> </span>&#123;</div><div class="line">       <span class="keyword">return</span> ((Transformer&lt;T, R&gt;) transformer).call(<span class="keyword">this</span>);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>​</p>
+<h3 id="RxBus"><a href="#RxBus" class="headerlink" title="RxBus"></a>RxBus</h3></li>
+</ul>
+<p>EventBus让模块间的耦合更低，利用 RxJava实现EventBus简直是容易，且便于管理</p>
+<p>在实现RxBus之前介绍两个很重要的类</p>
+<ul>
+<li><p>CompositeSubscription— Subscription that represents a group of Subscriptions that are unsubscribed together.</p>
+<p>是Subscription的一个实习类，用于管理一组订阅，当取消订阅时，会将这一组订阅全部取消，在Android中可以利用该类管理一个Activity中所有的异步任务，当Activity被销毁时，取消订阅，避免内存泄漏</p>
+<ul>
+<li>add — 将一个订阅加入到一个订阅组中</li>
+<li>remove — 将一个订阅从该组中移除</li>
+<li>clear — 清空订阅组</li>
+<li>unsubscribe — 取消改组中正在进行的所有订阅</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>Subject — 一个神奇的类，在 RxJava中它同时充当了Observer和Observable的角色。</p>
+<p>文章一开头提到了“冷”启动和“热”启动，而一个Subject可以将一个“冷”Observer变成一个“热”的，因为它是一个Observer，它可以订阅一个或多个Observable；又因为它是一个Observable，它可以转发它收到(Observe)的数据，也可以发射新的数据。</p>
+<p>subject.subscribe(subscriber) — 订阅事件</p>
+<p>subject.onNext(obj) — 发射数据</p>
+<p>Subject 在RxJava中总共有7个子类，这里不一一介绍（因为我也没用过…）</p>
+<ul>
+<li><p>PublishSubject — 一个“热”的Observable,这个对象会在onNext被调用的时候就开始发射数据，无论有没有订阅者，当一个Observer订阅了这个对象时，只会收到订阅时间点之后所发射的数据。官方给出的栗子：</p>
+<p>两个observer分别订阅了同一个subject，observer1会收到所有的数据，而observer2只能收到最后一条数据</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">PublishSubject&lt;Object&gt; subject = PublishSubject.create();</div><div class="line">  <span class="comment">// observer1 will receive all onNext and onCompleted events</span></div><div class="line">  subject.subscribe(observer1);</div><div class="line">  subject.onNext(<span class="string">"one"</span>);</div><div class="line">  subject.onNext(<span class="string">"two"</span>);</div><div class="line">  <span class="comment">// observer2 will only receive "three" and onCompleted</span></div><div class="line">  subject.subscribe(observer2);</div><div class="line">  subject.onNext(<span class="string">"three"</span>);</div><div class="line">  subject.onCompleted();</div></pre></td></tr></table></figure>
+<p>再想想EventBus的原理，我们所需要的正是这样一个“热”Observable。这里是较为复杂的一种实现，先上原理图<br><img src="http://upload-images.jianshu.io/upload_images/1473110-9eab2cb2f6047c34.JPG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="RxBus原理"></p>
+</li>
+</ul>
+<p>再贴代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> ConcurrentHashMap&lt;Object, List&lt;Subject&gt;&gt; subjectMapper </div><div class="line">  = <span class="keyword">new</span> ConcurrentHashMap&lt;Object, List&lt;Subject&gt;&gt;();</div><div class="line"><span class="comment">//订阅事件</span></div><div class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function">Observable&lt;T&gt; <span class="title">subscribe</span><span class="params">(@NonNull Object tag)</span> </span>&#123;</div><div class="line">        List&lt;Subject&gt; subjectList = subjectMapper.get(tag);</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == subjectList) &#123;</div><div class="line">            subjectList = <span class="keyword">new</span> ArrayList&lt;Subject&gt;();</div><div class="line">            subjectMapper.put(tag, subjectList);</div><div class="line">        &#125;</div><div class="line">        Subject&lt;T, T&gt; subject;</div><div class="line">        subjectList.add(subject = PublishSubject.create());</div><div class="line">        <span class="keyword">return</span> subject;</div><div class="line">    &#125;</div><div class="line"><span class="comment">//发布事件－－发射数据</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">post</span><span class="params">(@NonNull Object tag, @NonNull Object content)</span> </span>&#123;</div><div class="line">        List&lt;Subject&gt; subjectList = subjectMapper.get(tag);</div><div class="line">        <span class="keyword">if</span> (!isEmpty(subjectList)) &#123;</div><div class="line">            <span class="keyword">for</span> (Subject subject : subjectList) &#123;</div><div class="line">                subject.onNext(content);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>RxBus的核心逻辑就完成了，当然还需要加上取消订阅，清空事件等代码，比较简单不再赘述，在我实际的项目开发中，我将 RxBus交由 RxJavaManager进行管理，所有的订阅事件全部经过 RxJavaManager来操作，在需要取消订阅的地方统一unsubscribe</p>
+<h3 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h3><ul>
+<li><a href="https://github.com/mcxiaoke/RxDocs" target="_blank" rel="external">RxDocs</a> — ReactiveX中文文档</li>
+<li><a href="http://gank.io/post/560e15be2dca930e00da1083#toc_24" target="_blank" rel="external">给 Android 开发者的 RxJava 详解</a> — 扔物线大神的文章</li>
+<li><a href="https://asce1885.gitbooks.io/android-rd-senior-advanced/content/index.html" target="_blank" rel="external">什么是函数响应式编程</a> — android中响应式编程介绍</li>
+<li><a href="https://github.com/north2014/T-MVP" target="_blank" rel="external">T-MVP</a> — 一个不错的开源项目 RxJava+MVP</li>
+<li><a href="http://reactivex.io/" target="_blank" rel="external">ReactiveX.io</a> — 官方网站</li>
+<li><a href="http://imxie.cc/2016/06/02/deep-understanding-of-RxBus/" target="_blank" rel="external">从 RxBus 这辆兰博基尼深入进去</a> — 我的好基友谢三弟的Subject源码分析</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android/">Android</a>
+</div>
+
+
+</div>
+
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/rxjava_source/" title="RxJava 源码学习笔记">
+  <span>
+  RxJava 源码学习笔记</span>
+</a>
+</div>
+
+
+</nav>
+
+	
+<section id="comments" class="comment">
+	<div class="ds-thread" data-thread-key="how_to_use_rxjava/" data-title="RxJava 使用简介" data-url="https://joesteven.github.io/how_to_use_rxjava/"></div>
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+<div id="authorInfo">
+	
+		<div class="author-img"></div>		
+	
+	<div class="social-info" class="clearfix">
+		
+		<a href="http://weibo.com/2750146463" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		<a href="https://github.com/JoeSteven" target="_blank" class="icon-github" title="github"></a>
+		
+		
+		
+		
+		
+		
+		
+		<a href="http://www.zhihu.com/people/qiao-xi-28" target="_blank" class="icon-zhihu" title="知乎"></a>
+		
+		
+		
+		
+		<a href="mailto:qiaoxiaoxi621@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
+		
+
+	</div>
+</div>
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/Android/" title="Android">Android<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>9</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://laobie.github.io/" target="_blank" title="写代码的猴子">写代码的猴子</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://brucezz.github.io/" target="_blank" title="Brucezz">Brucezz</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://allenwu.itscoder.com/" target="_blank" title="allen">allen</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="大M">大M</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="http://solart.cc/" target="_blank" title="imilk">imilk</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://yongyu0102.github.io/" target="_blank" title="用语">用语</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+		
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2016 
+		
+		<a href="/about" target="_blank" title="Joe">Joe</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+        getSize();
+        if (myWidth >= 1024) {
+          c.click();
+        }
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"extremej"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
