@@ -13,37 +13,40 @@
     
     <meta name="description" content="注：本系列文章主要用于博主个人学习记录，本文末尾附上了一些较好的文章提供学习。转载请附原文链接： RxJava 使用简介如果你对 RxJava 的原理感兴趣，可以看看下面这篇文章RxJava 源码学习笔记
 RxJava利用响应式编程思想，专注于异步任务的处理，通过操作符进行流式操作，可以极大的去除多层嵌套，达到逻辑的简洁明了。
- 举个栗子🌰
-RxJava的观察者模式与普通观察者模式有一个区别是分">
+举个栗子🌰 
+
+RxJava的观察者模式与普通观察者模式有一个区别是">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RxJava 使用简介">
 <meta property="og:url" content="https://joesteven.github.io/how_to_use_rxjava/index.html">
 <meta property="og:site_name" content="Joe is a thin man">
 <meta property="og:description" content="注：本系列文章主要用于博主个人学习记录，本文末尾附上了一些较好的文章提供学习。转载请附原文链接： RxJava 使用简介如果你对 RxJava 的原理感兴趣，可以看看下面这篇文章RxJava 源码学习笔记
 RxJava利用响应式编程思想，专注于异步任务的处理，通过操作符进行流式操作，可以极大的去除多层嵌套，达到逻辑的简洁明了。
- 举个栗子🌰
-RxJava的观察者模式与普通观察者模式有一个区别是分">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-dfc3c65cfd2e105b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-09d4a6f103b6d962.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-1f554ba2fe1749eb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-7cc126e6e30cea4c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-d323b51bc0b851e8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-af6bb7e1f29150f9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-5484e3bbd2409889.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-e634cb860689553e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-6a500bba9d22f76e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-4c5ae0467e8913cb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-98e0dbff4dba71a1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-26e899c2711b175e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-9eab2cb2f6047c34.JPG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2016-07-28T13:08:06.000Z">
+举个栗子🌰 
+
+RxJava的观察者模式与普通观察者模式有一个区别是">
+<meta property="og:image" content="https://joesteven.github.io/img/RxJava栗子.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/RxJava一次完整订阅.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/创建Observable.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/RxJava各种线程.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/多次调用subscribeOn.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/logcat1.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/observerOn.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/logcat2.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/RxJava栗子.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/转换操作符.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/过滤操作符.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/异常处理.jpg">
+<meta property="og:image" content="https://joesteven.github.io/img/RxBus原理.jpeg">
+<meta property="og:updated_time" content="2016-08-01T14:21:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RxJava 使用简介">
 <meta name="twitter:description" content="注：本系列文章主要用于博主个人学习记录，本文末尾附上了一些较好的文章提供学习。转载请附原文链接： RxJava 使用简介如果你对 RxJava 的原理感兴趣，可以看看下面这篇文章RxJava 源码学习笔记
 RxJava利用响应式编程思想，专注于异步任务的处理，通过操作符进行流式操作，可以极大的去除多层嵌套，达到逻辑的简洁明了。
- 举个栗子🌰
-RxJava的观察者模式与普通观察者模式有一个区别是分">
-<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1473110-dfc3c65cfd2e105b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+举个栗子🌰 
+
+RxJava的观察者模式与普通观察者模式有一个区别是">
+<meta name="twitter:image" content="https://joesteven.github.io/img/RxJava栗子.jpg">
 
     
     <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
@@ -121,7 +124,8 @@ RxJava的观察者模式与普通观察者模式有一个区别是分">
 		
 		<p>注：本系列文章主要用于博主个人学习记录，本文末尾附上了一些较好的文章提供学习。<br>转载请附原文链接： <a href="http://extremej.itscoder.com/how_to_use_rxjava/" target="_blank" rel="external">RxJava 使用简介</a><br>如果你对 RxJava 的原理感兴趣，可以看看下面这篇文章<br><a href="http://extremej.itscoder.com/rxjava_source/" target="_blank" rel="external">RxJava 源码学习笔记</a></p>
 <p>RxJava利用响应式编程思想，专注于异步任务的处理，通过操作符进行流式操作，可以极大的去除多层嵌套，达到逻辑的简洁明了。</p>
-<p> 举个栗子🌰<br><img src="http://upload-images.jianshu.io/upload_images/1473110-dfc3c65cfd2e105b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="模拟用户注册请求"></p>
+<p>举个栗子🌰 </p>
+<p><img src="/img/RxJava栗子.jpg" alt="模拟用户登陆注册"></p>
 <p>RxJava的观察者模式与普通观察者模式有一个区别是分为“冷”启动和“热”启动，“热”启动即不管有没有观察者，观察者会按照自己的逻辑发送数据，而“冷”启动则是只有当观察者开启订阅时才开始发送数据。</p>
 <h3 id="基本概念及用法"><a href="#基本概念及用法" class="headerlink" title="基本概念及用法"></a>基本概念及用法</h3><ul>
 <li><p>三个重要的对象</p>
@@ -133,7 +137,7 @@ RxJava的观察者模式与普通观察者模式有一个区别是分">
 <p>一次事件订阅的流程：Observable持有一个 OnSubscribe对象，事件在OnSubscribe对象中被执行，当有Subscriber订阅了这个 Observable时，OnSubscribe中的事件开始执行，并由Observable发射数据给Subscriber </p>
 </li>
 </ul>
-<p><img src="http://upload-images.jianshu.io/upload_images/1473110-09d4a6f103b6d962.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="一次完整订阅"></p>
+<p><img src="/img/RxJava一次完整订阅.jpg" alt="一次完整订阅"></p>
 <ul>
 <li><p>Subscriber对象</p>
 <p>Subscriber是一个抽象类，需要实现三个方法</p>
@@ -182,7 +186,7 @@ RxJava的观察者模式与普通观察者模式有一个区别是分">
 </ul>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String [] array = <span class="keyword">new</span> String[]&#123;<span class="string">"one-from"</span>,<span class="string">"two-from"</span>,<span class="string">"three-from"</span>&#125;;</div><div class="line">Observable.from(array);</div></pre></td></tr></table></figure>
-<p>创建一个Observable的方法有很多，不一一列举<br><img src="http://upload-images.jianshu.io/upload_images/1473110-1f554ba2fe1749eb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="创建Observable"></p>
+<p>创建一个Observable的方法有很多，不一一列举<br><img src="/img/创建Observable.jpg" alt="创建Observable"></p>
 </li>
 </ul>
 <ul>
@@ -199,7 +203,7 @@ RxJava的观察者模式与普通观察者模式有一个区别是分">
 </ul>
 <h3 id="线程控制"><a href="#线程控制" class="headerlink" title="线程控制"></a>线程控制</h3><p>上面所提到的订阅会默认在当前线程中执行，然并卵，既然是专注于异步操作，就一定有线程控制的方法</p>
 <ul>
-<li>Schedulers—线程调度<br><img src="http://upload-images.jianshu.io/upload_images/1473110-7cc126e6e30cea4c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Sckedulers的各种线程"></li>
+<li>Schedulers—线程调度<br><img src="/img/RxJava各种线程.jpg" alt="Sckedulers的各种线程"></li>
 </ul>
 <ul>
 <li><p>subscribeOn—被观察事件执行线程（事实上，在该方法调用之前，以及调用后，observeOn之前的代码都会在subscribeOn所在的线程中执行）</p>
@@ -207,13 +211,13 @@ RxJava的观察者模式与普通观察者模式有一个区别是分">
 <li><p>observeOn— 观察线程（可以多次转换，observeOn指定在它之后的代码线程）</p>
 </li>
 <li><p>实践</p>
-<p>该方法只应该被调用一次，如果调用多次，只有第一个会生效 !<br><img src="http://upload-images.jianshu.io/upload_images/1473110-d323b51bc0b851e8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="多次调用subscribeOn"></p>
+<p>该方法只应该被调用一次，如果调用多次，只有第一个会生效 !<br><img src="/img/多次调用subscribeOn.jpg" alt="多次调用subscribeOn"></p>
 </li>
 </ul>
-<p>  如上图，首先指定了subscribeOn的线程为io线程，然后又指定了计算线程，打印日志<br><img src="http://upload-images.jianshu.io/upload_images/1473110-af6bb7e1f29150f9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="logcat 1"></p>
+<p>  如上图，首先指定了subscribeOn的线程为io线程，然后又指定了计算线程，打印日志<br><img src="/img/logcat1.jpg" alt="logcat 1"></p>
 <p>通过日志打印可以发现，只有第一个subscribeOn生效，并且在observeOn之前的代码也都在io线程中执行，而在observeOn之后的代码，在每一次调用该方法后都改变了线程</p>
-<p>有好事的同学说了，那如果我先调用observeOn再调用subscribeOn呢？虽然没有人这么做，但严谨的我还是要试试<br><img src="http://upload-images.jianshu.io/upload_images/1473110-5484e3bbd2409889.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="observeOn"></p>
-<p>先调用observeOn指定为主线程，然后subscribeOn指定为ui线程<br><img src="http://upload-images.jianshu.io/upload_images/1473110-e634cb860689553e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="E1EB67D4-11D4-42D2-A26F-5AB4282263A1.jpg"></p>
+<p>有好事的同学说了，那如果我先调用observeOn再调用subscribeOn呢？虽然没有人这么做，但严谨的我还是要试试<br><img src="/img/observerOn.jpg" alt="observeOn"></p>
+<p>先调用observeOn指定为主线程，然后subscribeOn指定为ui线程<br><img src="/img/logcat2.jpg" alt="logcat 2"></p>
 <p>可以看到第一条日志在io线程中执行，而第二条日志在主线程中，似乎可以得到一个结论</p>
 <p><strong>observeOn指定在它之后的代码的执行线程，而其余代码均在第一个subscribeOn指定的线程中执行</strong></p>
 <h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><h4 id="A-转换操作"><a href="#A-转换操作" class="headerlink" title="A.转换操作"></a>A.转换操作</h4><ul>
@@ -230,15 +234,18 @@ RxJava的观察者模式与普通观察者模式有一个区别是分">
 </li>
 <li><p>应用场景</p>
 <ul>
-<li>map比较简单，一个Observable可能被多个subscriber订阅，而不同的订阅所需要的最终数据不同，但事件的操作逻辑是相同的，就可以利用map来满足不同的数据需求</li>
-<li>flatmap的用处就比较多了，文章最开头举的栗子，一次复杂的注册逻辑，首先要请求服务器获取token，获取token后注册请求，注册请求完成后，登录请求，每一次请求利用Retrofit封装返回一个 Observable对象.我们只关心最后登录成功后告知用户，并刷新UI。这样原本用回调至少嵌套两次的逻辑，变得清晰明了（这样的注册逻辑本身是有问题的～）<br><img src="http://upload-images.jianshu.io/upload_images/1473110-6a500bba9d22f76e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="模拟一次注册请求"><br>![Uploading 48862518-1B43-457E-B734-36AE6669893C_441752.jpg . . .]</li>
+<li><p>map比较简单，一个Observable可能被多个subscriber订阅，而不同的订阅所需要的最终数据不同，但事件的操作逻辑是相同的，就可以利用map来满足不同的数据需求</p>
+</li>
+<li><p>flatmap的用处就比较多了，文章最开头举的栗子，一次复杂的注册逻辑，首先要请求服务器获取token，获取token后注册请求，注册请求完成后，登录请求，每一次请求利用Retrofit封装返回一个 Observable对象.我们只关心最后登录成功后告知用户，并刷新UI。这样原本用回调至少嵌套两次的逻辑，变得清晰明了（这样的注册逻辑本身是有问题的～）</p>
+<p><img src="/img/RxJava栗子.jpg" alt="模拟一次注册请求"></p>
+</li>
 </ul>
 </li>
 </ul>
 <p><strong>注意：只有每一个Observable都成功发射数据后，才会调用onNext方法，如果出现异常会直接调用onError</strong></p>
 <p>这样看来，好像很鸡肋，后面会讲到错误操作，你会发现RxJava确实是很牛逼的啊～</p>
 <ul>
-<li>其它转换操作<br><img src="http://upload-images.jianshu.io/upload_images/1473110-4c5ae0467e8913cb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="转换操作符"></li>
+<li>其它转换操作<br><img src="/img/转换操作符.jpg" alt="转换操作符"></li>
 </ul>
 <h4 id="B-合并操作"><a href="#B-合并操作" class="headerlink" title="B.合并操作"></a>B.合并操作</h4><ul>
 <li><p>merge— 将多个Observable合并为一个Observable发射数据</p>
@@ -269,8 +276,8 @@ RxJava的观察者模式与普通观察者模式有一个区别是分">
 <li><p>last — 只发射最后一条（或者满足某个条件的最后一项）数据</p>
 <p>last的用法跟frist一毛一样。</p>
 </li>
-<li><p>其它过滤操作<br><img src="http://upload-images.jianshu.io/upload_images/1473110-98e0dbff4dba71a1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="过滤操作符"></p>
-<h4 id="D-异常处理"><a href="#D-异常处理" class="headerlink" title="D.异常处理"></a>D.异常处理</h4><p><img src="http://upload-images.jianshu.io/upload_images/1473110-26e899c2711b175e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="异常处理"></p>
+<li><p>其它过滤操作<br><img src="/img/过滤操作符.jpg" alt="过滤操作符"></p>
+<h4 id="D-异常处理"><a href="#D-异常处理" class="headerlink" title="D.异常处理"></a>D.异常处理</h4><p><img src="/img/异常处理.jpg" alt="异常处理"></p>
 </li>
 </ul>
 <p>onErrorReturn可以在异常发生时发射一个默认的数据，结合过滤操作，可以发射一个不符合规则的数据，避免中断数据发射</p>
@@ -295,10 +302,9 @@ RxJava的观察者模式与普通观察者模式有一个区别是分">
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Observable.just(<span class="string">"123"</span>)</div><div class="line">                .compose(<span class="keyword">this</span>.&lt;String&gt;io_main())</div><div class="line">                .subscribe();</div></pre></td></tr></table></figure>
 <p>查看一下compose的源码发现，它其实就做了一件事情，调用 Transformer的call方法，并把当前的Observable对象作为参数传进去，返回call方法得到的新的Observable</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> &lt;R&gt; <span class="function">Observable&lt;R&gt; <span class="title">compose</span><span class="params">(Transformer&lt;? <span class="keyword">super</span> T, ? extends R&gt; transformer)</span> </span>&#123;</div><div class="line">       <span class="keyword">return</span> ((Transformer&lt;T, R&gt;) transformer).call(<span class="keyword">this</span>);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>​</p>
-<h3 id="RxBus"><a href="#RxBus" class="headerlink" title="RxBus"></a>RxBus</h3></li>
+</li>
 </ul>
-<p>EventBus让模块间的耦合更低，利用 RxJava实现EventBus简直是容易，且便于管理</p>
+<h3 id="RxBus"><a href="#RxBus" class="headerlink" title="RxBus"></a>RxBus</h3><p>EventBus让模块间的耦合更低，利用 RxJava实现EventBus简直是容易，且便于管理</p>
 <p>在实现RxBus之前介绍两个很重要的类</p>
 <ul>
 <li><p>CompositeSubscription— Subscription that represents a group of Subscriptions that are unsubscribed together.</p>
@@ -323,7 +329,7 @@ RxJava的观察者模式与普通观察者模式有一个区别是分">
 </li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">PublishSubject&lt;Object&gt; subject = PublishSubject.create();</div><div class="line">  <span class="comment">// observer1 will receive all onNext and onCompleted events</span></div><div class="line">  subject.subscribe(observer1);</div><div class="line">  subject.onNext(<span class="string">"one"</span>);</div><div class="line">  subject.onNext(<span class="string">"two"</span>);</div><div class="line">  <span class="comment">// observer2 will only receive "three" and onCompleted</span></div><div class="line">  subject.subscribe(observer2);</div><div class="line">  subject.onNext(<span class="string">"three"</span>);</div><div class="line">  subject.onCompleted();</div></pre></td></tr></table></figure>
-<p>再想想EventBus的原理，我们所需要的正是这样一个“热”Observable。这里是较为复杂的一种实现，先上原理图<br><img src="http://upload-images.jianshu.io/upload_images/1473110-9eab2cb2f6047c34.JPG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="RxBus原理"></p>
+<p>再想想EventBus的原理，我们所需要的正是这样一个“热”Observable。这里是较为复杂的一种实现，先上原理图<br><img src="/img/RxBus原理.jpeg" alt="RxBus原理"></p>
 </li>
 </ul>
 <p>再贴代码</p>
