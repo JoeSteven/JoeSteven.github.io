@@ -4,33 +4,38 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Handler源码学习（二）Message对象池 | Joe is a thin man</title>
+    <title>我和自己 | Joe is a thin man</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Joe">
     
 
     
-    <meta name="description" content="Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队消息池是全系统共用，上限为50个
-1private static final int MAX_POOL_SIZE = 50;
-1234567891011121314151617181920212223242526272829303132333435363738">
+    <meta name="description" content="在海淀黄庄的天桥上，看来去的车流，也能望到新浪的大楼，那一刻的我忽然百感交集。
+
+毕业一年，疲于奔命的一年让我很久很久没有像在大学时那样，每周去民主湖发呆，与自己对话。
+来北京也快半年了，在明天搬家前，我想我终于可以再一次与自己对话，今晚做一个不再转动的齿轮。
+夜半困倦和摸不到的光让你时刻都想放弃
+大四的开头，一切都充满着希望，我也充满着斗志，而黑暗来得那么迅速，让我来不及思考，来不及准备，甚至">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Handler源码学习（二）Message对象池">
-<meta property="og:url" content="https://joesteven.github.io/handler_source_2_Message/index.html">
+<meta property="og:title" content="我和自己">
+<meta property="og:url" content="https://joesteven.github.io/do_what_ever_u_want/index.html">
 <meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:description" content="Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队消息池是全系统共用，上限为50个
-1private static final int MAX_POOL_SIZE = 50;
-1234567891011121314151617181920212223242526272829303132333435363738">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-2c0dcf654d397a72.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-600f714bdbc236f8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-3557f637c794f14b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2016-08-01T14:32:13.000Z">
+<meta property="og:description" content="在海淀黄庄的天桥上，看来去的车流，也能望到新浪的大楼，那一刻的我忽然百感交集。
+
+毕业一年，疲于奔命的一年让我很久很久没有像在大学时那样，每周去民主湖发呆，与自己对话。
+来北京也快半年了，在明天搬家前，我想我终于可以再一次与自己对话，今晚做一个不再转动的齿轮。
+夜半困倦和摸不到的光让你时刻都想放弃
+大四的开头，一切都充满着希望，我也充满着斗志，而黑暗来得那么迅速，让我来不及思考，来不及准备，甚至">
+<meta property="og:updated_time" content="2016-08-25T15:57:08.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Handler源码学习（二）Message对象池">
-<meta name="twitter:description" content="Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队消息池是全系统共用，上限为50个
-1private static final int MAX_POOL_SIZE = 50;
-1234567891011121314151617181920212223242526272829303132333435363738">
-<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1473110-2c0dcf654d397a72.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta name="twitter:title" content="我和自己">
+<meta name="twitter:description" content="在海淀黄庄的天桥上，看来去的车流，也能望到新浪的大楼，那一刻的我忽然百感交集。
+
+毕业一年，疲于奔命的一年让我很久很久没有像在大学时那样，每周去民主湖发呆，与自己对话。
+来北京也快半年了，在明天搬家前，我想我终于可以再一次与自己对话，今晚做一个不再转动的齿轮。
+夜半困倦和摸不到的光让你时刻都想放弃
+大四的开头，一切都充满着希望，我也充满着斗志，而黑暗来得那么迅速，让我来不及思考，来不及准备，甚至">
 
     
     <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
@@ -88,14 +93,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/handler_source_2_Message/" title="Handler源码学习（二）Message对象池" itemprop="url">Handler源码学习（二）Message对象池</a>
+      <a href="/do_what_ever_u_want/" title="我和自己" itemprop="url">我和自己</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
 		
   <p class="article-time">
-    <time datetime="2016-07-16T10:18:57.000Z" itemprop="datePublished"> 發表於 2016-07-16</time>
+    <time datetime="2016-08-25T14:34:02.000Z" itemprop="datePublished"> 發表於 2016-08-25</time>
     
   </p>
 </header>
@@ -104,20 +109,48 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目錄</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Obtain-–-复用"><span class="toc-number">1.</span> <span class="toc-text">Obtain() – 复用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#recycleUnchecked-–-回收"><span class="toc-number">2.</span> <span class="toc-text">recycleUnchecked() – 回收</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#夜半"><span class="toc-number">1.</span> <span class="toc-text">夜半</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#鸡鸣"><span class="toc-number">2.</span> <span class="toc-text">鸡鸣</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#破晓"><span class="toc-number">3.</span> <span class="toc-text">破晓</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#清晨"><span class="toc-number">4.</span> <span class="toc-text">清晨</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#今天"><span class="toc-number">5.</span> <span class="toc-text">今天</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#未来"><span class="toc-number">6.</span> <span class="toc-text">未来</span></a></li></ol>
 		
 		</div>
 		
-		<p><a href="http://extremej.itscoder.com/handler_source_1/" target="_blank" rel="external">Handler源码学习（一）流程</a><br>Handler源码学习（二）Message对象池<br><a href="http://extremej.itscoder.com/handler_source_3_MessageQueue/" target="_blank" rel="external">Handler源码学习（三）MessageQueue入队插队</a><br>消息池是全系统共用，上限为50个</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_POOL_SIZE = <span class="number">50</span>;</div></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// sometimes we store linked lists of these things</span></div><div class="line"><span class="comment">/*package*/</span> Message next;</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> Message sPool;</div><div class="line"></div><div class="line"><span class="comment">//假设现在消息池为空，从new message开始，到这个message被取出使用后，准备回收</span></div><div class="line"><span class="comment">//准备工作：拿到同步锁，避免线程不安全</span></div><div class="line"><span class="comment">//1.next ＝ sPool,因为池中是空的，所以此时sPool其实是null</span></div><div class="line"><span class="comment">//2.spool = this,将当前这个message作为池中下一个应该被复用的对象</span></div><div class="line"><span class="comment">//3.sPoolSize ++;将池子中的数量增加一，这个数量依然是全系统共享</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">recycleUnchecked</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">synchronized</span> (sPoolSync) &#123;</div><div class="line">            <span class="keyword">if</span> (sPoolSize &lt; MAX_POOL_SIZE) &#123;</div><div class="line">                next = sPool;</div><div class="line">                sPool = <span class="keyword">this</span>;</div><div class="line">                sPoolSize++;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"><span class="comment">//上面已经回收了一个message，在这里来获取message，看看会发生什么</span></div><div class="line"><span class="comment">//同样进入同步代码块</span></div><div class="line"><span class="comment">//1.判断sPool是否是为空，如果池子为空，就直接new一个message</span></div><div class="line"><span class="comment">//上面已经回收过一个message了，这里应该不为空</span></div><div class="line"><span class="comment">//m ＝sPool；把池子里的这个message取出来</span></div><div class="line"><span class="comment">//2.sPool = m.next 将池中下一个复用的对象赋值为m.next,但是我们通过上面的代码发现这个是null，先</span></div><div class="line"><span class="comment">//不管</span></div><div class="line"><span class="comment">//3.将m.next置为空,m.flags = 0 给了一个标记使用中</span></div><div class="line"><span class="comment">//4.从池子中减去</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Message <span class="title">obtain</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">synchronized</span> (sPoolSync) &#123;</div><div class="line">        <span class="keyword">if</span> (sPool != <span class="keyword">null</span>) &#123;</div><div class="line">            Message m = sPool;</div><div class="line">            sPool = m.next;</div><div class="line">            m.next = <span class="keyword">null</span>;</div><div class="line">            m.flags = <span class="number">0</span>; <span class="comment">// clear in-use flag</span></div><div class="line">            sPoolSize--;</div><div class="line">            <span class="keyword">return</span> m;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Message();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上面的过程只有一个mesage，详细解释一下sPool和next，将sPool看成一个指针，通过next来将对象组成了一个链表，因为每次只需要从池子里拿一个对象，所以不需要关心池子里具体有多少个对象，而是拿出当前这个sPool所指向的这个对象就可以了，sPool从思路上理解就是通过左右移动来完成复用和回收</p>
-<h4 id="Obtain-–-复用"><a href="#Obtain-–-复用" class="headerlink" title="Obtain() – 复用"></a>Obtain() – 复用</h4><p><img src="http://upload-images.jianshu.io/upload_images/1473110-2c0dcf654d397a72.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MessageObtain(1).jpg"></p>
-<p>当调用Obtain()的时候让sPool＝next，因为第一个message.next就等于第二个message，从图上看相当于sPool这个指针向后移动了一位，随后会将第一个message.next的值置为空</p>
-<p>如下图<br><img src="http://upload-images.jianshu.io/upload_images/1473110-600f714bdbc236f8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MessageObtain(2).jpg"></p>
-<p>现在这个链表看上去就断了，如果in-use这个message使用完毕了，怎么回到链表中？</p>
-<h4 id="recycleUnchecked-–-回收"><a href="#recycleUnchecked-–-回收" class="headerlink" title="recycleUnchecked() – 回收"></a>recycleUnchecked() – 回收</h4><p>再看回收的方法中的代码，next ＝ sPool，将当前sPool所指向的message对象赋值给in－use的next，然后sPool = this，将sPool指向第一个message对象<br><img src="http://upload-images.jianshu.io/upload_images/1473110-3557f637c794f14b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MessageRecycle.jpg"></p>
-<p>这样，就将链表又恢复了～，而且不管是复用还是回收都是保证线程同步的，所以始终会形成一条链式结构</p>
+		<blockquote>
+<p>在海淀黄庄的天桥上，看来去的车流，也能望到新浪的大楼，那一刻的我忽然百感交集。</p>
+</blockquote>
+<p>毕业一年，疲于奔命的一年让我很久很久没有像在大学时那样，每周去民主湖发呆，与自己对话。</p>
+<p>来北京也快半年了，在明天搬家前，我想我终于可以再一次与自己对话，今晚做一个不再转动的齿轮。</p>
+<h3 id="夜半"><a href="#夜半" class="headerlink" title="夜半"></a>夜半</h3><p><strong>困倦和摸不到的光让你时刻都想放弃</strong></p>
+<p>大四的开头，一切都充满着希望，我也充满着斗志，而黑暗来得那么迅速，让我来不及思考，来不及准备，甚至来不及面对。我一直以来所相信的那些价值观，我的信仰和希望，在那时候顷刻崩塌，无尽的自责和内疚充满了我每一个细胞，清醒着的时间也让我觉得那么的漫长和折磨。陪伴着我的人，也不断得被我推开推远。</p>
+<p>我变得不再爱说话，害怕与人沟通，在那些日子里，纠结，折磨，困惑，抑郁。</p>
+<p>而我偏偏又干上了销售，这就是命运吧。</p>
+<p>我依然清晰的记得那些梦，记得我哭着抱着姐姐不让她走，也记得姐姐笑着说她已经走了。我也许该庆幸，此刻还能敲出这些冰冷的文字，因为至少，我还要去替她看看这个世界。</p>
+<p><strong>2014.10.2 姐姐永远是我这边最美的月亮</strong></p>
+<h3 id="鸡鸣"><a href="#鸡鸣" class="headerlink" title="鸡鸣"></a>鸡鸣</h3><p><strong>鸡鸣的时候，预示着天就要亮了，而这等待中的黑暗却无比的漫长</strong></p>
+<p>到现在依然会有很多人问我，诶，你为什么要放弃那样一份工作呢？</p>
+<p>14 年的十一月，我坐上去成都的动车，参加一场毫无概念的面试，也是我大四开始找工作以来最困难的一次面试。时间持续了整整一天，回到学校后不闻不问，依然放纵自己。我还记得那天下午 Ellie 给我打电话发 offer 的时候我平静得要命，只是简单的哦了几声，Ellie 当时就说小朋友你太淡定了吧。</p>
+<p>这是一件值得开心的事情，尤其是在我那种状态下，彷佛可以松了一口气，十一月到第二年的三月，除了一月和花儿去了一趟云南，在冰天雪地里释放所有的不安，此外什么都没干。</p>
+<p>当我以为我准备好了，可以很好的掌控自己的时候，才发现我错了，从四月到十月，每一天都让我越发的压抑，当我从口若悬河到面对同事，客户，一个字都憋不出来的时候，我知道我已经废了。而偏偏和我一起进入公司的管培生是那么的会来事儿。</p>
+<p>还没毕业的时候，爸爸打电话跟我说“不要随波逐流，顺从你自己，做有意义的事情”。可那时候的我啊，并不知道什么对我来说是有意义的事情。</p>
+<h3 id="破晓"><a href="#破晓" class="headerlink" title="破晓"></a>破晓</h3><p><strong>当能看到一点光的时候，说明一切开始往好的方向发展了</strong></p>
+<p>好朋友的女朋友是学计算机的，那时候好朋友劝我说，你去报个培训班吧，培训出来就能有一万多的工资。我第一反应是算了，我？程序员？</p>
+<p>表面上说着不要，身体却很诚实，在网上找了几个教程，自己学着搭了一搭 Java 的开发环境，摸着瞎就学了起来。从环境搭起来的那一天，一切都开始朝着不可控制的方向飞快的发展起来。我被写代码这件事情深深的吸引住了:</p>
+<ul>
+<li><strong>好像我又具备了沟通的能力，只不过对象不是人</strong></li>
+<li><strong>代码诚不欺我</strong></li>
+<li><strong>沟通成本远低于人</strong></li>
+</ul>
+<p>可我能成为一个程序员吗？我自己问自己，我的朋友也问我，当我的父母知道之后也这样问我。只有一个人没有问过我，她只说了一句话：如果你已经决定了，那么你一定会成为一个优秀的程序员。</p>
+<p>这个人就是我女朋友。三个月内，我比人生中任何一个阶段都努力，远远超过了高考前的准备。我疯狂的成长，又从这种成长中获取到成吨的快乐和成就感。也是在那三个月内，我有幸认识了猴子，认识了阿语，认识了一堆志同道合的朋友和前辈。</p>
+<p>当我觉得我准备好了的时候，也是她跟我说，去北京，去对你最好的地方。三天时间北上，将 offer 斩落马下。</p>
+<h3 id="清晨"><a href="#清晨" class="headerlink" title="清晨"></a>清晨</h3><p><strong>阳光将洒落到你身上，你也要准备好迎接正午</strong></p>
+<p>有个朋友笑我，河北通州，你都不算真正的北漂。</p>
+<p>每天在高碑店上班，在土桥睡觉。八通线的终点站，起码每天早上能有座位。刚进公司的那一个月，我发现成长的速度慢了很多，每天做着做不完的重复性的工作，好像他们也不关心你还会不会别的什么。当我意识到的时候，每天即便是十一点到家，也逼着自己学习新的东西，动手写代码来实践。</p>
+<p>很巧，有一个老司机大概也是机缘巧合来到这个公司 — 鹏哥。为什么说机缘巧合，因为他来的时候并不知道是上 6 天，因为上 6 天班，他已经拒了上一家公司。鹏哥是一个很讲究的人，不敷衍，热爱技术。在这个并没有太多技术氛围的公司里面，我们很快熟络起来。</p>
+<p>在跟鹏哥的长期交流和自己连续性的学习下，我发现自己的成长速度开始回升，甚至超过了开始那三个月。和最初认识的老司机们也搞了点大新闻 — itsCoder。</p>
+<p>因为 itsCoder 上第一期文章，被今日头条的人找到。在经历了长达四个多小时的面试，从一开始的被轻视到最后给他们带来的惊喜，我想我已经做到了。</p>
+<h3 id="今天"><a href="#今天" class="headerlink" title="今天"></a>今天</h3><p>现在是 2016 年 8 月 25 日 11 点 52 分，明天我就要离开通州土桥了。</p>
+<h3 id="未来"><a href="#未来" class="headerlink" title="未来"></a>未来</h3><p>我不知道未来还会发生什么，也不知道我需要面对什么，但是我知道：</p>
+<p><strong>不管未来等待我的是什么，我都会从容的面对。</strong></p>
+<p>盗用鹏哥一句话：<strong>一切都是上天最好的安排。</strong></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -125,7 +158,7 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/Android源码学习/">Android源码学习</a>
+  <a class="article-category-link" href="/categories/杂谈/">杂谈</a>
 </div>
 
 
@@ -140,17 +173,10 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/handler_source_3_MessageQueue/" title="Handler源码学习（三）MessageQueue入队插队">
-  <span>
-  Handler源码学习（三）MessageQueue入队插队</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/handler_source_1/"  title="Handler源码学习（一）流程">
- <span>Handler源码学习（一）流程
+<a href="/sparsearray_source_analyse/"  title="SparseArray 的使用及实现原理">
+ <span>SparseArray 的使用及实现原理
 </span>
 </a>
 </div>
@@ -159,7 +185,7 @@
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="handler_source_2_Message/" data-title="Handler源码学习（二）Message对象池" data-url="https://joesteven.github.io/handler_source_2_Message/"></div>
+	<div class="ds-thread" data-thread-key="do_what_ever_u_want/" data-title="我和自己" data-url="https://joesteven.github.io/do_what_ever_u_want/"></div>
 </section>
 
 

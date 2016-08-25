@@ -1,50 +1,50 @@
 
  <!DOCTYPE HTML>
-<html lang="Chinese">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
   
-    <title>Joe is a thin man</title>
+    <title>SparseArray 的使用及实现原理 | Joe is a thin man</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Joe">
     
 
     
-    <meta name="description" content="SparseArray的使用及实现原理
-文章来源：itsCoder 的 WeeklyBolg 项目
+    <meta name="description" content="文章来源：itsCoder 的 WeeklyBolg 项目
 itsCoder主页：http://itscoder.com/
 作者：Joe
 审阅者：allenwu
 
-序言相信大家都用过HashMap用来存放键值对，最近在项目中使用HashMap的时候发现，有时候 IDE 会提示我这里的HashMap可以用SparseArray或者SparseIntArray等">
+序言相信大家都用过HashMap用来存放键值对，最近在项目中使用HashMap的时候发现，有时候 IDE 会提示我这里的HashMap可以用SparseArray或者SparseIntArray等等来代替。
+细心的朋友可能也发现了这个">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Joe is a thin man">
+<meta property="og:title" content="SparseArray 的使用及实现原理">
 <meta property="og:url" content="https://joesteven.github.io/sparsearray_source_analyse/index.html">
 <meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:description" content="SparseArray的使用及实现原理
-文章来源：itsCoder 的 WeeklyBolg 项目
+<meta property="og:description" content="文章来源：itsCoder 的 WeeklyBolg 项目
 itsCoder主页：http://itscoder.com/
 作者：Joe
 审阅者：allenwu
 
-序言相信大家都用过HashMap用来存放键值对，最近在项目中使用HashMap的时候发现，有时候 IDE 会提示我这里的HashMap可以用SparseArray或者SparseIntArray等">
+序言相信大家都用过HashMap用来存放键值对，最近在项目中使用HashMap的时候发现，有时候 IDE 会提示我这里的HashMap可以用SparseArray或者SparseIntArray等等来代替。
+细心的朋友可能也发现了这个">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_one.jpg">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_two.jpg">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_three.jpg">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_four.jpg">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_remove.png">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_gc.png">
-<meta property="og:updated_time" content="2016-08-24T08:08:51.000Z">
+<meta property="og:updated_time" content="2016-08-24T09:02:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Joe is a thin man">
-<meta name="twitter:description" content="SparseArray的使用及实现原理
-文章来源：itsCoder 的 WeeklyBolg 项目
+<meta name="twitter:title" content="SparseArray 的使用及实现原理">
+<meta name="twitter:description" content="文章来源：itsCoder 的 WeeklyBolg 项目
 itsCoder主页：http://itscoder.com/
 作者：Joe
 审阅者：allenwu
 
-序言相信大家都用过HashMap用来存放键值对，最近在项目中使用HashMap的时候发现，有时候 IDE 会提示我这里的HashMap可以用SparseArray或者SparseIntArray等">
+序言相信大家都用过HashMap用来存放键值对，最近在项目中使用HashMap的时候发现，有时候 IDE 会提示我这里的HashMap可以用SparseArray或者SparseIntArray等等来代替。
+细心的朋友可能也发现了这个">
 <meta name="twitter:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_one.jpg">
 
     
@@ -69,7 +69,7 @@ itsCoder主页：http://itscoder.com/
 				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
 				<h2 class="blog-motto">写代码的民谣歌手</h2>
 			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
 			</a></div>
 			<nav class="animated">
 				<ul>
@@ -77,16 +77,19 @@ itsCoder主页：http://itscoder.com/
 					 
 						<li><a href="/">Home</a></li>
 					
+						<li><a href="/archives">Archives</a></li>
+					
 						<li><a href="/categories">Categories</a></li>
 					
 						<li><a href="/about">About</a></li>
 					
 					<li>
  					
-						<form class="search" action="" target="_blank">
-							<label>Search</label>
-						<input name="s" type="hidden" value= null ><input type="text" name="q" size="30" placeholder="搜索"><br>
-						</form>
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:joesteven.github.io">
+					</form>
 					
 					</li>
 				</ul>
@@ -100,27 +103,27 @@ itsCoder主页：http://itscoder.com/
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/sparsearray_source_analyse/" title="" itemprop="url"></a>
+      <a href="/sparsearray_source_analyse/" title="SparseArray 的使用及实现原理" itemprop="url">SparseArray 的使用及实现原理</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
 		
   <p class="article-time">
-    <time datetime="2016-08-19T12:52:19.000Z" itemprop="datePublished"> 发表于 2016-08-19</time>
+    <time datetime="2016-08-24T09:00:12.000Z" itemprop="datePublished"> 發表於 2016-08-24</time>
     
   </p>
 </header>
 	<div class="article-content">
 		
 		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
+			<strong class="toc-title">文章目錄</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SparseArray的使用及实现原理"><span class="toc-number">1.</span> <span class="toc-text">SparseArray的使用及实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#序言"><span class="toc-number">1.0.1.</span> <span class="toc-text">序言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SparseArray-的使用"><span class="toc-number">1.0.2.</span> <span class="toc-text">SparseArray 的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#创建"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#put"><span class="toc-number">1.0.2.2.</span> <span class="toc-text">put()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#get"><span class="toc-number">1.0.2.3.</span> <span class="toc-text">get()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#remove"><span class="toc-number">1.0.2.4.</span> <span class="toc-text">remove()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#index"><span class="toc-number">1.0.2.5.</span> <span class="toc-text">index</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SparseArray-实现原理"><span class="toc-number">1.0.3.</span> <span class="toc-text">SparseArray 实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化"><span class="toc-number">1.0.3.1.</span> <span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#put-1"><span class="toc-number">1.0.3.2.</span> <span class="toc-text">put()</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#冲突直接覆盖"><span class="toc-number">1.0.3.2.1.</span> <span class="toc-text">冲突直接覆盖</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#插入索引上为DELETED"><span class="toc-number">1.0.3.2.2.</span> <span class="toc-text">插入索引上为DELETED</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#索引上有值，但是应该触发gc"><span class="toc-number">1.0.3.2.3.</span> <span class="toc-text">索引上有值，但是应该触发gc()</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#满容且无法gc"><span class="toc-number">1.0.3.2.4.</span> <span class="toc-text">满容且无法gc()</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#remove-1"><span class="toc-number">1.0.3.3.</span> <span class="toc-text">remove()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#gc"><span class="toc-number">1.0.3.4.</span> <span class="toc-text">gc()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#get-1"><span class="toc-number">1.0.3.5.</span> <span class="toc-text">get()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SparseArray-的系列"><span class="toc-number">1.0.4.</span> <span class="toc-text">SparseArray 的系列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">1.0.5.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#序言"><span class="toc-number">1.</span> <span class="toc-text">序言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SparseArray-的使用"><span class="toc-number">2.</span> <span class="toc-text">SparseArray 的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#创建"><span class="toc-number">2.1.</span> <span class="toc-text">创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#put"><span class="toc-number">2.2.</span> <span class="toc-text">put()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#get"><span class="toc-number">2.3.</span> <span class="toc-text">get()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#remove"><span class="toc-number">2.4.</span> <span class="toc-text">remove()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#index"><span class="toc-number">2.5.</span> <span class="toc-text">index</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SparseArray-实现原理"><span class="toc-number">3.</span> <span class="toc-text">SparseArray 实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化"><span class="toc-number">3.1.</span> <span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#put-1"><span class="toc-number">3.2.</span> <span class="toc-text">put()</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#冲突直接覆盖"><span class="toc-number">3.2.1.</span> <span class="toc-text">冲突直接覆盖</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#插入索引上为DELETED"><span class="toc-number">3.2.2.</span> <span class="toc-text">插入索引上为DELETED</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#索引上有值，但是应该触发gc"><span class="toc-number">3.2.3.</span> <span class="toc-text">索引上有值，但是应该触发gc()</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#满容且无法gc"><span class="toc-number">3.2.4.</span> <span class="toc-text">满容且无法gc()</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#remove-1"><span class="toc-number">3.3.</span> <span class="toc-text">remove()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#gc"><span class="toc-number">3.4.</span> <span class="toc-text">gc()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#get-1"><span class="toc-number">3.5.</span> <span class="toc-text">get()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SparseArray-的系列"><span class="toc-number">4.</span> <span class="toc-text">SparseArray 的系列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol>
 		
 		</div>
 		
-		<h1 id="SparseArray的使用及实现原理"><a href="#SparseArray的使用及实现原理" class="headerlink" title="SparseArray的使用及实现原理"></a>SparseArray的使用及实现原理</h1><blockquote>
+		<blockquote>
 <p>文章来源：itsCoder 的 <a href="https://github.com/itsCoder/weeklyblog" target="_blank" rel="external">WeeklyBolg</a> 项目</p>
 <p>itsCoder主页：<a href="http://itscoder.com/" target="_blank" rel="external">http://itscoder.com/</a></p>
 <p>作者：<a href="http://extremej.itscoder.com/about/" target="_blank" rel="external">Joe</a></p>
@@ -220,6 +223,11 @@ itsCoder主页：http://itscoder.com/
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android源码学习/">Android源码学习</a>
+</div>
+
 
 </div>
 
@@ -232,6 +240,13 @@ itsCoder主页：http://itscoder.com/
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/do_what_ever_u_want/" title="我和自己">
+  <span>
+  我和自己</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/lrucache_source/"  title="LruCache 源码学习笔记">
@@ -244,15 +259,15 @@ itsCoder主页：http://itscoder.com/
 
 	
 <section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="sparsearray_source_analyse/" data-title="" data-url="https://joesteven.github.io/sparsearray_source_analyse/"></div>
+	<div class="ds-thread" data-thread-key="sparsearray_source_analyse/" data-title="SparseArray 的使用及实现原理" data-url="https://joesteven.github.io/sparsearray_source_analyse/"></div>
 </section>
 
 
 </div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
 
 <div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
 <aside class="clearfix">
 <div id="authorInfo">
 	
@@ -284,7 +299,7 @@ itsCoder主页：http://itscoder.com/
 
   
 <div class="categorieslist">
-	<p class="asidetitle">分类</p>
+	<p class="asidetitle">分類</p>
 		<ul>
 		
 		  
@@ -292,7 +307,11 @@ itsCoder主页：http://itscoder.com/
 		  
 		
 		  
-			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>9</sup></a></li>
+			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>10</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/杂谈/" title="杂谈">杂谈<sup>1</sup></a></li>
 		  
 		
 		</ul>
@@ -300,8 +319,14 @@ itsCoder主页：http://itscoder.com/
 
 
   <div class="linkslist">
-  <p class="asidetitle">链接</p>
+  <p class="asidetitle">聯結</p>
     <ul>
+        
+          <li>
+            
+            	<a href="http://itscoder.com/" target="_blank" title="itsCoder">itsCoder</a>
+            
+          </li>
         
           <li>
             
@@ -329,7 +354,7 @@ itsCoder主页：http://itscoder.com/
         
           <li>
             
-            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="大M">大M</a>
+            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="Manjusaka">Manjusaka</a>
             
           </li>
         
@@ -568,7 +593,7 @@ var _hmt = _hmt || [];
 <!-- Totop Begin -->
 
 	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	<a title="返回頂部"><img src="/img/scrollup.png"/></a>
 	</div>
 	<script src="/js/totop.js"></script>
 
