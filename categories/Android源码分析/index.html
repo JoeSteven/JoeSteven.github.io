@@ -1,10 +1,10 @@
 
- <!DOCTYPE HTML>
+  <!DOCTYPE HTML>
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
   
-    <title>分类 | Joe is a thin man</title>
+    <title>分类 : Android源码分析 | Joe is a thin man</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="Joe">
@@ -12,12 +12,11 @@
 
     
     <meta property="og:type" content="website">
-<meta property="og:title" content="分类">
-<meta property="og:url" content="https://joesteven.github.io/categories/index.html">
+<meta property="og:title" content="Joe is a thin man">
+<meta property="og:url" content="https://joesteven.github.io/categories/Android源码分析/index.html">
 <meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:updated_time" content="2016-07-24T06:58:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="分类">
+<meta name="twitter:title" content="Joe is a thin man">
 
     
     <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
@@ -69,25 +68,31 @@
 </div>
       </header>
       <div id="container">
-          
+        
+
 <div class="archive-title" >
-<h2 class="category-icon">分类</h2>
-
-<a data-src="/categories/Android/" href="#Android" title="Android">Android<sup>1</sup></a>
-
-<a data-src="/categories/Android源码分析/" href="#Android源码分析" title="Android源码分析">Android源码分析<sup>1</sup></a>
-
-<a data-src="/categories/Android源码学习/" href="#Android源码学习" title="Android源码学习">Android源码学习<sup>10</sup></a>
-
-<a data-src="/categories/Tools/" href="#Tools" title="Tools">Tools<sup>1</sup></a>
-
-<a data-src="/categories/杂谈/" href="#杂谈" title="杂谈">杂谈<sup>1</sup></a>
-
+  <h2 class="category-icon">Android源码分析</h2>
+  
 </div>
-<div id="main" class="archive-part">
-<div class="all-list-box"></div>
-</div>
+<div id="main" class="archive-part clearfix">
+  <div id="archive-page">
 
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/shared_preferences_source/" title="shared_preferences_source" itemprop="url">
+  
+
+    <time datetime="2016-09-18T14:41:01.000Z" itemprop="datePublished">2016-09-18</time>
+
+
+    <h1 itemprop="name">shared_preferences_source</h1>
+
+  </a>
+</section>
+
+
+  </div>
+</div>
 
       </div>
       <footer><div id="footer" >
@@ -156,40 +161,10 @@ $(document).ready(function(){
 
 
 
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:"extremej"};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0] 
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script> 
 
 
 
 
-
-
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var list    = $('.archive-title a'),
-      box     = $('.all-list-box'),
-      first   = $('.archive-title a:first-of-type');
-      box.load(first.attr('data-src').toString()+' #archive-page');
-      first.addClass('current');
-  list.each(function(){
-    $(this).click(function(){
-      var listSrc=$(this).attr('data-src').toString()+' #archive-page';
-      box.load(listSrc);
-      list.removeClass('current');
-      $(this).addClass('current');
-     });  
-    });
-  }); 
-</script>
 
 
 <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
