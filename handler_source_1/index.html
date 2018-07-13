@@ -1,121 +1,168 @@
+<!DOCTYPE html>
+<html zh>
 
- <!DOCTYPE HTML>
-<html lang="zh">
+
+
+
+
+
+
 <head>
-  <meta charset="UTF-8">
-  
-    <title>Handler源码学习（一）流程 | Joe is a thin man</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
-    
-    <meta name="author" content="Joe">
-    
+	
+	
+	<link rel="stylesheet" href="/css/allinone.min.css"> 
 
-    
-    <meta name="description" content="本系列笔记是我阅读Handler及相关类的源码时所记录的一些之前所不知道的知识点，该系列分为三部分，整体流程，Message对象回收原理，MessageQueue管理队列Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队
-1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的l">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Handler源码学习（一）流程">
-<meta property="og:url" content="https://joesteven.github.io/handler_source_1/index.html">
-<meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:description" content="本系列笔记是我阅读Handler及相关类的源码时所记录的一些之前所不知道的知识点，该系列分为三部分，整体流程，Message对象回收原理，MessageQueue管理队列Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队
-1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的l">
-<meta property="og:updated_time" content="2018-07-13T03:41:22.123Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Handler源码学习（一）流程">
-<meta name="twitter:description" content="本系列笔记是我阅读Handler及相关类的源码时所记录的一些之前所不知道的知识点，该系列分为三部分，整体流程，Message对象回收原理，MessageQueue管理队列Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队
-1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的l">
+	
 
-    
-    <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
-    
-    
-    <link rel="icon" href="/img/avatar.png">
-    
-    
-    <link rel="apple-touch-icon" href="/img/profile.png">
-    <link rel="apple-touch-icon-precomposed" href="/img/profile.png">
-    
-    <link rel="stylesheet" href="/css/style.css">
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<title>Handler源码学习（一）流程 | Joe is a thin man</title>
+
+	<meta name="HandheldFriendly" content="True" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	<meta name="generator" content="hexo">
+	<meta name="author" content="Joe">
+	<meta name="description" content="">
+
+	
+	<meta name="keywords" content="">
+	
+
+	
+	<link rel="shortcut icon" href="/img/avatar.png">
+	
+
+	
+	<meta name="theme-color" content="#3c484e">
+	<meta name="msapplication-TileColor" content="#3c484e">
+	
+
+	
+
+	
+
+	<meta property="og:site_name" content="Joe is a thin man">
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="Handler源码学习（一）流程 | Joe is a thin man">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="https://joesteven.github.io/handler_source_1/">
+
+	
+	<meta property="article:published_time" content="2016-08-15T22:08:00+08:00"/> 
+	<meta property="article:author" content="Joe">
+	<meta property="article:published_first" content="Joe is a thin man, /handler_source_1/" />
+	
+
+	
+	
+	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+
+	
+	<script src="https://cdn.staticfile.org/highlight.js/9.10.0/highlight.min.js"></script>
+	
+
+	
+	
 </head>
+<body class="post-template">
+    <div class="site-wrapper">
+        
 
-  <body>
-    <header>
-      
-<div>
-		
-			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
-				<h2 class="blog-motto">写代码的摇滚歌手</h2>
-			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
-			</a></div>
-			<nav class="animated">
-				<ul>
-					<ul>
-					 
-						<li><a href="/">Home</a></li>
-					
-						<li><a href="/archives">Archives</a></li>
-					
-						<li><a href="/categories">Categories</a></li>
-					
-						<li><a href="/about">About</a></li>
-					
-					<li>
- 					
-					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
-						<input type="hidden" name="q" value="site:joesteven.github.io">
-					</form>
-					
-					</li>
-				</ul>
-			</nav>			
+
+
+
+<header class="site-header outer" style="z-index: 999">
+    <div class="inner">
+        
+<nav class="site-nav"> 
+    <div class="site-nav-left">
+        <ul class="nav">
+            <li>
+                
+                
+                <a class="site-nav-logo" href="/"  title="Joe is a thin man">
+                    <img src="../../img/avatar.png" alt="Joe is a thin man" />
+                </a>
+                
+                
+            </li>
+            
+            
+            <li>
+                <a href="/" title="首页">首页</a>
+            </li>
+            
+            <li>
+                <a href="/about" title="关于我">关于我</a>
+            </li>
+            
+            <li>
+                <a href="/friends" title="友链">友链</a>
+            </li>
+            
+            
+        </ul> 
+    </div>
+    <div class="site-nav-right">
+        
+<div class="social-links" >
+    
+    <a class="social-link" title="weibo" href="https://weibo.com/u/2750146463?refer_flag=1001030201_" target="_blank" rel="noopener">
+        <svg viewBox="0 0 1141 1024" xmlns="http://www.w3.org/2000/svg"><path d="M916.48 518.144q27.648 21.504 38.912 51.712t9.216 62.976-14.336 65.536-31.744 59.392q-34.816 48.128-78.848 81.92t-91.136 56.32-94.72 35.328-89.6 18.944-75.264 7.68-51.712 1.536-49.152-2.56-68.096-10.24-78.336-21.504-79.872-36.352-74.24-55.296-59.904-78.848q-16.384-29.696-22.016-63.488t-5.632-86.016q0-22.528 7.68-51.2t27.136-63.488 53.248-75.776 86.016-90.112q51.2-48.128 105.984-85.504t117.248-57.856q28.672-10.24 63.488-11.264t57.344 11.264q10.24 11.264 19.456 23.04t12.288 29.184q3.072 14.336 0.512 27.648t-5.632 26.624-5.12 25.6 2.048 22.528q17.408 2.048 33.792-1.536t31.744-9.216 31.232-11.776 33.28-9.216q27.648-5.12 54.784-4.608t49.152 7.68 36.352 22.016 17.408 38.4q2.048 14.336-2.048 26.624t-8.704 23.04-7.168 22.016 1.536 23.552q3.072 7.168 14.848 13.312t27.136 12.288 32.256 13.312 29.184 16.384zM658.432 836.608q26.624-16.384 53.76-45.056t44.032-64 18.944-75.776-20.48-81.408q-19.456-33.792-47.616-57.344t-62.976-37.376-74.24-19.968-80.384-6.144q-78.848 0-139.776 16.384t-105.472 43.008-72.192 60.416-38.912 68.608q-11.264 33.792-6.656 67.072t20.992 62.976 42.496 53.248 57.856 37.888q58.368 25.6 119.296 32.256t116.224 0.512 100.864-21.504 74.24-33.792zM524.288 513.024q20.48 8.192 38.912 18.432t32.768 27.648q10.24 12.288 17.92 30.72t10.752 39.424 1.536 42.496-9.728 38.912q-8.192 18.432-19.968 37.376t-28.672 35.328-40.448 29.184-57.344 18.944q-61.44 11.264-117.76-11.264t-88.064-74.752q-12.288-39.936-13.312-70.656t16.384-66.56q13.312-27.648 40.448-51.712t62.464-38.912 75.264-17.408 78.848 12.8zM361.472 764.928q37.888 3.072 57.856-18.432t21.504-48.128-15.36-47.616-52.736-16.896q-27.648 3.072-43.008 23.552t-17.408 43.52 9.728 42.496 39.424 21.504zM780.288 6.144q74.752 0 139.776 19.968t113.664 57.856 76.288 92.16 27.648 122.88q0 33.792-16.384 50.688t-35.328 17.408-35.328-14.336-16.384-45.568q0-40.96-22.528-77.824t-59.392-64.512-84.48-43.52-96.768-15.872q-31.744 0-47.104-15.36t-14.336-34.304 18.944-34.304 51.712-15.36zM780.288 169.984q95.232 0 144.384 48.64t49.152 146.944q0 30.72-10.24 43.52t-22.528 11.264-22.528-14.848-10.24-35.84q0-60.416-34.816-96.256t-93.184-35.84q-19.456 0-28.672-10.752t-9.216-23.04 9.728-23.04 28.16-10.752z" /></svg>
+    </a>
+    
+    
+    <a class="social-link" title="github" href="https://github.com/JoeSteven" target="_blank" rel="noopener">
+        <svg viewBox="0 0 1049 1024" xmlns="http://www.w3.org/2000/svg"><path d="M524.979332 0C234.676191 0 0 234.676191 0 524.979332c0 232.068678 150.366597 428.501342 358.967656 498.035028 26.075132 5.215026 35.636014-11.299224 35.636014-25.205961 0-12.168395-0.869171-53.888607-0.869171-97.347161-146.020741 31.290159-176.441729-62.580318-176.441729-62.580318-23.467619-60.841976-58.234462-76.487055-58.234463-76.487055-47.804409-32.15933 3.476684-32.15933 3.476685-32.15933 53.019436 3.476684 80.83291 53.888607 80.83291 53.888607 46.935238 79.963739 122.553122 57.365291 152.97411 43.458554 4.345855-33.897672 18.252593-57.365291 33.028501-70.402857-116.468925-12.168395-239.022047-57.365291-239.022047-259.012982 0-57.365291 20.860106-104.300529 53.888607-140.805715-5.215026-13.037566-23.467619-66.926173 5.215027-139.067372 0 0 44.327725-13.906737 144.282399 53.888607 41.720212-11.299224 86.917108-17.383422 131.244833-17.383422s89.524621 6.084198 131.244833 17.383422C756.178839 203.386032 800.506564 217.29277 800.506564 217.29277c28.682646 72.1412 10.430053 126.029806 5.215026 139.067372 33.897672 36.505185 53.888607 83.440424 53.888607 140.805715 0 201.64769-122.553122 245.975415-239.891218 259.012982 19.121764 16.514251 35.636014 47.804409 35.636015 97.347161 0 70.402857-0.869171 126.898978-0.869172 144.282399 0 13.906737 9.560882 30.420988 35.636015 25.205961 208.601059-69.533686 358.967656-265.96635 358.967655-498.035028C1049.958663 234.676191 814.413301 0 524.979332 0z" /></svg>
+    </a>
+    
+    
+    
+    
 </div>
-    </header>
-    <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
-  
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/handler_source_1/" title="Handler源码学习（一）流程" itemprop="url">Handler源码学习（一）流程</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
-		
-  <p class="article-time">
-    <time datetime="2016-08-15T14:43:45.000Z" itemprop="datePublished"> 发表于 2016-08-15</time>
-    
-  </p>
+    </div>
+</nav>
+    </div>
 </header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
-		
-			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-创建handler-—-默认构造方法会获取当前线程的looper，也可以传入指定的looper"><span class="toc-number">1.</span> <span class="toc-text">1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的looper</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Looper"><span class="toc-number">2.</span> <span class="toc-text">2.Looper</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-sendMessage"><span class="toc-number">3.</span> <span class="toc-text">3.sendMessage</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-loop-—-取出消息"><span class="toc-number">4.</span> <span class="toc-text">4.loop() — 取出消息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-dispatchMessage-—-分发消息"><span class="toc-number">5.</span> <span class="toc-text">5.dispatchMessage() — 分发消息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-post-—-各种post方法"><span class="toc-number">6.</span> <span class="toc-text">6.post — 各种post方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-扩展"><span class="toc-number">7.</span> <span class="toc-text">8.扩展</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-收获"><span class="toc-number">8.</span> <span class="toc-text">7.收获</span></a></li></ol>
-		
-		</div>
-		
-		<p>本系列笔记是我阅读Handler及相关类的源码时所记录的一些之前所不知道的知识点，该系列分为三部分，整体流程，Message对象回收原理，MessageQueue管理队列<br>Handler源码学习（一）流程<br><a href="http://extremej.itscoder.com/handler_source_2_Message/" target="_blank" rel="external">Handler源码学习（二）Message对象池</a><br><a href="http://extremej.itscoder.com/handler_source_3_MessageQueue/" target="_blank" rel="external">Handler源码学习（三）MessageQueue入队插队</a></p>
-<h4 id="1-创建handler-—-默认构造方法会获取当前线程的looper，也可以传入指定的looper"><a href="#1-创建handler-—-默认构造方法会获取当前线程的looper，也可以传入指定的looper" class="headerlink" title="1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的looper"></a>1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的looper</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Default constructor associates this handler with the &#123;<span class="doctag">@link</span> Looper&#125; for the</div><div class="line"> * current thread.</div><div class="line"> *</div><div class="line"> * If this thread does not have a looper, this handler won't be able to receive messages</div><div class="line"> * so an exception is thrown.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>(<span class="keyword">null</span>, <span class="keyword">false</span>);</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">(Callback callback, <span class="keyword">boolean</span> async)</span> </span>&#123;</div><div class="line">  		<span class="comment">//警告潜在内存泄漏风险</span></div><div class="line">        <span class="keyword">if</span> (FIND_POTENTIAL_LEAKS) &#123;</div><div class="line">            <span class="keyword">final</span> Class&lt;? extends Handler&gt; klass = getClass();</div><div class="line">          <span class="comment">//如果是匿名类，内部类等等并且不是static 有内存泄露风险</span></div><div class="line">            <span class="keyword">if</span> ((klass.isAnonymousClass() || klass.isMemberClass() || klass.isLocalClass()) &amp;&amp;</div><div class="line">                    (klass.getModifiers() &amp; Modifier.STATIC) == <span class="number">0</span>) &#123;</div><div class="line">                Log.w(TAG, <span class="string">"The following Handler class should be static or leaks might occur: "</span> +</div><div class="line">                    klass.getCanonicalName());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">		<span class="comment">//创建looper</span></div><div class="line">        mLooper = Looper.myLooper();</div><div class="line">        <span class="keyword">if</span> (mLooper == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</div><div class="line">                <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>);</div><div class="line">        &#125;</div><div class="line">        mQueue = mLooper.mQueue;</div><div class="line">        mCallback = callback;</div><div class="line">        mAsynchronous = async;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<h4 id="2-Looper"><a href="#2-Looper" class="headerlink" title="2.Looper"></a>2.Looper</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/** Initialize the current thread as a looper.</span></div><div class="line">  * This gives you a chance to create handlers that then reference</div><div class="line">  * this looper, before actually starting the loop. Be sure to call</div><div class="line">  * &#123;<span class="doctag">@link</span> #loop()&#125; after calling this method, and end it by calling</div><div class="line">  * &#123;<span class="doctag">@link</span> #quit()&#125;.</div><div class="line">  */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> </span>&#123;</div><div class="line">    prepare(<span class="keyword">true</span>);</div><div class="line">&#125;</div><div class="line"><span class="comment">//用ThreadLocal来存放looper 如果当前线程已经有一个looper则抛异常</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (sThreadLocal.get() != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);</div><div class="line">    &#125;</div><div class="line">    sThreadLocal.set(<span class="keyword">new</span> Looper(quitAllowed));</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="title">Looper</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">        mQueue = <span class="keyword">new</span> MessageQueue(quitAllowed);</div><div class="line">        mThread = Thread.currentThread();</div><div class="line">    &#125;</div><div class="line"></div><div class="line"><span class="comment">//主线程的looper</span></div><div class="line"><span class="comment">/**</span></div><div class="line">     * Initialize the current thread as a looper, marking it as an</div><div class="line">     * application's main looper. The main looper for your application</div><div class="line">     * is created by the Android environment, so you should never need</div><div class="line">     * to call this function yourself.  See also: &#123;<span class="doctag">@link</span> #prepare()&#125;</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepareMainLooper</span><span class="params">()</span> </span>&#123;</div><div class="line">        prepare(<span class="keyword">false</span>);</div><div class="line">        <span class="keyword">synchronized</span> (Looper.class) &#123;</div><div class="line">            <span class="keyword">if</span> (sMainLooper != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The main Looper has already been prepared."</span>);</div><div class="line">            &#125;</div><div class="line">            sMainLooper = myLooper();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"><span class="comment">//构造方法，创建了一个消息队列</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="title">Looper</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">        mQueue = <span class="keyword">new</span> MessageQueue(quitAllowed);</div><div class="line">        mThread = Thread.currentThread();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<h4 id="3-sendMessage"><a href="#3-sendMessage" class="headerlink" title="3.sendMessage"></a>3.sendMessage</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">sendMessageAtTime</span><span class="params">(Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">    MessageQueue queue = mQueue;</div><div class="line">    <span class="keyword">if</span> (queue == <span class="keyword">null</span>) &#123;</div><div class="line">        RuntimeException e = <span class="keyword">new</span> RuntimeException(</div><div class="line">                <span class="keyword">this</span> + <span class="string">" sendMessageAtTime() called with no mQueue"</span>);</div><div class="line">        Log.w(<span class="string">"Looper"</span>, e.getMessage(), e);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> enqueueMessage(queue, msg, uptimeMillis);</div><div class="line">&#125;</div><div class="line"><span class="comment">//handler中将message添加到消息队列</span></div><div class="line"><span class="comment">//将这个message的target设置成当前的这个handler</span></div><div class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(MessageQueue queue, Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">        msg.target = <span class="keyword">this</span>;</div><div class="line">        <span class="keyword">if</span> (mAsynchronous) &#123;</div><div class="line">            msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<h4 id="4-loop-—-取出消息"><a href="#4-loop-—-取出消息" class="headerlink" title="4.loop() — 取出消息"></a>4.loop() — 取出消息</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//target是handler，这里是个无限循环</span></div><div class="line">msg.target.dispatchMessage(msg);</div></pre></td></tr></table></figure>
-<h4 id="5-dispatchMessage-—-分发消息"><a href="#5-dispatchMessage-—-分发消息" class="headerlink" title="5.dispatchMessage() — 分发消息"></a>5.dispatchMessage() — 分发消息</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//三种情况，</span></div><div class="line"><span class="comment">//第一种Message对象的callback不为空(runnable)，交给callback处理，第一种大多是使用post方法传入runnable对象时会调用</span></div><div class="line"><span class="comment">//第二种是handler的callback不为空，交给callback处理，callback</span></div><div class="line"><span class="comment">//前两种都没有的情况下交给handleMessag去处理</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispatchMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (msg.callback != <span class="keyword">null</span>) &#123;</div><div class="line">        handleCallback(msg);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        handleMessage(msg);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">handleCallback</span><span class="params">(Message message)</span> </span>&#123;</div><div class="line">        message.callback.run();</div><div class="line">    &#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Callback</span> </span>&#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span></span>;</div><div class="line">    &#125;</div><div class="line"><span class="comment">//Handler的callback可以在构造方法中传入</span></div><div class="line"><span class="comment">//Message的callback可以在obtain方法中作为参数传入，注意，一个消息被使用完毕后会被recycle，callback也会被移除，所以只能使用一次</span></div></pre></td></tr></table></figure>
-<h4 id="6-post-—-各种post方法"><a href="#6-post-—-各种post方法" class="headerlink" title="6.post — 各种post方法"></a>6.post — 各种post方法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//注意传入的runnable的run方法会在handler所绑定的looper所在线程中执行，最终还是sendMessageDelayed()</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">post</span><span class="params">(Runnable r)</span></span></div><div class="line">&#123;</div><div class="line">   <span class="keyword">return</span>  sendMessageDelayed(getPostMessage(r), <span class="number">0</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//不被推荐使用的方法,很容易导致消息队列清空，排序问题，以及其它副作用</span></div><div class="line"><span class="comment">//Posts a message to an object that implements Runnable.</span></div><div class="line"><span class="comment">//Causes the Runnable r to executed on the next iteration through the</span></div><div class="line"><span class="comment">//message queue.</span></div><div class="line"><span class="comment">//This method is only for use in very special circumstances -- it</span></div><div class="line"><span class="comment">//can easily starve the message queue, cause ordering problems, or have</span></div><div class="line"><span class="comment">//other unexpected side-effects.&lt;/b&gt;</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">sendMessageAtFrontOfQueue</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">        MessageQueue queue = mQueue;</div><div class="line">        <span class="keyword">if</span> (queue == <span class="keyword">null</span>) &#123;</div><div class="line">            RuntimeException e = <span class="keyword">new</span> RuntimeException(</div><div class="line">                <span class="keyword">this</span> + <span class="string">" sendMessageAtTime() called with no mQueue"</span>);</div><div class="line">            Log.w(<span class="string">"Looper"</span>, e.getMessage(), e);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> enqueueMessage(queue, msg, <span class="number">0</span>);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+
+
+<main id="site-main" class="site-main outer" role="main">
+    <div class="inner">
+        <header class="post-full-header">
+            <section class="post-full-meta">
+                <time  class="post-full-meta-date" datetime="2016-08-15T14:43:45.000Z" itemprop="datePublished">
+                    2016-08-15
+                </time>
+                
+                <span class="date-divider">/</span>
+                
+                <a href="/categories/Android源码学习/">Android源码学习</a>&nbsp;&nbsp;
+                
+                
+            </section>
+            <h1 class="post-full-title">Handler源码学习（一）流程</h1>
+        </header>
+        <article class="post-full no-image">
+            
+            <section class="post-full-content">
+                <div id="lightgallery" class="markdown-body">
+                    <p>本系列笔记是我阅读Handler及相关类的源码时所记录的一些之前所不知道的知识点，该系列分为三部分，整体流程，Message对象回收原理，MessageQueue管理队列<br>Handler源码学习（一）流程<br><a href="http://extremej.itscoder.com/handler_source_2_Message/" target="_blank" rel="external">Handler源码学习（二）Message对象池</a><br><a href="http://extremej.itscoder.com/handler_source_3_MessageQueue/" target="_blank" rel="external">Handler源码学习（三）MessageQueue入队插队</a></p>
+<h4 id="1-创建handler-—-默认构造方法会获取当前线程的looper，也可以传入指定的looper"><a href="#1-创建handler-—-默认构造方法会获取当前线程的looper，也可以传入指定的looper" class="headerlink" title="1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的looper"></a>1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的looper</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Default constructor associates this handler with the &#123;<span class="doctag">@link</span> Looper&#125; for the</div><div class="line"> * current thread.</div><div class="line"> *</div><div class="line"> * If this thread does not have a looper, this handler won't be able to receive messages</div><div class="line"> * so an exception is thrown.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>(<span class="keyword">null</span>, <span class="keyword">false</span>);</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">(Callback callback, <span class="keyword">boolean</span> async)</span> </span>&#123;</div><div class="line">  		<span class="comment">//警告潜在内存泄漏风险</span></div><div class="line">        <span class="keyword">if</span> (FIND_POTENTIAL_LEAKS) &#123;</div><div class="line">            <span class="keyword">final</span> Class&lt;? extends Handler&gt; klass = getClass();</div><div class="line">          <span class="comment">//如果是匿名类，内部类等等并且不是static 有内存泄露风险</span></div><div class="line">            <span class="keyword">if</span> ((klass.isAnonymousClass() || klass.isMemberClass() || klass.isLocalClass()) &amp;&amp;</div><div class="line">                    (klass.getModifiers() &amp; Modifier.STATIC) == <span class="number">0</span>) &#123;</div><div class="line">                Log.w(TAG, <span class="string">"The following Handler class should be static or leaks might occur: "</span> +</div><div class="line">                    klass.getCanonicalName());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">		<span class="comment">//创建looper</span></div><div class="line">        mLooper = Looper.myLooper();</div><div class="line">        <span class="keyword">if</span> (mLooper == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</div><div class="line">                <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>);</div><div class="line">        &#125;</div><div class="line">        mQueue = mLooper.mQueue;</div><div class="line">        mCallback = callback;</div><div class="line">        mAsynchronous = async;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h4 id="2-Looper"><a href="#2-Looper" class="headerlink" title="2.Looper"></a>2.Looper</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">/** Initialize the current thread as a looper.</span></div><div class="line">  * This gives you a chance to create handlers that then reference</div><div class="line">  * this looper, before actually starting the loop. Be sure to call</div><div class="line">  * &#123;<span class="doctag">@link</span> #loop()&#125; after calling this method, and end it by calling</div><div class="line">  * &#123;<span class="doctag">@link</span> #quit()&#125;.</div><div class="line">  */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">()</span> </span>&#123;</div><div class="line">    prepare(<span class="keyword">true</span>);</div><div class="line">&#125;</div><div class="line"><span class="comment">//用ThreadLocal来存放looper 如果当前线程已经有一个looper则抛异常</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (sThreadLocal.get() != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);</div><div class="line">    &#125;</div><div class="line">    sThreadLocal.set(<span class="keyword">new</span> Looper(quitAllowed));</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="title">Looper</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">        mQueue = <span class="keyword">new</span> MessageQueue(quitAllowed);</div><div class="line">        mThread = Thread.currentThread();</div><div class="line">    &#125;</div><div class="line"></div><div class="line"><span class="comment">//主线程的looper</span></div><div class="line"><span class="comment">/**</span></div><div class="line">     * Initialize the current thread as a looper, marking it as an</div><div class="line">     * application's main looper. The main looper for your application</div><div class="line">     * is created by the Android environment, so you should never need</div><div class="line">     * to call this function yourself.  See also: &#123;<span class="doctag">@link</span> #prepare()&#125;</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepareMainLooper</span><span class="params">()</span> </span>&#123;</div><div class="line">        prepare(<span class="keyword">false</span>);</div><div class="line">        <span class="keyword">synchronized</span> (Looper.class) &#123;</div><div class="line">            <span class="keyword">if</span> (sMainLooper != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The main Looper has already been prepared."</span>);</div><div class="line">            &#125;</div><div class="line">            sMainLooper = myLooper();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"><span class="comment">//构造方法，创建了一个消息队列</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="title">Looper</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">        mQueue = <span class="keyword">new</span> MessageQueue(quitAllowed);</div><div class="line">        mThread = Thread.currentThread();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h4 id="3-sendMessage"><a href="#3-sendMessage" class="headerlink" title="3.sendMessage"></a>3.sendMessage</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">sendMessageAtTime</span><span class="params">(Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">    MessageQueue queue = mQueue;</div><div class="line">    <span class="keyword">if</span> (queue == <span class="keyword">null</span>) &#123;</div><div class="line">        RuntimeException e = <span class="keyword">new</span> RuntimeException(</div><div class="line">                <span class="keyword">this</span> + <span class="string">" sendMessageAtTime() called with no mQueue"</span>);</div><div class="line">        Log.w(<span class="string">"Looper"</span>, e.getMessage(), e);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> enqueueMessage(queue, msg, uptimeMillis);</div><div class="line">&#125;</div><div class="line"><span class="comment">//handler中将message添加到消息队列</span></div><div class="line"><span class="comment">//将这个message的target设置成当前的这个handler</span></div><div class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(MessageQueue queue, Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">        msg.target = <span class="keyword">this</span>;</div><div class="line">        <span class="keyword">if</span> (mAsynchronous) &#123;</div><div class="line">            msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h4 id="4-loop-—-取出消息"><a href="#4-loop-—-取出消息" class="headerlink" title="4.loop() — 取出消息"></a>4.loop() — 取出消息</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">//target是handler，这里是个无限循环</span></div><div class="line">msg.target.dispatchMessage(msg);</div></pre></td></tr></table></figure>
+<h4 id="5-dispatchMessage-—-分发消息"><a href="#5-dispatchMessage-—-分发消息" class="headerlink" title="5.dispatchMessage() — 分发消息"></a>5.dispatchMessage() — 分发消息</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">//三种情况，</span></div><div class="line"><span class="comment">//第一种Message对象的callback不为空(runnable)，交给callback处理，第一种大多是使用post方法传入runnable对象时会调用</span></div><div class="line"><span class="comment">//第二种是handler的callback不为空，交给callback处理，callback</span></div><div class="line"><span class="comment">//前两种都没有的情况下交给handleMessag去处理</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispatchMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (msg.callback != <span class="keyword">null</span>) &#123;</div><div class="line">        handleCallback(msg);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        handleMessage(msg);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">handleCallback</span><span class="params">(Message message)</span> </span>&#123;</div><div class="line">        message.callback.run();</div><div class="line">    &#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Callback</span> </span>&#123;</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span></span>;</div><div class="line">    &#125;</div><div class="line"><span class="comment">//Handler的callback可以在构造方法中传入</span></div><div class="line"><span class="comment">//Message的callback可以在obtain方法中作为参数传入，注意，一个消息被使用完毕后会被recycle，callback也会被移除，所以只能使用一次</span></div></pre></td></tr></table></figure>
+<h4 id="6-post-—-各种post方法"><a href="#6-post-—-各种post方法" class="headerlink" title="6.post — 各种post方法"></a>6.post — 各种post方法</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">//注意传入的runnable的run方法会在handler所绑定的looper所在线程中执行，最终还是sendMessageDelayed()</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">post</span><span class="params">(Runnable r)</span></span></div><div class="line">&#123;</div><div class="line">   <span class="keyword">return</span>  sendMessageDelayed(getPostMessage(r), <span class="number">0</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//不被推荐使用的方法,很容易导致消息队列清空，排序问题，以及其它副作用</span></div><div class="line"><span class="comment">//Posts a message to an object that implements Runnable.</span></div><div class="line"><span class="comment">//Causes the Runnable r to executed on the next iteration through the</span></div><div class="line"><span class="comment">//message queue.</span></div><div class="line"><span class="comment">//This method is only for use in very special circumstances -- it</span></div><div class="line"><span class="comment">//can easily starve the message queue, cause ordering problems, or have</span></div><div class="line"><span class="comment">//other unexpected side-effects.&lt;/b&gt;</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">sendMessageAtFrontOfQueue</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">        MessageQueue queue = mQueue;</div><div class="line">        <span class="keyword">if</span> (queue == <span class="keyword">null</span>) &#123;</div><div class="line">            RuntimeException e = <span class="keyword">new</span> RuntimeException(</div><div class="line">                <span class="keyword">this</span> + <span class="string">" sendMessageAtTime() called with no mQueue"</span>);</div><div class="line">            Log.w(<span class="string">"Looper"</span>, e.getMessage(), e);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> enqueueMessage(queue, msg, <span class="number">0</span>);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
 <h4 id="8-扩展"><a href="#8-扩展" class="headerlink" title="8.扩展"></a>8.扩展</h4><ul>
 <li>runOnUiThread()</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//如果当前线程是ui线程就直接调用run方法，如果不是当前线程则通过handler发送消息</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">runOnUiThread</span><span class="params">(Runnable action)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (Thread.currentThread() != mUiThread) &#123;</div><div class="line">        mHandler.post(action);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        action.run();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">//如果当前线程是ui线程就直接调用run方法，如果不是当前线程则通过handler发送消息</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">runOnUiThread</span><span class="params">(Runnable action)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (Thread.currentThread() != mUiThread) &#123;</div><div class="line">        mHandler.post(action);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        action.run();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <ul>
 <li>view.post()</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//首先会判断这个view是否已经attach上了window，如果是的话会使用handler来发送消息</span></div><div class="line"><span class="comment">//否则会加入到消息队列中，等到attach了才会一次取出执行</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">post</span><span class="params">(Runnable action)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> AttachInfo attachInfo = mAttachInfo;</div><div class="line">    <span class="keyword">if</span> (attachInfo != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> attachInfo.mHandler.post(action);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// Assume that post will succeed later</span></div><div class="line">    ViewRootImpl.getRunQueue().post(action);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">//首先会判断这个view是否已经attach上了window，如果是的话会使用handler来发送消息</span></div><div class="line"><span class="comment">//否则会加入到消息队列中，等到attach了才会一次取出执行</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">post</span><span class="params">(Runnable action)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> AttachInfo attachInfo = mAttachInfo;</div><div class="line">    <span class="keyword">if</span> (attachInfo != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> attachInfo.mHandler.post(action);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// Assume that post will succeed later</span></div><div class="line">    ViewRootImpl.getRunQueue().post(action);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h4 id="7-收获"><a href="#7-收获" class="headerlink" title="7.收获"></a>7.收获</h4><p>1.looper是通过 ThreadLoacal来保存 ，保证looper只被创建一次，且跟当前线程绑定，一个looper。</p>
 <p>2.handler有多个构造方法，并不是必须要重写handleMessage方法，可以通过传入callback对象来处理消息，同时也可以给handler指定looper，因此handler可以给其它线程的looper发送消息。</p>
 <p>3.MessageQueue不由handler创建，而是从looper中获取，一个looper对应有一个MessageQueue，因此一个looper必然可以对应多个handler，它们都是往这同一个消息队列中发送消息而已</p>
@@ -123,406 +170,301 @@
 <p>5.handler发送延迟消息时，是通过但前时间＋delayed时间，在某个时间去发送，因此如果在插入message时的时间是0，会容易导致排序问题</p>
 <p>6.每一个Activity在创建的时候其实就已经创建了一个handler，runOnUiThread方法中使用的就是这个handler</p>
 <p>7.view.post除了异步更新ui外还有一个作用，可以判断当前view是否已经attach window，在这个runnable任务被执行时，可以拿到尺寸等等，避免因为disattach造成异常</p>
-  
-	</div>
-		<footer class="article-footer clearfix">
-<div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Android源码学习/">Android源码学习</a>
-</div>
-
-
-</div>
-
-
-
-</footer>
-
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/handler_source_2_Message/" title="Handler源码学习（二）Message对象池">
-  <span>
-  Handler源码学习（二）Message对象池</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/rxjava_source/"  title="RxJava 源码学习笔记">
- <span>RxJava 源码学习笔记
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-<section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="handler_source_1/" data-title="Handler源码学习（一）流程" data-url="https://joesteven.github.io/handler_source_1/"></div>
-</section>
-
-
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
-
-<div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
-<aside class="clearfix">
-<div id="authorInfo">
-	
-		<div class="author-img"></div>		
-	
-	<div class="social-info" class="clearfix">
-		
-		<a href="http://weibo.com/2750146463" target="_blank" class="icon-weibo" title="微博"></a>
-		
-		
-		<a href="https://github.com/JoeSteven" target="_blank" class="icon-github" title="github"></a>
-		
-		
-		
-		
-		
-		
-		
-		<a href="http://www.zhihu.com/people/qiao-xi-28" target="_blank" class="icon-zhihu" title="知乎"></a>
-		
-		
-		
-		
-		<a href="mailto:qiaoxiaoxi621@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
-		
-
-	</div>
-</div>
-
-  
-<div class="categorieslist">
-	<p class="asidetitle">分类</p>
-		<ul>
-		
-		  
-			<li><a href="/categories/Android/" title="Android">Android<sup>3</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>11</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/Tools/" title="Tools">Tools<sup>1</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/杂谈/" title="杂谈">杂谈<sup>1</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  <div class="linkslist">
-  <p class="asidetitle">链接</p>
-    <ul>
-        
-          <li>
-            
-            	<a href="http://itscoder.com/" target="_blank" title="itsCoder">itsCoder</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="https://cassieran.github.io/" target="_blank" title="FaFa">FaFa</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://laobie.github.io/" target="_blank" title="写代码的猴子">写代码的猴子</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://brucezz.github.io/" target="_blank" title="Brucezz">Brucezz</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://allenwu.itscoder.com/" target="_blank" title="allen">allen</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="Manjusaka">Manjusaka</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://solart.cc/" target="_blank" title="imilk">imilk</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="https://yongyu0102.github.io/" target="_blank" title="用语">用语</a>
-            
-          </li>
-        
-    </ul>
-</div>
-
-</aside>
-</div>
+                </div>
+            </section>
+        </article>
     </div>
-    <footer><div id="footer" >
-		
-		
+    
+<nav class="pagination">
+    
+    
+    <a class="prev-post" title="Handler源码学习（二）Message对象池" href="/handler_source_2_Message/">
+        ← Handler源码学习（二）Message对象池
+    </a>
+    
+    <span class="prev-next-post">•</span>
+    
+    <a class="next-post" title="RxJava 源码学习笔记" href="/rxjava_source/">
+        RxJava 源码学习笔记 →
+    </a>
+    
+    
+</nav>
+    
+</main>
 
-		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2018 
-		
-		<a href="/about" target="_blank" title="Joe">Joe</a>
-		
-		
-		</p>
+<div class="t-g-control">
+    <div class="gotop">
+        <svg class="icon" width="32px" height="32px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M793.024 710.272a32 32 0 1 0 45.952-44.544l-310.304-320a32 32 0 0 0-46.4 0.48l-297.696 320a32 32 0 0 0 46.848 43.584l274.752-295.328 286.848 295.808z" fill="#8a8a8a" /></svg>
+    </div>
+    <div class="toc-control">
+        <svg class="icon toc-icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M779.776 480h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M779.776 672h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M256 288a32 32 0 1 0 0 64 32 32 0 0 0 0-64M392.576 352h387.2a32 32 0 0 0 0-64h-387.2a32 32 0 0 0 0 64M256 480a32 32 0 1 0 0 64 32 32 0 0 0 0-64M256 672a32 32 0 1 0 0 64 32 32 0 0 0 0-64" fill="#8a8a8a" /></svg>
+        <svg class="icon toc-close" style="display: none;" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M512 960c-247.039484 0-448-200.960516-448-448S264.960516 64 512 64 960 264.960516 960 512 759.039484 960 512 960zM512 128.287273c-211.584464 0-383.712727 172.128262-383.712727 383.712727 0 211.551781 172.128262 383.712727 383.712727 383.712727 211.551781 0 383.712727-172.159226 383.712727-383.712727C895.712727 300.415536 723.551781 128.287273 512 128.287273z" fill="#8a8a8a" /><path d="M557.05545 513.376159l138.367639-136.864185c12.576374-12.416396 12.672705-32.671738 0.25631-45.248112s-32.704421-12.672705-45.248112-0.25631l-138.560301 137.024163-136.447897-136.864185c-12.512727-12.512727-32.735385-12.576374-45.248112-0.063647-12.512727 12.480043-12.54369 32.735385-0.063647 45.248112l136.255235 136.671523-137.376804 135.904314c-12.576374 12.447359-12.672705 32.671738-0.25631 45.248112 6.271845 6.335493 14.496116 9.504099 22.751351 9.504099 8.12794 0 16.25588-3.103239 22.496761-9.247789l137.567746-136.064292 138.687596 139.136568c6.240882 6.271845 14.432469 9.407768 22.65674 9.407768 8.191587 0 16.352211-3.135923 22.591372-9.34412 12.512727-12.480043 12.54369-32.704421 0.063647-45.248112L557.05545 513.376159z" fill="#8a8a8a" /></svg>
+    </div>
+    <div class="gobottom">
+        <svg class="icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M231.424 346.208a32 32 0 0 0-46.848 43.584l297.696 320a32 32 0 0 0 46.4 0.48l310.304-320a32 32 0 1 0-45.952-44.544l-286.848 295.808-274.752-295.36z" fill="#8a8a8a" /></svg>
+    </div>
 </div>
-</footer>
-    <script src="/js/jquery-2.0.3.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+<div class="toc-main" style="right: -100%">
+    <div class="post-toc">
+        <span>TOC</span>
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-创建handler-—-默认构造方法会获取当前线程的looper，也可以传入指定的looper"><span class="toc-text">1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的looper</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Looper"><span class="toc-text">2.Looper</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-sendMessage"><span class="toc-text">3.sendMessage</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-loop-—-取出消息"><span class="toc-text">4.loop() — 取出消息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-dispatchMessage-—-分发消息"><span class="toc-text">5.dispatchMessage() — 分发消息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-post-—-各种post方法"><span class="toc-text">6.post — 各种post方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-扩展"><span class="toc-text">8.扩展</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-收获"><span class="toc-text">7.收获</span></a></li></ol>
+    </div>
+</div>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.navbar').click(function(){
-    $('header nav').toggleClass('shownav');
-  });
-  var myWidth = 0;
-  function getSize(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-  };
-  var m = $('#main'),
-      a = $('#asidepart'),
-      c = $('.closeaside'),
-      o = $('.openaside');
-  c.click(function(){
-    a.addClass('fadeOut').css('display', 'none');
-    o.css('display', 'block').addClass('fadeIn');
-    m.addClass('moveMain');
-  });
-  o.click(function(){
-    o.css('display', 'none').removeClass('beforeFadeIn');
-    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
-    m.removeClass('moveMain');
-  });
-  $(window).scroll(function(){
-    o.css("top",Math.max(80,260-$(this).scrollTop()));
-  });
-  
-        getSize();
-        if (myWidth >= 1024) {
-          c.click();
-        }
-  
-  $(window).resize(function(){
-    getSize(); 
-    if (myWidth >= 1024) {
-      $('header nav').removeClass('shownav');
-    }else{
-      m.removeClass('moveMain');
-      a.css('display', 'block').removeClass('fadeOut');
-      o.css('display', 'none');
+
+
         
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+            
+            
+
+<article class="read-next-card"  style="background-image: url(../../img/cover.png)"  >
+  <header class="read-next-card-header">
+    <small class="read-next-card-header-sitetitle">&mdash; Joe is a thin man &mdash;</small>
+    <h3 class="read-next-card-header-title">Recent Posts</h3>
+  </header>
+  <div class="read-next-divider">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/>
+    </svg>
+  </div>
+  <div class="read-next-card-content">
+    <ul>
+      
+      
+      
+      <li>
+        <a href="/android_long_picture_process/">Android 中的长图片处理</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/shared_preferences_source/">对 SharedPreferences 再多一点了解</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/zoom-up-animation/">Activity 共享元素转场动画实践</a>
+      </li>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    </ul>
+  </div>
+  <footer class="read-next-card-footer">
+    <a href="/archives">  MORE  → </a>
+  </footer>
+</article>
+
+            
+            
+            
+
+<article class="read-next-card"  style="background-image: url(../../img/cover.png)"  >
+    <header class="read-next-card-header" style="padding-bottom: 20px">
+        <h3 class="read-next-card-header-title">Categories</h3>
+    </header>
+    <div class="read-next-card-content">
+        <ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Android源码学习/">Android源码学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/">Tools</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/杂谈/">杂谈</a></li></ul>
+        </ul>
+    </div>
+</article>
+
+
+            
+            
+            
+
+            
+        </div>
+    </div>
+</aside>
+
+<footer class="site-footer outer">
+	<div class="site-footer-content inner">
+		<section class="copyright">
+			<a href="/" title="Joe is a thin man">Joe is a thin man</a>
+			&copy; 2018
+		</section>
+		<nav class="site-footer-nav">
+			
+            <a href="https://hexo.io" title="Hexo" target="_blank" rel="external">Hexo</a>
+            <a href="https://github.com/xzhih/hexo-theme-casper" title="Casper" target="_blank" rel="external">Casper</a>
+        </nav>
+    </div>
+</footer>
+
+
+
+
+
+
+<div class="floating-header" >
+	<div class="floating-header-logo">
+        <a href="/" title="Joe is a thin man">
+			
+                <img src="img/avatar.png" alt="Joe is a thin man icon" />
+			
+            <span>Joe is a thin man</span>
+        </a>
+    </div>
+    <span class="floating-header-divider">&mdash;</span>
+    <div class="floating-header-title">Handler源码学习（一）流程</div>
+    <progress class="progress" value="0">
+        <div class="progress-container">
+            <span class="progress-bar"></span>
+        </div>
+    </progress>
+</div>
+<script>
+   $(document).ready(function () {
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
     }
-  });
-});
-</script>
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+    function update() {
+        var rect = title.getBoundingClientRect();
+        var trigger = rect.top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+            // show/hide floating header
+            if (lastScrollY >= trigger + triggerOffset) {
+                header.classList.add('floating-active');
+            } else {
+                header.classList.remove('floating-active');
+            }
+            progressBar.setAttribute('max', progressMax);
+            progressBar.setAttribute('value', lastScrollY);
+            ticking = false;
+        }
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
+        window.addEventListener('scroll', onScroll, {passive: true});
+        update();
 
+        // TOC
+        var width = $('.toc-main').width();
+        $('.toc-control').click(function () {
+            if ($('.t-g-control').css('width')=="50px") {
+                if ($('.t-g-control').css('right')=="0px") {
+                    $('.t-g-control').animate({right: width}, "slow");
+                    $('.toc-main').animate({right: 0}, "slow");
+                    toc_icon()
+                } else {
+                    $('.t-g-control').animate({right: 0}, "slow");
+                    $('.toc-main').animate({right: -width}, "slow");
+                    toc_icon()
+                }
+            } else {
+                if ($('.toc-main').css('right')=="0px") {
+                    $('.toc-main').slideToggle("fast", toc_icon());
+                } else {
+                    $('.toc-main').css('right', '0px');
+                    toc_icon()
+                }
+            }
+        })
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
+        function toc_icon() {
+            if ($('.toc-icon').css('display')=="none") {
+                $('.toc-close').hide();
+                $('.toc-icon').show();
+            } else {
+                $('.toc-icon').hide();
+                $('.toc-close').show();
+            }
+        }
 
-  $('.hoverqrcode').hide();
+        $('.gotop').click(function(){
+            $('html,body').animate({scrollTop:$('.post-full-header').offset().top}, 800);
+        });
+        $('.gobottom').click(function () {
+            $('html,body').animate({scrollTop:$('.pagination').offset().top}, 800);
+        });
 
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
+        // highlight
+        // https://highlightjs.org
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+        $('td.code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
 
-
-
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:"extremej"};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0] 
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script> 
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.article-content').each(function(i){
-    $(this).find('img').each(function(){
-      if ($(this).parent().hasClass('fancybox')) return;
-      var alt = this.alt;
-      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
-      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+        console.log("this theme is from https://github.com/xzhih/hexo-theme-casper")
     });
-    $(this).find('.fancybox').each(function(){
-      $(this).attr('rel', 'article' + i);
-    });
-  });
-  if($.fancybox){
-    $('.fancybox').fancybox();
-  }
-}); 
 </script>
 
 
 
-<!-- Analytics Begin -->
+<link rel="stylesheet" href="https://cdn.staticfile.org/lightgallery/1.3.9/css/lightgallery.min.css">
 
-<script type="text/javascript">
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-81871291-1', 'http://extremej.itscoder.com/');  
-ga('send', 'pageview');
-</script>
 
+
+<script src="https://cdn.staticfile.org/lightgallery/1.3.9/js/lightgallery.min.js"></script>
 
 
 <script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?a7eee7d6f5059e0cebc1c797881c4f8f";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
+	$(function () {
+		var postImg = $('#lightgallery').find('img');
+		postImg.addClass('post-img');
+		postImg.each(function () {
+			var imgSrc = $(this).attr('src');
+			$(this).attr('data-src', imgSrc);
+		});
+		$('#lightgallery').lightGallery({selector: '.post-img'});
+	});
 </script>
 
 
 
-<!-- Analytics End -->
 
-<!-- Totop Begin -->
-
-	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
-	</div>
-	<script src="/js/totop.js"></script>
-
-<!-- Totop End -->
-
-<!-- MathJax Begin -->
-<!-- mathjax config similar to math.stackexchange -->
-
-
-<!-- MathJax End -->
-
-<!-- Tiny_search Begin -->
-
-<!-- Tiny_search End -->
-
-  </body>
+    </div>
+</body>
 </html>

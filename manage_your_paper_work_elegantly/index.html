@@ -1,142 +1,154 @@
+<!DOCTYPE html>
+<html zh>
 
- <!DOCTYPE HTML>
-<html lang="zh">
+
+
+
+
+
+
 <head>
-  <meta charset="UTF-8">
-  
-    <title>优雅的管理你的文稿 | Joe is a thin man</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
-    
-    <meta name="author" content="Joe">
-    
+	
+	
+	<link rel="stylesheet" href="/css/allinone.min.css"> 
 
-    
-    <meta name="description" content="序言在我没做码农前，经常需要写各种论文，报表之类的文稿。有一个非常苦恼的困扰就是，写完了一个版本后，要在这版本基础上改动，就复制一份，时间长了以后电脑上各种 1.0、2.0、3.0…一团遭，为了保持整洁就删除了一些认为以后用不到的，结果后面突然要用，这种痛我想很多人都有。还有跟别人一起写文稿的时候，明明是他写的，后来甩锅给我，那种委屈简直了。
+	
 
-做了码农后，我发现有很多工具，即使你不写代码，熟练使">
-<meta property="og:type" content="article">
-<meta property="og:title" content="优雅的管理你的文稿">
-<meta property="og:url" content="https://joesteven.github.io/manage_your_paper_work_elegantly/index.html">
-<meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:description" content="序言在我没做码农前，经常需要写各种论文，报表之类的文稿。有一个非常苦恼的困扰就是，写完了一个版本后，要在这版本基础上改动，就复制一份，时间长了以后电脑上各种 1.0、2.0、3.0…一团遭，为了保持整洁就删除了一些认为以后用不到的，结果后面突然要用，这种痛我想很多人都有。还有跟别人一起写文稿的时候，明明是他写的，后来甩锅给我，那种委屈简直了。
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-做了码农后，我发现有很多工具，即使你不写代码，熟练使">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/manage_origin.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/teminate.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_version.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_bash.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/create_file.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/cd_xxx.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_status_failed.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_init.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_status_1.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/file_1.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_status_2.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_add.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_status_3.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_commit_1.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_log_1.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/file_2.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_status_4.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_diff.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_log_2.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_log_2.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_checkout_commit.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_status_6.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_branch_1.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_branch_2.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_checkout_branch.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/file_3.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_log_3.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_checkout_branch_2.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_tag_1.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/file_4.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/git_log_5.png">
-<meta property="og:updated_time" content="2018-07-13T03:44:57.417Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="优雅的管理你的文稿">
-<meta name="twitter:description" content="序言在我没做码农前，经常需要写各种论文，报表之类的文稿。有一个非常苦恼的困扰就是，写完了一个版本后，要在这版本基础上改动，就复制一份，时间长了以后电脑上各种 1.0、2.0、3.0…一团遭，为了保持整洁就删除了一些认为以后用不到的，结果后面突然要用，这种痛我想很多人都有。还有跟别人一起写文稿的时候，明明是他写的，后来甩锅给我，那种委屈简直了。
+	<title>优雅的管理你的文稿 | Joe is a thin man</title>
 
-做了码农后，我发现有很多工具，即使你不写代码，熟练使">
-<meta name="twitter:image" content="http://7xtakx.com1.z0.glb.clouddn.com/manage_origin.png">
+	<meta name="HandheldFriendly" content="True" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	<meta name="generator" content="hexo">
+	<meta name="author" content="Joe">
+	<meta name="description" content="">
 
-    
-    <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
-    
-    
-    <link rel="icon" href="/img/avatar.png">
-    
-    
-    <link rel="apple-touch-icon" href="/img/profile.png">
-    <link rel="apple-touch-icon-precomposed" href="/img/profile.png">
-    
-    <link rel="stylesheet" href="/css/style.css">
+	
+	<meta name="keywords" content="">
+	
+
+	
+	<link rel="shortcut icon" href="/img/avatar.png">
+	
+
+	
+	<meta name="theme-color" content="#3c484e">
+	<meta name="msapplication-TileColor" content="#3c484e">
+	
+
+	
+
+	
+
+	<meta property="og:site_name" content="Joe is a thin man">
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="优雅的管理你的文稿 | Joe is a thin man">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="https://joesteven.github.io/manage_your_paper_work_elegantly/">
+
+	
+	<meta property="article:published_time" content="2017-03-15T01:03:00+08:00"/> 
+	<meta property="article:author" content="Joe">
+	<meta property="article:published_first" content="Joe is a thin man, /manage_your_paper_work_elegantly/" />
+	
+
+	
+	
+	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+
+	
+	<script src="https://cdn.staticfile.org/highlight.js/9.10.0/highlight.min.js"></script>
+	
+
+	
+	
 </head>
+<body class="post-template">
+    <div class="site-wrapper">
+        
 
-  <body>
-    <header>
-      
-<div>
-		
-			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
-				<h2 class="blog-motto">写代码的摇滚歌手</h2>
-			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
-			</a></div>
-			<nav class="animated">
-				<ul>
-					<ul>
-					 
-						<li><a href="/">Home</a></li>
-					
-						<li><a href="/archives">Archives</a></li>
-					
-						<li><a href="/categories">Categories</a></li>
-					
-						<li><a href="/about">About</a></li>
-					
-					<li>
- 					
-					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
-						<input type="hidden" name="q" value="site:joesteven.github.io">
-					</form>
-					
-					</li>
-				</ul>
-			</nav>			
+
+
+
+<header class="site-header outer" style="z-index: 999">
+    <div class="inner">
+        
+<nav class="site-nav"> 
+    <div class="site-nav-left">
+        <ul class="nav">
+            <li>
+                
+                
+                <a class="site-nav-logo" href="/"  title="Joe is a thin man">
+                    <img src="../../img/avatar.png" alt="Joe is a thin man" />
+                </a>
+                
+                
+            </li>
+            
+            
+            <li>
+                <a href="/" title="首页">首页</a>
+            </li>
+            
+            <li>
+                <a href="/about" title="关于我">关于我</a>
+            </li>
+            
+            <li>
+                <a href="/friends" title="友链">友链</a>
+            </li>
+            
+            
+        </ul> 
+    </div>
+    <div class="site-nav-right">
+        
+<div class="social-links" >
+    
+    <a class="social-link" title="weibo" href="https://weibo.com/u/2750146463?refer_flag=1001030201_" target="_blank" rel="noopener">
+        <svg viewBox="0 0 1141 1024" xmlns="http://www.w3.org/2000/svg"><path d="M916.48 518.144q27.648 21.504 38.912 51.712t9.216 62.976-14.336 65.536-31.744 59.392q-34.816 48.128-78.848 81.92t-91.136 56.32-94.72 35.328-89.6 18.944-75.264 7.68-51.712 1.536-49.152-2.56-68.096-10.24-78.336-21.504-79.872-36.352-74.24-55.296-59.904-78.848q-16.384-29.696-22.016-63.488t-5.632-86.016q0-22.528 7.68-51.2t27.136-63.488 53.248-75.776 86.016-90.112q51.2-48.128 105.984-85.504t117.248-57.856q28.672-10.24 63.488-11.264t57.344 11.264q10.24 11.264 19.456 23.04t12.288 29.184q3.072 14.336 0.512 27.648t-5.632 26.624-5.12 25.6 2.048 22.528q17.408 2.048 33.792-1.536t31.744-9.216 31.232-11.776 33.28-9.216q27.648-5.12 54.784-4.608t49.152 7.68 36.352 22.016 17.408 38.4q2.048 14.336-2.048 26.624t-8.704 23.04-7.168 22.016 1.536 23.552q3.072 7.168 14.848 13.312t27.136 12.288 32.256 13.312 29.184 16.384zM658.432 836.608q26.624-16.384 53.76-45.056t44.032-64 18.944-75.776-20.48-81.408q-19.456-33.792-47.616-57.344t-62.976-37.376-74.24-19.968-80.384-6.144q-78.848 0-139.776 16.384t-105.472 43.008-72.192 60.416-38.912 68.608q-11.264 33.792-6.656 67.072t20.992 62.976 42.496 53.248 57.856 37.888q58.368 25.6 119.296 32.256t116.224 0.512 100.864-21.504 74.24-33.792zM524.288 513.024q20.48 8.192 38.912 18.432t32.768 27.648q10.24 12.288 17.92 30.72t10.752 39.424 1.536 42.496-9.728 38.912q-8.192 18.432-19.968 37.376t-28.672 35.328-40.448 29.184-57.344 18.944q-61.44 11.264-117.76-11.264t-88.064-74.752q-12.288-39.936-13.312-70.656t16.384-66.56q13.312-27.648 40.448-51.712t62.464-38.912 75.264-17.408 78.848 12.8zM361.472 764.928q37.888 3.072 57.856-18.432t21.504-48.128-15.36-47.616-52.736-16.896q-27.648 3.072-43.008 23.552t-17.408 43.52 9.728 42.496 39.424 21.504zM780.288 6.144q74.752 0 139.776 19.968t113.664 57.856 76.288 92.16 27.648 122.88q0 33.792-16.384 50.688t-35.328 17.408-35.328-14.336-16.384-45.568q0-40.96-22.528-77.824t-59.392-64.512-84.48-43.52-96.768-15.872q-31.744 0-47.104-15.36t-14.336-34.304 18.944-34.304 51.712-15.36zM780.288 169.984q95.232 0 144.384 48.64t49.152 146.944q0 30.72-10.24 43.52t-22.528 11.264-22.528-14.848-10.24-35.84q0-60.416-34.816-96.256t-93.184-35.84q-19.456 0-28.672-10.752t-9.216-23.04 9.728-23.04 28.16-10.752z" /></svg>
+    </a>
+    
+    
+    <a class="social-link" title="github" href="https://github.com/JoeSteven" target="_blank" rel="noopener">
+        <svg viewBox="0 0 1049 1024" xmlns="http://www.w3.org/2000/svg"><path d="M524.979332 0C234.676191 0 0 234.676191 0 524.979332c0 232.068678 150.366597 428.501342 358.967656 498.035028 26.075132 5.215026 35.636014-11.299224 35.636014-25.205961 0-12.168395-0.869171-53.888607-0.869171-97.347161-146.020741 31.290159-176.441729-62.580318-176.441729-62.580318-23.467619-60.841976-58.234462-76.487055-58.234463-76.487055-47.804409-32.15933 3.476684-32.15933 3.476685-32.15933 53.019436 3.476684 80.83291 53.888607 80.83291 53.888607 46.935238 79.963739 122.553122 57.365291 152.97411 43.458554 4.345855-33.897672 18.252593-57.365291 33.028501-70.402857-116.468925-12.168395-239.022047-57.365291-239.022047-259.012982 0-57.365291 20.860106-104.300529 53.888607-140.805715-5.215026-13.037566-23.467619-66.926173 5.215027-139.067372 0 0 44.327725-13.906737 144.282399 53.888607 41.720212-11.299224 86.917108-17.383422 131.244833-17.383422s89.524621 6.084198 131.244833 17.383422C756.178839 203.386032 800.506564 217.29277 800.506564 217.29277c28.682646 72.1412 10.430053 126.029806 5.215026 139.067372 33.897672 36.505185 53.888607 83.440424 53.888607 140.805715 0 201.64769-122.553122 245.975415-239.891218 259.012982 19.121764 16.514251 35.636014 47.804409 35.636015 97.347161 0 70.402857-0.869171 126.898978-0.869172 144.282399 0 13.906737 9.560882 30.420988 35.636015 25.205961 208.601059-69.533686 358.967656-265.96635 358.967655-498.035028C1049.958663 234.676191 814.413301 0 524.979332 0z" /></svg>
+    </a>
+    
+    
+    
+    
 </div>
-    </header>
-    <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
-  
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/manage_your_paper_work_elegantly/" title="优雅的管理你的文稿" itemprop="url">优雅的管理你的文稿</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
-		
-  <p class="article-time">
-    <time datetime="2017-03-14T17:59:07.000Z" itemprop="datePublished"> 发表于 2017-03-15</time>
-    
-  </p>
+    </div>
+</nav>
+    </div>
 </header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
-		
-			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#序言"><span class="toc-number">1.</span> <span class="toc-text">序言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#目标"><span class="toc-number">2.</span> <span class="toc-text">目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工具"><span class="toc-number">3.</span> <span class="toc-text">工具</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Git-配置"><span class="toc-number">3.1.</span> <span class="toc-text">Git 配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#新建论文"><span class="toc-number">4.</span> <span class="toc-text">新建论文</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化仓库"><span class="toc-number">4.1.</span> <span class="toc-text">初始化仓库</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#给论文加点东西"><span class="toc-number">4.2.</span> <span class="toc-text">给论文加点东西</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查看修改"><span class="toc-number">4.3.</span> <span class="toc-text">查看修改</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改论文"><span class="toc-number">5.</span> <span class="toc-text">修改论文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在不同版本间切换"><span class="toc-number">6.</span> <span class="toc-text">在不同版本间切换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分支开发"><span class="toc-number">7.</span> <span class="toc-text">分支开发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#新建分支，切换"><span class="toc-number">7.1.</span> <span class="toc-text">新建分支，切换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#分支合并"><span class="toc-number">7.2.</span> <span class="toc-text">分支合并</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#版本标注"><span class="toc-number">8.</span> <span class="toc-text">版本标注</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">9.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#资料"><span class="toc-number">10.</span> <span class="toc-text">资料</span></a></li></ol>
-		
-		</div>
-		
-		<h3 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h3><p>在我没做码农前，经常需要写各种论文，报表之类的文稿。有一个非常苦恼的困扰就是，写完了一个版本后，要在这版本基础上改动，就复制一份，时间长了以后电脑上各种 1.0、2.0、3.0…一团遭，为了保持整洁就删除了一些认为以后用不到的，结果后面突然要用，这种痛我想很多人都有。还有跟别人一起写文稿的时候，明明是他写的，后来甩锅给我，那种委屈简直了。</p>
+
+
+<main id="site-main" class="site-main outer" role="main">
+    <div class="inner">
+        <header class="post-full-header">
+            <section class="post-full-meta">
+                <time  class="post-full-meta-date" datetime="2017-03-14T17:59:07.000Z" itemprop="datePublished">
+                    2017-03-15
+                </time>
+                
+                <span class="date-divider">/</span>
+                
+                <a href="/categories/Tools/">Tools</a>&nbsp;&nbsp;
+                
+                
+            </section>
+            <h1 class="post-full-title">优雅的管理你的文稿</h1>
+        </header>
+        <article class="post-full no-image">
+            
+            <section class="post-full-content">
+                <div id="lightgallery" class="markdown-body">
+                    <h3 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h3><p>在我没做码农前，经常需要写各种论文，报表之类的文稿。有一个非常苦恼的困扰就是，写完了一个版本后，要在这版本基础上改动，就复制一份，时间长了以后电脑上各种 1.0、2.0、3.0…一团遭，为了保持整洁就删除了一些认为以后用不到的，结果后面突然要用，这种痛我想很多人都有。还有跟别人一起写文稿的时候，明明是他写的，后来甩锅给我，那种委屈简直了。</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/manage_origin.png" alt="疯狂 cv"></p>
 <p>做了码农后，我发现有很多工具，即使你不写代码，熟练使用后，也会大大改善你的工作效率～，今天教大家如何优雅的管理你的文稿。</p>
 <h3 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h3><p>如果你认真的看完了本篇文章，我希望能帮你在管理文稿的过程中达到以下几个目标：</p>
@@ -167,45 +179,45 @@
 <p>现在开始，我们从新建一篇论文开始，为了方便，就新建 txt 文件作为我们的文稿测试。</p>
 <h3 id="新建论文"><a href="#新建论文" class="headerlink" title="新建论文"></a>新建论文</h3><p>前文我们提到了，Git 可以帮助你不被别人甩锅，所以每次的改动应该知道是谁来做的，那么我们需要先配置你的名称，打开命令行窗口，Mac 是终端，Windows 是 Git Bash ，大家记住，后面不会再提了～</p>
 <p>输入以下命令，输完一行就回车，再输入下一行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git config --global user.name &quot;Your Name&quot;</div><div class="line">git config --global user.email &quot;email@example.com&quot;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git config --global user.name &quot;Your Name&quot;</div><div class="line">git config --global user.email &quot;email@example.com&quot;</div></pre></td></tr></table></figure>
 <p>这两句命令的意思就是为这个电脑的版本管理配置了修改人的姓名和邮箱，这样每次修改就明确知道是谁修改的。</p>
 <p>废话不多说，我们先建一个文件夹：Demo，然后在这个文件夹下新建一个 txt 文件假装是我们的论文（对，假装，你非要用 word 也可以～）</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/create_file.png" alt="新建论文文件夹"></p>
 <p>注意了，现在文件夹有了，论文也有了，怎么用 Git 来管理呢？首先要将这个文件夹变成一个 Git 仓库，说仓库可能有点难理解，但是大家想想仓库，进货出货等等都会登记对吧？咱们就要吧咱们的论文文件夹变成一个严格管理的仓库。</p>
 <p>Mac 的同学打开终端，cd 到这个文件夹下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cd xxx/xxx/Demo</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">cd xxx/xxx/Demo</div></pre></td></tr></table></figure>
 <p>注意，这个 xxx/xxx/Demo 是这个文件夹的路径，可以通过右键查看。cd 到这个文件夹下就相当于在命令行中进入到了这个窗口下</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/cd_xxx.png" alt="cd 到文件夹下"></p>
 <p>Windows 的同学可以直接在 Demo 文件夹下面右键打开 Git Bash ，就默认进入到该文件夹下啦</p>
 <h4 id="初始化仓库"><a href="#初始化仓库" class="headerlink" title="初始化仓库"></a>初始化仓库</h4><p>现在已经到这个文件夹下了，我们先来看一下这个文件夹的状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
 <p>查看 Git 仓库的状态，不出意外你会发现报错了</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_failed.png" alt="git 仓库不存在"></p>
 <p>意思是这不是一个 Git 仓库，那么我们来把它变成一个仓库：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git init</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git init</div></pre></td></tr></table></figure>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_init.png" alt="初始化仓库"></p>
 <p>这句命令是初始化一个仓库，init 是 Initialized 的缩写，初始化后我们再来查看一下仓库的状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_1.png" alt="初始化仓库状态"></p>
 <p>看到了么，我们的仓库已经创建成功了，并且刚刚我们创建的这个论文也出现在了命令行中，并且是红色的～，咱们先不去管是什么意思，来写我们的论文</p>
 <h4 id="给论文加点东西"><a href="#给论文加点东西" class="headerlink" title="给论文加点东西"></a>给论文加点东西</h4><p>咱们打开论文，写点东西：</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/file_1.png" alt="第一次修改论文"></p>
 <p>好啦～简单的完成了第一次修改，我们需要保存这一次修改，还是先来查看下仓库的状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
 <p>记住这个命令，你会经常用到的～</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_2.png" alt="第一次修改后的状态"></p>
 <p>发现跟刚刚初始化的时候的状态一样，好了，我们要来记录这一次修改了，首先将要修改的文件加入到本次纪录中：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git add xxx</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git add xxx</div></pre></td></tr></table></figure>
 <p>xxx 是被修改的文件，这里就是我们的 初版.txt，注意是相对路径（相对这个文件夹的）,比如说这个文件夹下面还有一个文件夹 test，test 下面有个文件 xxx，那么 xxx 就应该是 test/xxx。</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_add.png" alt="add 修改文件"></p>
 <p>add 之后好像什么都没发生哈，再来查看下 status：</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_3.png" alt="add 后状态"></p>
 <p>喏～变绿了有没有，而且有一行字提示你有修改等着被提交，那么我们就来提交吧：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git commit -m &apos;这里是本次修改的描述信息&apos;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git commit -m &apos;这里是本次修改的描述信息&apos;</div></pre></td></tr></table></figure>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_commit_1.png" alt="commit 修改"></p>
 <p>ok~提示我们完成了提交，并且提交的内容是什么也显示了出来。</p>
 <h4 id="查看修改"><a href="#查看修改" class="headerlink" title="查看修改"></a>查看修改</h4><p>我们提交了第一次修改，那么在哪里查看呢？用下面这个命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git log</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git log</div></pre></td></tr></table></figure>
 <p>这个命令会以流水线的形式来展示我们的每一次修改</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_log_1.png" alt="git log"></p>
 <p>注意一下，这里f移动查看log 是 h j k l ，而不是方向键，如果要退出查看 log 按一下 q （quit）</p>
@@ -217,14 +229,14 @@
 <li>查看这次修改的日志</li>
 </ul>
 <p>用到的命令有</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">git init //初始化</div><div class="line">git status //查看状态</div><div class="line">git add xxx //添加某个文件</div><div class="line">git commit -m &apos;xxx&apos; // 提交这次纪录</div><div class="line">git log // 查看日志</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git init //初始化</div><div class="line">git status //查看状态</div><div class="line">git add xxx //添加某个文件</div><div class="line">git commit -m &apos;xxx&apos; // 提交这次纪录</div><div class="line">git log // 查看日志</div></pre></td></tr></table></figure>
 <p>好了～，说到这里，是不是感觉干了好多并不明白的事情？貌似并没有什么卵用啊？？？别着急，进入下一步</p>
 <h3 id="修改论文"><a href="#修改论文" class="headerlink" title="修改论文"></a>修改论文</h3><p>上面我们只是刚刚新建了一篇论文，简单的写了个开头而已，现在我们要真正的去写我们的出版了，打开初版，疯狂的输出～</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/file_2.png" alt="修改正文"></p>
 <p>ok~正文写完了。。。虽然我这里写的很少，但是假装我们写的很多～我们来查看下仓库的状态</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_4.png" alt="修改正文后的状态"></p>
 <p>看到没～又变红了，我们先不急着像上面一样提交修改，假如我们现在想看看我们到底修改了写什么，跟我们修改前的文件对比一下呢？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git diff</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git diff</div></pre></td></tr></table></figure>
 <p>diff 是 different 的缩写</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_diff.png" alt="diff"></p>
 <p>－号代表了修改前的文件，＋号代表了修改后的文件～</p>
@@ -232,7 +244,7 @@
 <p>注意下命令行中用到的符号都必须是英文符号噢</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_log_2.png" alt="添加正文后的log"></p>
 <h3 id="在不同版本间切换"><a href="#在不同版本间切换" class="headerlink" title="在不同版本间切换"></a>在不同版本间切换</h3><p>前面的一切都在为后面的操作铺路～上面的功能好像除了纪录下每次的修改并没有其他的卵用啊，假设现在我们有个需求，是要看最开始创建的那个版本，也就是只写了一行字的那个，怎么办？下面教一个流弊的命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git checkout xxx</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git checkout xxx</div></pre></td></tr></table></figure>
 <p>xxx 具体是什么呢？先不提，因为 checkout 有很多种用法，还记得前面讲  git log 的那张图里面，每一个纪录都有一个独一无二的 id 么？</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_log_2.png" alt="两次修改的日志"></p>
 <p>找到第一次提交的纪录的 id，复制下来，将 xxx 换成这个 id</p>
@@ -243,14 +255,14 @@
 <p>有没有看到一行红字，<code>HEAD detached at 3d6fe3c</code>，后面的那个乱码其实是这个纪录的 id 的前几位，不信你去看 log，HEAD 就像是一个指针，这个指针指到哪儿，文件就变成那个时候的样子，怎么样，是不是很流弊？这时候你再查看 log 会发现第二次的提交不见了，不要惊慌，因为在当前的这个提交上面还没有第二个提交纪录呢</p>
 <p>那么怎么切换回第二次，也就是最新的那个版本呢？</p>
 <p>这里就要引入一个分支的概念了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git branch</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git branch</div></pre></td></tr></table></figure>
 <p>输入这个命令查看当前仓库中的分支</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_branch_1.png" alt="分支查看"></p>
 <p>绿色的，前面有 ＊ 号的，就是我们当前所在的分支，另外我们还看到还有一个 master 分支，在没有进行分支指定的情况下是默认在 master 分支上，可以把这个分支看成是主分支，而我们目前所在的这个分支只是一个临时分支，供我们切换到某个版本上面而不影响主分支上的内容，那么现在就让我们切换到主分支上：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git checkout master</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git checkout master</div></pre></td></tr></table></figure>
 <p>然后再查看我们的 log ，发现第二次提交的纪录也回来了，打开初版可以看到恢复到最新的版本了。</p>
 <p>这时候再来查看下分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git branch</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git branch</div></pre></td></tr></table></figure>
 <p>会发现我们已经到 master 分支上面了，并且之前的那个临时分支已经不见了～</p>
 <h3 id="分支开发"><a href="#分支开发" class="headerlink" title="分支开发"></a>分支开发</h3><p>前面引入了一个分支的概念，现在要好好讲讲分支的作用，这是 Git 比较精华的部分。先举个在程序开发中的例子</p>
 <p><strong>通常在程序开发中会有三个主要的分支，分别是 master ，develop，test，从字面理解就是主分支，开发分支，和测试分支。什么意思呢？</strong></p>
@@ -265,7 +277,7 @@
 <p>有好事的同学问了，master 上同时可以保存 1.0，1.1，1.2 等等不同的版本么？当然可以，还记得前面我们任意切换到一个 commit 上吧？不过 当你写到 1.3 版本的时候，可能就已经有非常多的 commit 了，如何精确的跳到一个完成版上面，后面会教大家。</p>
 <p>首先查看分支的命令还记得是什么？</p>
 <h4 id="新建分支，切换"><a href="#新建分支，切换" class="headerlink" title="新建分支，切换"></a>新建分支，切换</h4><p>现在来创建一个新的分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git branch develop</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git branch develop</div></pre></td></tr></table></figure>
 <p>后面的 develop 是分支名，这个名字由你来定，需要注意的是，我们当前在 master 分支上去切一个新的分支，这个分支是基于 master 分支的，也就是 master 分支上有的东西，它都有。</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_branch_2.png" alt="新建分支"></p>
 <p>可以看到已经创建了一个新的分支，现在 checkout 到这个分支上去吧</p>
@@ -278,433 +290,328 @@
 <p>现在问题来了，我怎么把 develop 上面的修改弄到 master 上面去呢？</p>
 <h4 id="分支合并"><a href="#分支合并" class="headerlink" title="分支合并"></a>分支合并</h4><p>很简单，一个分支要想更新到另一个分支所在的版本，合并下这个分支就好了</p>
 <p>所以，首先我们要切换到 master 分支上面</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git checkout master</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git checkout master</div></pre></td></tr></table></figure>
 <p>然后合并 develop 分支上面的改动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git merge develop</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git merge develop</div></pre></td></tr></table></figure>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_checkout_branch_2.png" alt="合并分支"></p>
 <p>git 会提示我有一个文件发生了改变，这时候再看看log，是不是有了第三次提交的纪录呢？</p>
 <h3 id="版本标注"><a href="#版本标注" class="headerlink" title="版本标注"></a>版本标注</h3><p>前面说了，会教大家如何表明一个版本，比如现在我们有了三次修改纪录，但第三次提交时才完成了我们的 1.0，当我们写到 5.0 的时候，可能有上百个提交，我怎么能精确的记住 1.0 在哪次提交纪录上呢？</p>
 <p>很简单我们在完成了 1.0 的这次纪录上添加一个标记，来标明它是 1.0 的版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git tag xxx</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git tag xxx</div></pre></td></tr></table></figure>
 <p>xxx 即是你要的标记</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_tag_1.png" alt="tag 标记"></p>
 <p>OK～添加完成，怎么看呢？简单</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git tag</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git tag</div></pre></td></tr></table></figure>
 <p>就可以看到你当前有多少个 tag 了。有同学问了，我可以在这一次纪录上多打几个标记么？当然可以，只要你开心～</p>
 <p>如果要删除某个 tag</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git tag -d xxx</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git tag -d xxx</div></pre></td></tr></table></figure>
 <p>来实操一下，咱们已经添加了一个 1.0 的 tag 了。现在来多提交几次，看看能不能回到 1.0 版本。</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/file_4.png" alt="完成了多个版本"></p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_log_5.png" alt="多个版本的 log"></p>
 <p>现在我们已经提交了两次，完成了两个版本，这里为了方便我们都是直接在 master 上提交的哈。</p>
 <p>来看看怎么切换回 1.0，有的同学可能已经猜到了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git checkout 1.0</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git checkout 1.0</div></pre></td></tr></table></figure>
 <p>这个 checkout 是不是很流弊啊。</p>
 <p>再打开初版.txt看看，是不是回到了 1.0 版本呢？</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>到这里已经教给了大家 git 常用的这些操作，当然 git 的操作远不止这些，本篇文章的目的只是带你入门，当你入门了以后就可以通过看官方文档或者专业一点的  git 介绍来深入学习，对了～目标里面的最后一条，我会放到下一篇文章中来单独讲解，如果你特别感兴趣可以自行 Google  Github～</p>
 <p>当然，如果你对命令行操作实在感到困难，也可以使用图形化的 Git 工具来帮助操作，前提是你得理解这些命令的作用噢～</p>
 <h3 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h3><p><a href="https://git-scm.com/book/zh/v2" target="_blank" rel="external">Git-Book</a></p>
 <p><a href="https://my.oschina.net/amstrong/blog/159114" target="_blank" rel="external">图形化工具集合</a></p>
-  
-	</div>
-		<footer class="article-footer clearfix">
-<div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Tools/">Tools</a>
-</div>
-
-
-</div>
-
-
-
-</footer>
-
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/zoom-up-animation/" title="Activity 共享元素转场动画实践">
-  <span>
-  Activity 共享元素转场动画实践</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/sparsearray_source_analyse/"  title="SparseArray 的使用及实现原理">
- <span>SparseArray 的使用及实现原理
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-<section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="manage_your_paper_work_elegantly/" data-title="优雅的管理你的文稿" data-url="https://joesteven.github.io/manage_your_paper_work_elegantly/"></div>
-</section>
-
-
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
-
-<div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
-<aside class="clearfix">
-<div id="authorInfo">
-	
-		<div class="author-img"></div>		
-	
-	<div class="social-info" class="clearfix">
-		
-		<a href="http://weibo.com/2750146463" target="_blank" class="icon-weibo" title="微博"></a>
-		
-		
-		<a href="https://github.com/JoeSteven" target="_blank" class="icon-github" title="github"></a>
-		
-		
-		
-		
-		
-		
-		
-		<a href="http://www.zhihu.com/people/qiao-xi-28" target="_blank" class="icon-zhihu" title="知乎"></a>
-		
-		
-		
-		
-		<a href="mailto:qiaoxiaoxi621@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
-		
-
-	</div>
-</div>
-
-  
-<div class="categorieslist">
-	<p class="asidetitle">分类</p>
-		<ul>
-		
-		  
-			<li><a href="/categories/Android/" title="Android">Android<sup>3</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>11</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/Tools/" title="Tools">Tools<sup>1</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/杂谈/" title="杂谈">杂谈<sup>1</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  <div class="linkslist">
-  <p class="asidetitle">链接</p>
-    <ul>
-        
-          <li>
-            
-            	<a href="http://itscoder.com/" target="_blank" title="itsCoder">itsCoder</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="https://cassieran.github.io/" target="_blank" title="FaFa">FaFa</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://laobie.github.io/" target="_blank" title="写代码的猴子">写代码的猴子</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://brucezz.github.io/" target="_blank" title="Brucezz">Brucezz</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://allenwu.itscoder.com/" target="_blank" title="allen">allen</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="Manjusaka">Manjusaka</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://solart.cc/" target="_blank" title="imilk">imilk</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="https://yongyu0102.github.io/" target="_blank" title="用语">用语</a>
-            
-          </li>
-        
-    </ul>
-</div>
-
-</aside>
-</div>
+                </div>
+            </section>
+        </article>
     </div>
-    <footer><div id="footer" >
-		
-		
+    
+<nav class="pagination">
+    
+    
+    <a class="prev-post" title="Activity 共享元素转场动画实践" href="/zoom-up-animation/">
+        ← Activity 共享元素转场动画实践
+    </a>
+    
+    <span class="prev-next-post">•</span>
+    
+    <a class="next-post" title="SparseArray 的使用及实现原理" href="/sparsearray_source_analyse/">
+        SparseArray 的使用及实现原理 →
+    </a>
+    
+    
+</nav>
+    
+</main>
 
-		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2018 
-		
-		<a href="/about" target="_blank" title="Joe">Joe</a>
-		
-		
-		</p>
+<div class="t-g-control">
+    <div class="gotop">
+        <svg class="icon" width="32px" height="32px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M793.024 710.272a32 32 0 1 0 45.952-44.544l-310.304-320a32 32 0 0 0-46.4 0.48l-297.696 320a32 32 0 0 0 46.848 43.584l274.752-295.328 286.848 295.808z" fill="#8a8a8a" /></svg>
+    </div>
+    <div class="toc-control">
+        <svg class="icon toc-icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M779.776 480h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M779.776 672h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M256 288a32 32 0 1 0 0 64 32 32 0 0 0 0-64M392.576 352h387.2a32 32 0 0 0 0-64h-387.2a32 32 0 0 0 0 64M256 480a32 32 0 1 0 0 64 32 32 0 0 0 0-64M256 672a32 32 0 1 0 0 64 32 32 0 0 0 0-64" fill="#8a8a8a" /></svg>
+        <svg class="icon toc-close" style="display: none;" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M512 960c-247.039484 0-448-200.960516-448-448S264.960516 64 512 64 960 264.960516 960 512 759.039484 960 512 960zM512 128.287273c-211.584464 0-383.712727 172.128262-383.712727 383.712727 0 211.551781 172.128262 383.712727 383.712727 383.712727 211.551781 0 383.712727-172.159226 383.712727-383.712727C895.712727 300.415536 723.551781 128.287273 512 128.287273z" fill="#8a8a8a" /><path d="M557.05545 513.376159l138.367639-136.864185c12.576374-12.416396 12.672705-32.671738 0.25631-45.248112s-32.704421-12.672705-45.248112-0.25631l-138.560301 137.024163-136.447897-136.864185c-12.512727-12.512727-32.735385-12.576374-45.248112-0.063647-12.512727 12.480043-12.54369 32.735385-0.063647 45.248112l136.255235 136.671523-137.376804 135.904314c-12.576374 12.447359-12.672705 32.671738-0.25631 45.248112 6.271845 6.335493 14.496116 9.504099 22.751351 9.504099 8.12794 0 16.25588-3.103239 22.496761-9.247789l137.567746-136.064292 138.687596 139.136568c6.240882 6.271845 14.432469 9.407768 22.65674 9.407768 8.191587 0 16.352211-3.135923 22.591372-9.34412 12.512727-12.480043 12.54369-32.704421 0.063647-45.248112L557.05545 513.376159z" fill="#8a8a8a" /></svg>
+    </div>
+    <div class="gobottom">
+        <svg class="icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M231.424 346.208a32 32 0 0 0-46.848 43.584l297.696 320a32 32 0 0 0 46.4 0.48l310.304-320a32 32 0 1 0-45.952-44.544l-286.848 295.808-274.752-295.36z" fill="#8a8a8a" /></svg>
+    </div>
 </div>
-</footer>
-    <script src="/js/jquery-2.0.3.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+<div class="toc-main" style="right: -100%">
+    <div class="post-toc">
+        <span>TOC</span>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#序言"><span class="toc-text">序言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#目标"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#工具"><span class="toc-text">工具</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Git-配置"><span class="toc-text">Git 配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#新建论文"><span class="toc-text">新建论文</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#初始化仓库"><span class="toc-text">初始化仓库</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#给论文加点东西"><span class="toc-text">给论文加点东西</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查看修改"><span class="toc-text">查看修改</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改论文"><span class="toc-text">修改论文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在不同版本间切换"><span class="toc-text">在不同版本间切换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分支开发"><span class="toc-text">分支开发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#新建分支，切换"><span class="toc-text">新建分支，切换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#分支合并"><span class="toc-text">分支合并</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#版本标注"><span class="toc-text">版本标注</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#资料"><span class="toc-text">资料</span></a></li></ol>
+    </div>
+</div>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.navbar').click(function(){
-    $('header nav').toggleClass('shownav');
-  });
-  var myWidth = 0;
-  function getSize(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-  };
-  var m = $('#main'),
-      a = $('#asidepart'),
-      c = $('.closeaside'),
-      o = $('.openaside');
-  c.click(function(){
-    a.addClass('fadeOut').css('display', 'none');
-    o.css('display', 'block').addClass('fadeIn');
-    m.addClass('moveMain');
-  });
-  o.click(function(){
-    o.css('display', 'none').removeClass('beforeFadeIn');
-    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
-    m.removeClass('moveMain');
-  });
-  $(window).scroll(function(){
-    o.css("top",Math.max(80,260-$(this).scrollTop()));
-  });
-  
-        getSize();
-        if (myWidth >= 1024) {
-          c.click();
-        }
-  
-  $(window).resize(function(){
-    getSize(); 
-    if (myWidth >= 1024) {
-      $('header nav').removeClass('shownav');
-    }else{
-      m.removeClass('moveMain');
-      a.css('display', 'block').removeClass('fadeOut');
-      o.css('display', 'none');
+
+
         
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+            
+            
+
+<article class="read-next-card"  style="background-image: url(../../img/cover.png)"  >
+  <header class="read-next-card-header">
+    <small class="read-next-card-header-sitetitle">&mdash; Joe is a thin man &mdash;</small>
+    <h3 class="read-next-card-header-title">Recent Posts</h3>
+  </header>
+  <div class="read-next-divider">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/>
+    </svg>
+  </div>
+  <div class="read-next-card-content">
+    <ul>
+      
+      
+      
+      <li>
+        <a href="/android_long_picture_process/">Android 中的长图片处理</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/shared_preferences_source/">对 SharedPreferences 再多一点了解</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/zoom-up-animation/">Activity 共享元素转场动画实践</a>
+      </li>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    </ul>
+  </div>
+  <footer class="read-next-card-footer">
+    <a href="/archives">  MORE  → </a>
+  </footer>
+</article>
+
+            
+            
+            
+
+<article class="read-next-card"  style="background-image: url(../../img/cover.png)"  >
+    <header class="read-next-card-header" style="padding-bottom: 20px">
+        <h3 class="read-next-card-header-title">Categories</h3>
+    </header>
+    <div class="read-next-card-content">
+        <ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Android源码学习/">Android源码学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/">Tools</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/杂谈/">杂谈</a></li></ul>
+        </ul>
+    </div>
+</article>
+
+
+            
+            
+            
+
+            
+        </div>
+    </div>
+</aside>
+
+<footer class="site-footer outer">
+	<div class="site-footer-content inner">
+		<section class="copyright">
+			<a href="/" title="Joe is a thin man">Joe is a thin man</a>
+			&copy; 2018
+		</section>
+		<nav class="site-footer-nav">
+			
+            <a href="https://hexo.io" title="Hexo" target="_blank" rel="external">Hexo</a>
+            <a href="https://github.com/xzhih/hexo-theme-casper" title="Casper" target="_blank" rel="external">Casper</a>
+        </nav>
+    </div>
+</footer>
+
+
+
+
+
+
+<div class="floating-header" >
+	<div class="floating-header-logo">
+        <a href="/" title="Joe is a thin man">
+			
+                <img src="img/avatar.png" alt="Joe is a thin man icon" />
+			
+            <span>Joe is a thin man</span>
+        </a>
+    </div>
+    <span class="floating-header-divider">&mdash;</span>
+    <div class="floating-header-title">优雅的管理你的文稿</div>
+    <progress class="progress" value="0">
+        <div class="progress-container">
+            <span class="progress-bar"></span>
+        </div>
+    </progress>
+</div>
+<script>
+   $(document).ready(function () {
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
     }
-  });
-});
-</script>
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+    function update() {
+        var rect = title.getBoundingClientRect();
+        var trigger = rect.top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+            // show/hide floating header
+            if (lastScrollY >= trigger + triggerOffset) {
+                header.classList.add('floating-active');
+            } else {
+                header.classList.remove('floating-active');
+            }
+            progressBar.setAttribute('max', progressMax);
+            progressBar.setAttribute('value', lastScrollY);
+            ticking = false;
+        }
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
+        window.addEventListener('scroll', onScroll, {passive: true});
+        update();
 
+        // TOC
+        var width = $('.toc-main').width();
+        $('.toc-control').click(function () {
+            if ($('.t-g-control').css('width')=="50px") {
+                if ($('.t-g-control').css('right')=="0px") {
+                    $('.t-g-control').animate({right: width}, "slow");
+                    $('.toc-main').animate({right: 0}, "slow");
+                    toc_icon()
+                } else {
+                    $('.t-g-control').animate({right: 0}, "slow");
+                    $('.toc-main').animate({right: -width}, "slow");
+                    toc_icon()
+                }
+            } else {
+                if ($('.toc-main').css('right')=="0px") {
+                    $('.toc-main').slideToggle("fast", toc_icon());
+                } else {
+                    $('.toc-main').css('right', '0px');
+                    toc_icon()
+                }
+            }
+        })
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
+        function toc_icon() {
+            if ($('.toc-icon').css('display')=="none") {
+                $('.toc-close').hide();
+                $('.toc-icon').show();
+            } else {
+                $('.toc-icon').hide();
+                $('.toc-close').show();
+            }
+        }
 
-  $('.hoverqrcode').hide();
+        $('.gotop').click(function(){
+            $('html,body').animate({scrollTop:$('.post-full-header').offset().top}, 800);
+        });
+        $('.gobottom').click(function () {
+            $('html,body').animate({scrollTop:$('.pagination').offset().top}, 800);
+        });
 
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
+        // highlight
+        // https://highlightjs.org
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+        $('td.code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
 
-
-
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:"extremej"};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0] 
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script> 
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.article-content').each(function(i){
-    $(this).find('img').each(function(){
-      if ($(this).parent().hasClass('fancybox')) return;
-      var alt = this.alt;
-      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
-      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+        console.log("this theme is from https://github.com/xzhih/hexo-theme-casper")
     });
-    $(this).find('.fancybox').each(function(){
-      $(this).attr('rel', 'article' + i);
-    });
-  });
-  if($.fancybox){
-    $('.fancybox').fancybox();
-  }
-}); 
 </script>
 
 
 
-<!-- Analytics Begin -->
+<link rel="stylesheet" href="https://cdn.staticfile.org/lightgallery/1.3.9/css/lightgallery.min.css">
 
-<script type="text/javascript">
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-81871291-1', 'http://extremej.itscoder.com/');  
-ga('send', 'pageview');
-</script>
 
+
+<script src="https://cdn.staticfile.org/lightgallery/1.3.9/js/lightgallery.min.js"></script>
 
 
 <script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?a7eee7d6f5059e0cebc1c797881c4f8f";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
+	$(function () {
+		var postImg = $('#lightgallery').find('img');
+		postImg.addClass('post-img');
+		postImg.each(function () {
+			var imgSrc = $(this).attr('src');
+			$(this).attr('data-src', imgSrc);
+		});
+		$('#lightgallery').lightGallery({selector: '.post-img'});
+	});
 </script>
 
 
 
-<!-- Analytics End -->
 
-<!-- Totop Begin -->
-
-	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
-	</div>
-	<script src="/js/totop.js"></script>
-
-<!-- Totop End -->
-
-<!-- MathJax Begin -->
-<!-- mathjax config similar to math.stackexchange -->
-
-
-<!-- MathJax End -->
-
-<!-- Tiny_search Begin -->
-
-<!-- Tiny_search End -->
-
-  </body>
+    </div>
+</body>
 </html>

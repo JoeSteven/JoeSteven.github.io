@@ -1,124 +1,154 @@
+<!DOCTYPE html>
+<html zh>
 
- <!DOCTYPE HTML>
-<html lang="zh">
+
+
+
+
+
+
 <head>
-  <meta charset="UTF-8">
-  
-    <title>Activity 共享元素转场动画实践 | Joe is a thin man</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
-    
-    <meta name="author" content="Joe">
-    
+	
+	
+	<link rel="stylesheet" href="/css/allinone.min.css"> 
 
-    
-    <meta name="description" content="作者：Joe
-审阅者：Brucezz
+	
 
-前言上次碰到个需求，要从 Feed 页以 item 放大的动画打开第二个页面，先来看一个效果：
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-就是这样一个转场动画～有了思路后要实现起来还是不难
-思路1.API一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提供了相关的 Api ，这样可以避免盲目的造轮子，尤其对于项目来说，时间成本还是很重要的，而且 Android 提供的 Api">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Activity 共享元素转场动画实践">
-<meta property="og:url" content="https://joesteven.github.io/zoom-up-animation/index.html">
-<meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:description" content="作者：Joe
-审阅者：Brucezz
+	<title>Activity 共享元素转场动画实践 | Joe is a thin man</title>
 
-前言上次碰到个需求，要从 Feed 页以 item 放大的动画打开第二个页面，先来看一个效果：
+	<meta name="HandheldFriendly" content="True" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	<meta name="generator" content="hexo">
+	<meta name="author" content="Joe">
+	<meta name="description" content="">
 
-就是这样一个转场动画～有了思路后要实现起来还是不难
-思路1.API一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提供了相关的 Api ，这样可以避免盲目的造轮子，尤其对于项目来说，时间成本还是很重要的，而且 Android 提供的 Api">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/zoom_up.gif">
-<meta property="og:updated_time" content="2018-07-13T03:57:18.450Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Activity 共享元素转场动画实践">
-<meta name="twitter:description" content="作者：Joe
-审阅者：Brucezz
+	
+	<meta name="keywords" content="">
+	
 
-前言上次碰到个需求，要从 Feed 页以 item 放大的动画打开第二个页面，先来看一个效果：
+	
+	<link rel="shortcut icon" href="/img/avatar.png">
+	
 
-就是这样一个转场动画～有了思路后要实现起来还是不难
-思路1.API一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提供了相关的 Api ，这样可以避免盲目的造轮子，尤其对于项目来说，时间成本还是很重要的，而且 Android 提供的 Api">
-<meta name="twitter:image" content="http://7xtakx.com1.z0.glb.clouddn.com/zoom_up.gif">
+	
+	<meta name="theme-color" content="#3c484e">
+	<meta name="msapplication-TileColor" content="#3c484e">
+	
 
-    
-    <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
-    
-    
-    <link rel="icon" href="/img/avatar.png">
-    
-    
-    <link rel="apple-touch-icon" href="/img/profile.png">
-    <link rel="apple-touch-icon-precomposed" href="/img/profile.png">
-    
-    <link rel="stylesheet" href="/css/style.css">
+	
+
+	
+
+	<meta property="og:site_name" content="Joe is a thin man">
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="Activity 共享元素转场动画实践 | Joe is a thin man">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="https://joesteven.github.io/zoom-up-animation/">
+
+	
+	<meta property="article:published_time" content="2017-03-22T22:03:00+08:00"/> 
+	<meta property="article:author" content="Joe">
+	<meta property="article:published_first" content="Joe is a thin man, /zoom-up-animation/" />
+	
+
+	
+	
+	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+
+	
+	<script src="https://cdn.staticfile.org/highlight.js/9.10.0/highlight.min.js"></script>
+	
+
+	
+	
 </head>
+<body class="post-template">
+    <div class="site-wrapper">
+        
 
-  <body>
-    <header>
-      
-<div>
-		
-			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
-				<h2 class="blog-motto">写代码的摇滚歌手</h2>
-			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
-			</a></div>
-			<nav class="animated">
-				<ul>
-					<ul>
-					 
-						<li><a href="/">Home</a></li>
-					
-						<li><a href="/archives">Archives</a></li>
-					
-						<li><a href="/categories">Categories</a></li>
-					
-						<li><a href="/about">About</a></li>
-					
-					<li>
- 					
-					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
-						<input type="hidden" name="q" value="site:joesteven.github.io">
-					</form>
-					
-					</li>
-				</ul>
-			</nav>			
+
+
+
+<header class="site-header outer" style="z-index: 999">
+    <div class="inner">
+        
+<nav class="site-nav"> 
+    <div class="site-nav-left">
+        <ul class="nav">
+            <li>
+                
+                
+                <a class="site-nav-logo" href="/"  title="Joe is a thin man">
+                    <img src="../../img/avatar.png" alt="Joe is a thin man" />
+                </a>
+                
+                
+            </li>
+            
+            
+            <li>
+                <a href="/" title="首页">首页</a>
+            </li>
+            
+            <li>
+                <a href="/about" title="关于我">关于我</a>
+            </li>
+            
+            <li>
+                <a href="/friends" title="友链">友链</a>
+            </li>
+            
+            
+        </ul> 
+    </div>
+    <div class="site-nav-right">
+        
+<div class="social-links" >
+    
+    <a class="social-link" title="weibo" href="https://weibo.com/u/2750146463?refer_flag=1001030201_" target="_blank" rel="noopener">
+        <svg viewBox="0 0 1141 1024" xmlns="http://www.w3.org/2000/svg"><path d="M916.48 518.144q27.648 21.504 38.912 51.712t9.216 62.976-14.336 65.536-31.744 59.392q-34.816 48.128-78.848 81.92t-91.136 56.32-94.72 35.328-89.6 18.944-75.264 7.68-51.712 1.536-49.152-2.56-68.096-10.24-78.336-21.504-79.872-36.352-74.24-55.296-59.904-78.848q-16.384-29.696-22.016-63.488t-5.632-86.016q0-22.528 7.68-51.2t27.136-63.488 53.248-75.776 86.016-90.112q51.2-48.128 105.984-85.504t117.248-57.856q28.672-10.24 63.488-11.264t57.344 11.264q10.24 11.264 19.456 23.04t12.288 29.184q3.072 14.336 0.512 27.648t-5.632 26.624-5.12 25.6 2.048 22.528q17.408 2.048 33.792-1.536t31.744-9.216 31.232-11.776 33.28-9.216q27.648-5.12 54.784-4.608t49.152 7.68 36.352 22.016 17.408 38.4q2.048 14.336-2.048 26.624t-8.704 23.04-7.168 22.016 1.536 23.552q3.072 7.168 14.848 13.312t27.136 12.288 32.256 13.312 29.184 16.384zM658.432 836.608q26.624-16.384 53.76-45.056t44.032-64 18.944-75.776-20.48-81.408q-19.456-33.792-47.616-57.344t-62.976-37.376-74.24-19.968-80.384-6.144q-78.848 0-139.776 16.384t-105.472 43.008-72.192 60.416-38.912 68.608q-11.264 33.792-6.656 67.072t20.992 62.976 42.496 53.248 57.856 37.888q58.368 25.6 119.296 32.256t116.224 0.512 100.864-21.504 74.24-33.792zM524.288 513.024q20.48 8.192 38.912 18.432t32.768 27.648q10.24 12.288 17.92 30.72t10.752 39.424 1.536 42.496-9.728 38.912q-8.192 18.432-19.968 37.376t-28.672 35.328-40.448 29.184-57.344 18.944q-61.44 11.264-117.76-11.264t-88.064-74.752q-12.288-39.936-13.312-70.656t16.384-66.56q13.312-27.648 40.448-51.712t62.464-38.912 75.264-17.408 78.848 12.8zM361.472 764.928q37.888 3.072 57.856-18.432t21.504-48.128-15.36-47.616-52.736-16.896q-27.648 3.072-43.008 23.552t-17.408 43.52 9.728 42.496 39.424 21.504zM780.288 6.144q74.752 0 139.776 19.968t113.664 57.856 76.288 92.16 27.648 122.88q0 33.792-16.384 50.688t-35.328 17.408-35.328-14.336-16.384-45.568q0-40.96-22.528-77.824t-59.392-64.512-84.48-43.52-96.768-15.872q-31.744 0-47.104-15.36t-14.336-34.304 18.944-34.304 51.712-15.36zM780.288 169.984q95.232 0 144.384 48.64t49.152 146.944q0 30.72-10.24 43.52t-22.528 11.264-22.528-14.848-10.24-35.84q0-60.416-34.816-96.256t-93.184-35.84q-19.456 0-28.672-10.752t-9.216-23.04 9.728-23.04 28.16-10.752z" /></svg>
+    </a>
+    
+    
+    <a class="social-link" title="github" href="https://github.com/JoeSteven" target="_blank" rel="noopener">
+        <svg viewBox="0 0 1049 1024" xmlns="http://www.w3.org/2000/svg"><path d="M524.979332 0C234.676191 0 0 234.676191 0 524.979332c0 232.068678 150.366597 428.501342 358.967656 498.035028 26.075132 5.215026 35.636014-11.299224 35.636014-25.205961 0-12.168395-0.869171-53.888607-0.869171-97.347161-146.020741 31.290159-176.441729-62.580318-176.441729-62.580318-23.467619-60.841976-58.234462-76.487055-58.234463-76.487055-47.804409-32.15933 3.476684-32.15933 3.476685-32.15933 53.019436 3.476684 80.83291 53.888607 80.83291 53.888607 46.935238 79.963739 122.553122 57.365291 152.97411 43.458554 4.345855-33.897672 18.252593-57.365291 33.028501-70.402857-116.468925-12.168395-239.022047-57.365291-239.022047-259.012982 0-57.365291 20.860106-104.300529 53.888607-140.805715-5.215026-13.037566-23.467619-66.926173 5.215027-139.067372 0 0 44.327725-13.906737 144.282399 53.888607 41.720212-11.299224 86.917108-17.383422 131.244833-17.383422s89.524621 6.084198 131.244833 17.383422C756.178839 203.386032 800.506564 217.29277 800.506564 217.29277c28.682646 72.1412 10.430053 126.029806 5.215026 139.067372 33.897672 36.505185 53.888607 83.440424 53.888607 140.805715 0 201.64769-122.553122 245.975415-239.891218 259.012982 19.121764 16.514251 35.636014 47.804409 35.636015 97.347161 0 70.402857-0.869171 126.898978-0.869172 144.282399 0 13.906737 9.560882 30.420988 35.636015 25.205961 208.601059-69.533686 358.967656-265.96635 358.967655-498.035028C1049.958663 234.676191 814.413301 0 524.979332 0z" /></svg>
+    </a>
+    
+    
+    
+    
 </div>
-    </header>
-    <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
-  
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/zoom-up-animation/" title="Activity 共享元素转场动画实践" itemprop="url">Activity 共享元素转场动画实践</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
-		
-  <p class="article-time">
-    <time datetime="2017-03-22T14:40:27.000Z" itemprop="datePublished"> 发表于 2017-03-22</time>
-    
-  </p>
+    </div>
+</nav>
+    </div>
 </header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
-		
-			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思路"><span class="toc-number">2.</span> <span class="toc-text">思路</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-API"><span class="toc-number">2.1.</span> <span class="toc-text">1.API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-实现思路"><span class="toc-number">2.2.</span> <span class="toc-text">2.实现思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#封装动画工具类"><span class="toc-number">3.</span> <span class="toc-text">封装动画工具类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-获取共享元素的初始信息"><span class="toc-number">3.1.</span> <span class="toc-text">1.获取共享元素的初始信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-封装动画执行接口"><span class="toc-number">3.2.</span> <span class="toc-text">2.封装动画执行接口</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现-Activity-转场动画"><span class="toc-number">4.</span> <span class="toc-text">实现 Activity 转场动画</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-进入动画"><span class="toc-number">4.1.</span> <span class="toc-text">1.进入动画</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-退出动画"><span class="toc-number">4.2.</span> <span class="toc-text">2.退出动画</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#坑"><span class="toc-number">5.</span> <span class="toc-text">坑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关资料"><span class="toc-number">6.</span> <span class="toc-text">相关资料</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Activity-共享元素转场动画实践-Joe"><span class="toc-number"></span> <span class="toc-text">Activity 共享元素转场动画实践 @Joe</span></a>
-		
-		</div>
-		
-		<ul>
+
+
+<main id="site-main" class="site-main outer" role="main">
+    <div class="inner">
+        <header class="post-full-header">
+            <section class="post-full-meta">
+                <time  class="post-full-meta-date" datetime="2017-03-22T14:40:27.000Z" itemprop="datePublished">
+                    2017-03-22
+                </time>
+                
+                <span class="date-divider">/</span>
+                
+                <a href="/categories/Android/">Android</a>&nbsp;&nbsp;
+                
+                
+            </section>
+            <h1 class="post-full-title">Activity 共享元素转场动画实践</h1>
+        </header>
+        <article class="post-full no-image">
+            
+            <section class="post-full-content">
+                <div id="lightgallery" class="markdown-body">
+                    <ul>
 <li>作者：<a href="http://extremej.itscoder.com/" target="_blank" rel="external">Joe</a></li>
 <li>审阅者：<a href="http://brucezz.itscoder.com/" target="_blank" rel="external">Brucezz</a></li>
 </ul>
@@ -127,7 +157,7 @@
 <p>就是这样一个转场动画～有了思路后要实现起来还是不难</p>
 <h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><h4 id="1-API"><a href="#1-API" class="headerlink" title="1.API"></a>1.API</h4><p>一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提供了相关的 Api ，这样可以避免盲目的造轮子，尤其对于项目来说，时间成本还是很重要的，而且 Android 提供的 Api 使用起来一般也会更简单易于维护。</p>
 <p>事实上在 Android 5.0 确实提供了这样的 Api — <code>ActivityOptions</code> 以及兼容包 <code>ActivityOptionsCompat</code>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ActivityOptionsCompat.makeCustomAnimation(Context context, <span class="keyword">int</span> enterResId, <span class="keyword">int</span> exitResId)</div><div class="line">ActivityOptionsCompat.makeScaleUpAnimation(View source,<span class="keyword">int</span> startX, <span class="keyword">int</span> startY, <span class="keyword">int</span> startWidth, <span class="keyword">int</span> startHeight)</div><div class="line">ActivityOptionsCompat.makeThumbnailScaleUpAnimation(View source,Bitmap thumbnail, <span class="keyword">int</span> startX, <span class="keyword">int</span> startY)</div><div class="line">ActivityOptionsCompat.makeSceneTransitionAnimation(Activity activity, View sharedElement, String sharedElementName)</div><div class="line">ActivityOptionsCompat.makeSceneTransitionAnimation(Activity activity,Pair&lt;View, String&gt;… sharedElements)</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line">ActivityOptionsCompat.makeCustomAnimation(Context context, <span class="keyword">int</span> enterResId, <span class="keyword">int</span> exitResId)</div><div class="line">ActivityOptionsCompat.makeScaleUpAnimation(View source,<span class="keyword">int</span> startX, <span class="keyword">int</span> startY, <span class="keyword">int</span> startWidth, <span class="keyword">int</span> startHeight)</div><div class="line">ActivityOptionsCompat.makeThumbnailScaleUpAnimation(View source,Bitmap thumbnail, <span class="keyword">int</span> startX, <span class="keyword">int</span> startY)</div><div class="line">ActivityOptionsCompat.makeSceneTransitionAnimation(Activity activity, View sharedElement, String sharedElementName)</div><div class="line">ActivityOptionsCompat.makeSceneTransitionAnimation(Activity activity,Pair&lt;View, String&gt;… sharedElements)</div></pre></td></tr></table></figure>
 <p>这个类使用非常的简单，总共提供了五种方法来实现不同的动画效果，其中就包括我们需要的这种效果。所以一开始我是选择了用 Api 来实现，但是很快发现了有一些问题：</p>
 <ul>
 <li><p><code>makeScaleUpAnimation</code>可以实现我们需要的效果，但是在5.0及以下的手机上效果并不好，会闪屏。（看了下快手貌似是用这个方法实现的，测试发现有同样的问题）</p>
@@ -148,43 +178,43 @@
 <p>所以我们要做的是封装一个工具类，更加通用的执行动画。</p>
 <h3 id="封装动画工具类"><a href="#封装动画工具类" class="headerlink" title="封装动画工具类"></a>封装动画工具类</h3><p>我们首先不去考虑 <code>Activity</code> 具体要怎么执行动画，先来封装一个动画的工具类。 </p>
 <h4 id="1-获取共享元素的初始信息"><a href="#1-获取共享元素的初始信息" class="headerlink" title="1.获取共享元素的初始信息"></a>1.获取共享元素的初始信息</h4><p>我们封装一个工具类 — <code>ZoomAnimationUtils</code>，在这个类中定义一个 <code>ZoomInfo</code> model：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ZoomInfo</span> <span class="keyword">implements</span> <span class="title">Parcelable</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> screenX;</div><div class="line">    <span class="keyword">int</span> screenY;</div><div class="line">    <span class="keyword">int</span> width;</div><div class="line">    <span class="keyword">int</span> height;</div><div class="line">  ... 省略其它内容 ...</div><div class="line">｝</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ZoomInfo</span> <span class="keyword">implements</span> <span class="title">Parcelable</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> screenX;</div><div class="line">    <span class="keyword">int</span> screenY;</div><div class="line">    <span class="keyword">int</span> width;</div><div class="line">    <span class="keyword">int</span> height;</div><div class="line">  ... 省略其它内容 ...</div><div class="line">｝</div></pre></td></tr></table></figure>
 <p>这个类用于获取动画开始时 <code>View</code> 在屏幕上的位置，大小。实现序列化是为了在 <code>Activity</code> 之间能通过 <code>Intent</code> 传递。然后在 <code>ZoomAnimationUtils</code>  中封装一个获取 <code>ZoomInfo</code>  方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> ZoomAnimationUtils.<span class="function">ZoomInfo <span class="title">getZoomInfo</span><span class="params">(@NonNull View view)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span>[] screenLocation = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</div><div class="line">    view.getLocationOnScreen(screenLocation);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ZoomInfo(screenLocation[<span class="number">0</span>],</div><div class="line">                        screenLocation[<span class="number">1</span>],</div><div class="line">                        view.getWidth(),</div><div class="line">                        view.getHeight());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> ZoomAnimationUtils.<span class="function">ZoomInfo <span class="title">getZoomInfo</span><span class="params">(@NonNull View view)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span>[] screenLocation = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</div><div class="line">    view.getLocationOnScreen(screenLocation);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ZoomInfo(screenLocation[<span class="number">0</span>],</div><div class="line">                        screenLocation[<span class="number">1</span>],</div><div class="line">                        view.getWidth(),</div><div class="line">                        view.getHeight());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h4 id="2-封装动画执行接口"><a href="#2-封装动画执行接口" class="headerlink" title="2.封装动画执行接口"></a>2.封装动画执行接口</h4><p>在这个需求中我们至少需要提供两个方法，一个放大，一个缩小。先来写放大的动画，想一想我们需要哪些参数？</p>
 <ul>
 <li>第一个共享元素的信息 <code>ZoomInfo</code> (也就是效果图中列表里小图的信息)</li>
 <li>第二个共享元素 <code>TargetView</code>  ，在这个 <code>View</code>  上来执行动画</li>
 <li>Listener ，给调用者提供监听动画执行的回调 </li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startZoomUpAnim</span><span class="params">(<span class="keyword">final</span> ZoomInfo preViewInfo,</span></span></div><div class="line">                                   <span class="keyword">final</span> View targetView,</div><div class="line">                                   <span class="keyword">final</span> Animator.AnimatorListener listener) &#123;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startZoomUpAnim</span><span class="params">(<span class="keyword">final</span> ZoomInfo preViewInfo,</span></span></div><div class="line">                                   <span class="keyword">final</span> View targetView,</div><div class="line">                                   <span class="keyword">final</span> Animator.AnimatorListener listener) &#123;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>首先我们要将 <code>targetView</code> 的初始属性设置为 <code>preViewInfo</code> ，跟小图一样，因此要在 <code>onDraw</code> 之前就把这件事情先做完，系统提供了一个方法 <code>onPreDraw()</code> 很好的让我们来做这件事情，在上面的方法中添加下面的代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">targetView.getViewTreeObserver().addOnPreDrawListener(<span class="keyword">new</span> ViewTreeObserver.OnPreDrawListener() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onPreDraw</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="comment">// 务必记得 remove 掉 </span></div><div class="line">        targetView.getViewTreeObserver().removeOnPreDrawListener(<span class="keyword">this</span>);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line">targetView.getViewTreeObserver().addOnPreDrawListener(<span class="keyword">new</span> ViewTreeObserver.OnPreDrawListener() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onPreDraw</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="comment">// 务必记得 remove 掉 </span></div><div class="line">        targetView.getViewTreeObserver().removeOnPreDrawListener(<span class="keyword">this</span>);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
 <p>开始计算开始的状态值，体力活～把逻辑先理清楚再计算，否则会掉入一直调试的怪圈中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> startWidth = preViewInfo.getWidth();</div><div class="line"><span class="keyword">int</span> startHeight = preViewInfo.getHeight();</div><div class="line"><span class="keyword">int</span> endWidth = targetView.getWidth();</div><div class="line"><span class="keyword">int</span> endHeight = targetView.getHeight();</div><div class="line"><span class="keyword">int</span>[] screenLocation = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</div><div class="line">targetView.getLocationOnScreen(screenLocation);</div><div class="line"><span class="keyword">int</span> endX = screenLocation[<span class="number">0</span>];</div><div class="line"><span class="keyword">int</span> endY = screenLocation[<span class="number">1</span>];</div><div class="line"><span class="keyword">float</span> startScaleX = (<span class="keyword">float</span>) endWidth / startWidth;</div><div class="line"><span class="keyword">float</span> startScaleY = (<span class="keyword">float</span>) endHeight / startHeight;</div><div class="line"><span class="keyword">int</span> translationX = preViewInfo.getScreenX() - endX;</div><div class="line"><span class="keyword">int</span> translationY = preViewInfo.getScreenY() - endY;</div><div class="line"></div><div class="line">targetView.setPivotX(<span class="number">0</span>);</div><div class="line">targetView.setPivotY(<span class="number">0</span>);</div><div class="line">targetView.setTranslationX(translationX);</div><div class="line">targetView.setTranslationY(translationY);</div><div class="line">targetView.setScaleX(<span class="number">1</span> / startScaleX);</div><div class="line">targetView.setScaleY(<span class="number">1</span> / startScaleY);</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">int</span> startWidth = preViewInfo.getWidth();</div><div class="line"><span class="keyword">int</span> startHeight = preViewInfo.getHeight();</div><div class="line"><span class="keyword">int</span> endWidth = targetView.getWidth();</div><div class="line"><span class="keyword">int</span> endHeight = targetView.getHeight();</div><div class="line"><span class="keyword">int</span>[] screenLocation = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</div><div class="line">targetView.getLocationOnScreen(screenLocation);</div><div class="line"><span class="keyword">int</span> endX = screenLocation[<span class="number">0</span>];</div><div class="line"><span class="keyword">int</span> endY = screenLocation[<span class="number">1</span>];</div><div class="line"><span class="keyword">float</span> startScaleX = (<span class="keyword">float</span>) endWidth / startWidth;</div><div class="line"><span class="keyword">float</span> startScaleY = (<span class="keyword">float</span>) endHeight / startHeight;</div><div class="line"><span class="keyword">int</span> translationX = preViewInfo.getScreenX() - endX;</div><div class="line"><span class="keyword">int</span> translationY = preViewInfo.getScreenY() - endY;</div><div class="line"></div><div class="line">targetView.setPivotX(<span class="number">0</span>);</div><div class="line">targetView.setPivotY(<span class="number">0</span>);</div><div class="line">targetView.setTranslationX(translationX);</div><div class="line">targetView.setTranslationY(translationY);</div><div class="line">targetView.setScaleX(<span class="number">1</span> / startScaleX);</div><div class="line">targetView.setScaleY(<span class="number">1</span> / startScaleY);</div></pre></td></tr></table></figure>
 <p>上面这步做完后，就得到了一个在屏幕上与小图一样的一个 <code>View</code>  啦，现在来执行动画：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">targetView.setVisibility(View.VISIBLE);</div><div class="line">ViewPropertyAnimator animator = targetView.animate();</div><div class="line">animator.setDuration(ANIMATION_DURATION)</div><div class="line">        .scaleX(<span class="number">1f</span>)</div><div class="line">        .scaleY(<span class="number">1f</span>)</div><div class="line">        .translationX(<span class="number">0</span>)</div><div class="line">        .translationY(<span class="number">0</span>);</div><div class="line"><span class="keyword">if</span> (listener != <span class="keyword">null</span>) &#123;</div><div class="line">    animator.setListener(listener);</div><div class="line">&#125;</div><div class="line">animator.start();</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line">targetView.setVisibility(View.VISIBLE);</div><div class="line">ViewPropertyAnimator animator = targetView.animate();</div><div class="line">animator.setDuration(ANIMATION_DURATION)</div><div class="line">        .scaleX(<span class="number">1f</span>)</div><div class="line">        .scaleY(<span class="number">1f</span>)</div><div class="line">        .translationX(<span class="number">0</span>)</div><div class="line">        .translationY(<span class="number">0</span>);</div><div class="line"><span class="keyword">if</span> (listener != <span class="keyword">null</span>) &#123;</div><div class="line">    animator.setListener(listener);</div><div class="line">&#125;</div><div class="line">animator.start();</div></pre></td></tr></table></figure>
 <p>放大的动画就写完了～接下来我们写缩小的动画，思路与放大一样，但是有个小区别，我们缩小的动画实际也是大的那个 <code>View</code>  来执行，这个 <code>View</code> 当前的状态就是动画开始的初始状态，因此不需要做初始化：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startZoomDownAnim</span><span class="params">(ZoomInfo preViewInfo, <span class="keyword">final</span> View targetView, <span class="keyword">final</span> Animator.AnimatorListener listener)</span></span>&#123;</div><div class="line">    <span class="keyword">int</span> endWidth = preViewInfo.getWidth();</div><div class="line">    <span class="keyword">int</span> endHeight = preViewInfo.getHeight();</div><div class="line">    <span class="keyword">int</span> startWidth = targetView.getWidth();</div><div class="line">    <span class="keyword">int</span> startHeight = targetView.getHeight();</div><div class="line">    <span class="keyword">int</span> endX = preViewInfo.getScreenX();</div><div class="line">    <span class="keyword">int</span> endY = preViewInfo.getScreenY();</div><div class="line">    <span class="keyword">float</span> endScaleX = (<span class="keyword">float</span>) endWidth / startWidth;</div><div class="line">    <span class="keyword">float</span> endScaleY = (<span class="keyword">float</span>) endHeight / startHeight;</div><div class="line">    <span class="keyword">int</span>[] screenLocation = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</div><div class="line">    targetView.getLocationOnScreen(screenLocation);</div><div class="line">    <span class="keyword">int</span> startX = screenLocation[<span class="number">0</span>];</div><div class="line">    <span class="keyword">int</span> startY = screenLocation[<span class="number">1</span>];</div><div class="line">    <span class="keyword">int</span> translationX = endX - startX;</div><div class="line">    <span class="keyword">int</span> translationY = endY - startY;</div><div class="line"></div><div class="line">    targetView.setPivotX(<span class="number">0</span>);</div><div class="line">    targetView.setPivotY(<span class="number">0</span>);</div><div class="line">    targetView.setVisibility(View.VISIBLE);</div><div class="line">    ViewPropertyAnimator animator = targetView.animate();</div><div class="line">    animator.setDuration(ANIMATION_DURATION)</div><div class="line">            .scaleX(endScaleX)</div><div class="line">            .scaleY(endScaleY)</div><div class="line">            .translationX(translationX)</div><div class="line">            .translationY(translationY);</div><div class="line">    <span class="keyword">if</span> (listener != <span class="keyword">null</span>) &#123;</div><div class="line">        animator.setListener(listener);</div><div class="line">    &#125;</div><div class="line">  	animator.start();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startZoomDownAnim</span><span class="params">(ZoomInfo preViewInfo, <span class="keyword">final</span> View targetView, <span class="keyword">final</span> Animator.AnimatorListener listener)</span></span>&#123;</div><div class="line">    <span class="keyword">int</span> endWidth = preViewInfo.getWidth();</div><div class="line">    <span class="keyword">int</span> endHeight = preViewInfo.getHeight();</div><div class="line">    <span class="keyword">int</span> startWidth = targetView.getWidth();</div><div class="line">    <span class="keyword">int</span> startHeight = targetView.getHeight();</div><div class="line">    <span class="keyword">int</span> endX = preViewInfo.getScreenX();</div><div class="line">    <span class="keyword">int</span> endY = preViewInfo.getScreenY();</div><div class="line">    <span class="keyword">float</span> endScaleX = (<span class="keyword">float</span>) endWidth / startWidth;</div><div class="line">    <span class="keyword">float</span> endScaleY = (<span class="keyword">float</span>) endHeight / startHeight;</div><div class="line">    <span class="keyword">int</span>[] screenLocation = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</div><div class="line">    targetView.getLocationOnScreen(screenLocation);</div><div class="line">    <span class="keyword">int</span> startX = screenLocation[<span class="number">0</span>];</div><div class="line">    <span class="keyword">int</span> startY = screenLocation[<span class="number">1</span>];</div><div class="line">    <span class="keyword">int</span> translationX = endX - startX;</div><div class="line">    <span class="keyword">int</span> translationY = endY - startY;</div><div class="line"></div><div class="line">    targetView.setPivotX(<span class="number">0</span>);</div><div class="line">    targetView.setPivotY(<span class="number">0</span>);</div><div class="line">    targetView.setVisibility(View.VISIBLE);</div><div class="line">    ViewPropertyAnimator animator = targetView.animate();</div><div class="line">    animator.setDuration(ANIMATION_DURATION)</div><div class="line">            .scaleX(endScaleX)</div><div class="line">            .scaleY(endScaleY)</div><div class="line">            .translationX(translationX)</div><div class="line">            .translationY(translationY);</div><div class="line">    <span class="keyword">if</span> (listener != <span class="keyword">null</span>) &#123;</div><div class="line">        animator.setListener(listener);</div><div class="line">    &#125;</div><div class="line">  	animator.start();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h3 id="实现-Activity-转场动画"><a href="#实现-Activity-转场动画" class="headerlink" title="实现 Activity 转场动画"></a>实现 Activity 转场动画</h3><h4 id="1-进入动画"><a href="#1-进入动画" class="headerlink" title="1.进入动画"></a>1.进入动画</h4><p>上一步我们已经把动画封装好了，现在我们需要实现 <code>Activity</code>  的转场动画，还记得最开始的那个三个关键点中有一点，将 <code>Activity</code> 背景透明，注意这里的背景是指 <code>Window</code> 的背景，因此要在 style.xml 中定义一个透明主题：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">name</span>=<span class="string">"Translucent"</span> <span class="attr">parent</span>=<span class="string">"AppTheme"</span>&gt;</span><span class="xml"></span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"windowNoTitle"</span>&gt;</span>true<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowBackground"</span>&gt;</span>@android:color/transparent<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:colorBackgroundCacheHint"</span>&gt;</span>@null<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowIsTranslucent"</span>&gt;</span>true<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowAnimationStyle"</span>&gt;</span>@null<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">name</span>=<span class="string">"Translucent"</span> <span class="attr">parent</span>=<span class="string">"AppTheme"</span>&gt;</span><span class="xml"></span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"windowNoTitle"</span>&gt;</span>true<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowBackground"</span>&gt;</span>@android:color/transparent<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:colorBackgroundCacheHint"</span>&gt;</span>@null<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowIsTranslucent"</span>&gt;</span>true<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowAnimationStyle"</span>&gt;</span>@null<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></div></pre></td></tr></table></figure>
 <p><strong>着重说下<code>windowIsTranslucent</code> 必须为 true，否则即使设置了 background 为透明，也是黑色</strong></p>
 <p>第二件事情要将 <code>Activity</code> 本身的转场动画去掉 <code>overridePendingTransition(0,0)</code>，这个方法要在调用 <code>startActivity</code> 后立即调用，我在 <code>DetailActivity</code>  中封装了一个静态方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startActivity</span><span class="params">(Activity from, View sharedView, FeedItem item)</span></span>&#123;</div><div class="line">    <span class="keyword">if</span> (item == <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">    Intent intent = <span class="keyword">new</span> Intent(from, DetailActivity.class);</div><div class="line">    intent.putExtra(EXTRA_FEED_ITEM, item);</div><div class="line">  <span class="comment">// 获取到前一个 view 的基本信息</span></div><div class="line">    intent.putExtra(EXTRA_ZOOM_INFO, ZoomAnimationUtils.getZoomInfo(sharedView));</div><div class="line">    from.startActivity(intent);</div><div class="line">  <span class="comment">// 去掉自带的转场动画</span></div><div class="line">    from.overridePendingTransition(<span class="number">0</span>,<span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startActivity</span><span class="params">(Activity from, View sharedView, FeedItem item)</span></span>&#123;</div><div class="line">    <span class="keyword">if</span> (item == <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">    Intent intent = <span class="keyword">new</span> Intent(from, DetailActivity.class);</div><div class="line">    intent.putExtra(EXTRA_FEED_ITEM, item);</div><div class="line">  <span class="comment">// 获取到前一个 view 的基本信息</span></div><div class="line">    intent.putExtra(EXTRA_ZOOM_INFO, ZoomAnimationUtils.getZoomInfo(sharedView));</div><div class="line">    from.startActivity(intent);</div><div class="line">  <span class="comment">// 去掉自带的转场动画</span></div><div class="line">    from.overridePendingTransition(<span class="number">0</span>,<span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>这里我们的共享 <code>View</code> 是一个 <code>ImageView</code> ，使用的图片加载框架是 <code>Picasso</code>，当然用什么框架都可以，但是要保证一点：<strong>动画开始执行时，这个共享元素的内容应该加载完成了</strong></p>
 <p>我们在 <code>onCreate</code> 中先加载好图片</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">Picasso.with(<span class="keyword">this</span>)</div><div class="line">        .load(mFeedItem.getImageUrl())</div><div class="line">        .into(<span class="keyword">new</span> Target() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBitmapLoaded</span><span class="params">(Bitmap bitmap, Picasso.LoadedFrom from)</span> </span>&#123;</div><div class="line">              <span class="comment">// 加载图片</span></div><div class="line">                setBitmap(bitmap);</div><div class="line">              <span class="comment">// 执行进入的动画</span></div><div class="line">                tryEnterAnimation();</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBitmapFailed</span><span class="params">(Drawable errorDrawable)</span> </span>&#123;&#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onPrepareLoad</span><span class="params">(Drawable placeHolderDrawable)</span> </span>&#123;&#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line">Picasso.with(<span class="keyword">this</span>)</div><div class="line">        .load(mFeedItem.getImageUrl())</div><div class="line">        .into(<span class="keyword">new</span> Target() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBitmapLoaded</span><span class="params">(Bitmap bitmap, Picasso.LoadedFrom from)</span> </span>&#123;</div><div class="line">              <span class="comment">// 加载图片</span></div><div class="line">                setBitmap(bitmap);</div><div class="line">              <span class="comment">// 执行进入的动画</span></div><div class="line">                tryEnterAnimation();</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBitmapFailed</span><span class="params">(Drawable errorDrawable)</span> </span>&#123;&#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onPrepareLoad</span><span class="params">(Drawable placeHolderDrawable)</span> </span>&#123;&#125;</div><div class="line">        &#125;);</div></pre></td></tr></table></figure>
 <p><code>tryEnterAniamtion()</code> 中的代码就简单了</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tryEnterAnimation</span><span class="params">()</span> </span>&#123;</div><div class="line">    ZoomAnimationUtils.startZoomUpAnim(mZoomInfo, mImageView, <span class="keyword">null</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tryEnterAnimation</span><span class="params">()</span> </span>&#123;</div><div class="line">    ZoomAnimationUtils.startZoomUpAnim(mZoomInfo, mImageView, <span class="keyword">null</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>到这里，转场动画的进入部分就写完了，但是我们发现个问题～，那就是因为 <code>Activity</code> 是透明的，图片没有盖住的部分是能看到上一个 <code>Activity</code> 的，为了让动画效果更好，我们再加一个背景渐变的动画。</p>
 <p>在 <code>ZoomAnimationUtils</code> 中添加一个方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startBackgroundAlphaAnim</span><span class="params">(<span class="keyword">final</span> View targetView,</span></span></div><div class="line">                                            <span class="keyword">final</span> ColorDrawable color,</div><div class="line">                                            <span class="keyword">int</span>...values) &#123;</div><div class="line">    <span class="keyword">if</span> (targetView == <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">    <span class="keyword">if</span> (values == <span class="keyword">null</span> || values.length == <span class="number">0</span>) &#123;</div><div class="line">        values = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">0</span>, <span class="number">255</span>&#125;;</div><div class="line">    &#125;</div><div class="line">    ObjectAnimator bgAnim = ObjectAnimator</div><div class="line">            .ofInt(color, <span class="string">"alpha"</span>, values);</div><div class="line">    bgAnim.setDuration(ANIMATION_DURATION);</div><div class="line">    bgAnim.addUpdateListener(<span class="keyword">new</span> ValueAnimator.AnimatorUpdateListener() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationUpdate</span><span class="params">(ValueAnimator animation)</span> </span>&#123;</div><div class="line">            targetView.setBackgroundDrawable(color);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    bgAnim.start();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startBackgroundAlphaAnim</span><span class="params">(<span class="keyword">final</span> View targetView,</span></span></div><div class="line">                                            <span class="keyword">final</span> ColorDrawable color,</div><div class="line">                                            <span class="keyword">int</span>...values) &#123;</div><div class="line">    <span class="keyword">if</span> (targetView == <span class="keyword">null</span>) <span class="keyword">return</span>;</div><div class="line">    <span class="keyword">if</span> (values == <span class="keyword">null</span> || values.length == <span class="number">0</span>) &#123;</div><div class="line">        values = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">0</span>, <span class="number">255</span>&#125;;</div><div class="line">    &#125;</div><div class="line">    ObjectAnimator bgAnim = ObjectAnimator</div><div class="line">            .ofInt(color, <span class="string">"alpha"</span>, values);</div><div class="line">    bgAnim.setDuration(ANIMATION_DURATION);</div><div class="line">    bgAnim.addUpdateListener(<span class="keyword">new</span> ValueAnimator.AnimatorUpdateListener() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationUpdate</span><span class="params">(ValueAnimator animation)</span> </span>&#123;</div><div class="line">            targetView.setBackgroundDrawable(color);</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">    bgAnim.start();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>然后在 <code>DetailActivity</code> 中的 <code>tryEnterAnimation()</code>  中给背景加上动画：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tryEnterAnimation</span><span class="params">()</span> </span>&#123;</div><div class="line">    ZoomAnimationUtils.startZoomUpAnim(mZoomInfo, mImageView, <span class="keyword">null</span>);</div><div class="line">    ZoomAnimationUtils.startBackgroundAlphaAnim(mBackgroundView,</div><div class="line">            <span class="keyword">new</span> ColorDrawable(getResources().getColor(android.R.color.black)), <span class="number">0</span>, <span class="number">255</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tryEnterAnimation</span><span class="params">()</span> </span>&#123;</div><div class="line">    ZoomAnimationUtils.startZoomUpAnim(mZoomInfo, mImageView, <span class="keyword">null</span>);</div><div class="line">    ZoomAnimationUtils.startBackgroundAlphaAnim(mBackgroundView,</div><div class="line">            <span class="keyword">new</span> ColorDrawable(getResources().getColor(android.R.color.black)), <span class="number">0</span>, <span class="number">255</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h4 id="2-退出动画"><a href="#2-退出动画" class="headerlink" title="2.退出动画"></a>2.退出动画</h4><p>重写两个方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBackPressed</span><span class="params">()</span> </span>&#123;</div><div class="line">    tryExitAnimation();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">finish</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">super</span>.finish();</div><div class="line">  <span class="comment">// 去掉自带的转场动画</span></div><div class="line">    overridePendingTransition(<span class="number">0</span>, <span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBackPressed</span><span class="params">()</span> </span>&#123;</div><div class="line">    tryExitAnimation();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">finish</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">super</span>.finish();</div><div class="line">  <span class="comment">// 去掉自带的转场动画</span></div><div class="line">    overridePendingTransition(<span class="number">0</span>, <span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>退出动画</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tryExitAnimation</span><span class="params">()</span> </span>&#123;</div><div class="line">    ZoomAnimationUtils.startBackgroundAlphaAnim(mBackgroundView,</div><div class="line">                                                <span class="keyword">new</span> ColorDrawable(getResources().getColor(android.R.color.black)),</div><div class="line">                                                <span class="number">255</span>,</div><div class="line">                                                <span class="number">0</span>);</div><div class="line">    ZoomAnimationUtils.startZoomDownAnim(mZoomInfo,</div><div class="line">                                         mImageView,</div><div class="line">                                         <span class="keyword">new</span> AnimatorListenerAdapter() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationEnd</span><span class="params">(Animator animation)</span> </span>&#123;</div><div class="line">            finish();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tryExitAnimation</span><span class="params">()</span> </span>&#123;</div><div class="line">    ZoomAnimationUtils.startBackgroundAlphaAnim(mBackgroundView,</div><div class="line">                                                <span class="keyword">new</span> ColorDrawable(getResources().getColor(android.R.color.black)),</div><div class="line">                                                <span class="number">255</span>,</div><div class="line">                                                <span class="number">0</span>);</div><div class="line">    ZoomAnimationUtils.startZoomDownAnim(mZoomInfo,</div><div class="line">                                         mImageView,</div><div class="line">                                         <span class="keyword">new</span> AnimatorListenerAdapter() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAnimationEnd</span><span class="params">(Animator animation)</span> </span>&#123;</div><div class="line">            finish();</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h3 id="坑"><a href="#坑" class="headerlink" title="坑"></a>坑</h3><p>我们好像顺利的写完了动画，但是 QA 后来给我提了一个 bug，这个 bug 极其的蛋疼，由这个 bug 又引发了其它的坑，而这些坑基本来自于 <code>Window</code> 的透明。</p>
 <ul>
 <li>坑一：透明主题的 <code>Activity</code> 如果弹出键盘，并且是 <code>adjustResize</code>  模式，在键盘弹出的一瞬间可以看到前一个 <code>Activity</code> <ul>
@@ -206,406 +236,301 @@
 <li><a href="https://www.kancloud.cn/qibin0506/android-md/117682" target="_blank" rel="external">你所不知道的Activity转场动画——ActivityOptions</a></li>
 <li><a href="http://cashow.github.io/android-get-keyboard-height.html" target="_blank" rel="external">Android - 监听软键盘状态以及获取软键盘的高度</a></li>
 </ul>
-<h1 id="Activity-共享元素转场动画实践-Joe"><a href="#Activity-共享元素转场动画实践-Joe" class="headerlink" title="Activity 共享元素转场动画实践 @Joe"></a><a href="http://extremej.itscoder.com/zoom-up-animation/" target="_blank" rel="external">Activity 共享元素转场动画实践</a> <a href="http://extremej.itscoder.com/" target="_blank" rel="external">@Joe</a></h1>  
-	</div>
-		<footer class="article-footer clearfix">
-<div class="article-catetags">
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Android/">Android</a>
-</div>
-
-
-</div>
-
-
-
-</footer>
-
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/shared_preferences_source/" title="对 SharedPreferences 再多一点了解">
-  <span>
-  对 SharedPreferences 再多一点了解</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/manage_your_paper_work_elegantly/"  title="优雅的管理你的文稿">
- <span>优雅的管理你的文稿
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-<section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="zoom-up-animation/" data-title="Activity 共享元素转场动画实践" data-url="https://joesteven.github.io/zoom-up-animation/"></div>
-</section>
-
-
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
-
-<div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
-<aside class="clearfix">
-<div id="authorInfo">
-	
-		<div class="author-img"></div>		
-	
-	<div class="social-info" class="clearfix">
-		
-		<a href="http://weibo.com/2750146463" target="_blank" class="icon-weibo" title="微博"></a>
-		
-		
-		<a href="https://github.com/JoeSteven" target="_blank" class="icon-github" title="github"></a>
-		
-		
-		
-		
-		
-		
-		
-		<a href="http://www.zhihu.com/people/qiao-xi-28" target="_blank" class="icon-zhihu" title="知乎"></a>
-		
-		
-		
-		
-		<a href="mailto:qiaoxiaoxi621@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
-		
-
-	</div>
-</div>
-
-  
-<div class="categorieslist">
-	<p class="asidetitle">分类</p>
-		<ul>
-		
-		  
-			<li><a href="/categories/Android/" title="Android">Android<sup>3</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>11</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/Tools/" title="Tools">Tools<sup>1</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/杂谈/" title="杂谈">杂谈<sup>1</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  <div class="linkslist">
-  <p class="asidetitle">链接</p>
-    <ul>
-        
-          <li>
-            
-            	<a href="http://itscoder.com/" target="_blank" title="itsCoder">itsCoder</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="https://cassieran.github.io/" target="_blank" title="FaFa">FaFa</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://laobie.github.io/" target="_blank" title="写代码的猴子">写代码的猴子</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://brucezz.github.io/" target="_blank" title="Brucezz">Brucezz</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://allenwu.itscoder.com/" target="_blank" title="allen">allen</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="Manjusaka">Manjusaka</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://solart.cc/" target="_blank" title="imilk">imilk</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="https://yongyu0102.github.io/" target="_blank" title="用语">用语</a>
-            
-          </li>
-        
-    </ul>
-</div>
-
-</aside>
-</div>
+<h1 id="Activity-共享元素转场动画实践-Joe"><a href="#Activity-共享元素转场动画实践-Joe" class="headerlink" title="Activity 共享元素转场动画实践 @Joe"></a><a href="http://extremej.itscoder.com/zoom-up-animation/" target="_blank" rel="external">Activity 共享元素转场动画实践</a> <a href="http://extremej.itscoder.com/" target="_blank" rel="external">@Joe</a></h1>
+                </div>
+            </section>
+        </article>
     </div>
-    <footer><div id="footer" >
-		
-		
+    
+<nav class="pagination">
+    
+    
+    <a class="prev-post" title="对 SharedPreferences 再多一点了解" href="/shared_preferences_source/">
+        ← 对 SharedPreferences 再多一点了解
+    </a>
+    
+    <span class="prev-next-post">•</span>
+    
+    <a class="next-post" title="优雅的管理你的文稿" href="/manage_your_paper_work_elegantly/">
+        优雅的管理你的文稿 →
+    </a>
+    
+    
+</nav>
+    
+</main>
 
-		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2018 
-		
-		<a href="/about" target="_blank" title="Joe">Joe</a>
-		
-		
-		</p>
+<div class="t-g-control">
+    <div class="gotop">
+        <svg class="icon" width="32px" height="32px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M793.024 710.272a32 32 0 1 0 45.952-44.544l-310.304-320a32 32 0 0 0-46.4 0.48l-297.696 320a32 32 0 0 0 46.848 43.584l274.752-295.328 286.848 295.808z" fill="#8a8a8a" /></svg>
+    </div>
+    <div class="toc-control">
+        <svg class="icon toc-icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M779.776 480h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M779.776 672h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M256 288a32 32 0 1 0 0 64 32 32 0 0 0 0-64M392.576 352h387.2a32 32 0 0 0 0-64h-387.2a32 32 0 0 0 0 64M256 480a32 32 0 1 0 0 64 32 32 0 0 0 0-64M256 672a32 32 0 1 0 0 64 32 32 0 0 0 0-64" fill="#8a8a8a" /></svg>
+        <svg class="icon toc-close" style="display: none;" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M512 960c-247.039484 0-448-200.960516-448-448S264.960516 64 512 64 960 264.960516 960 512 759.039484 960 512 960zM512 128.287273c-211.584464 0-383.712727 172.128262-383.712727 383.712727 0 211.551781 172.128262 383.712727 383.712727 383.712727 211.551781 0 383.712727-172.159226 383.712727-383.712727C895.712727 300.415536 723.551781 128.287273 512 128.287273z" fill="#8a8a8a" /><path d="M557.05545 513.376159l138.367639-136.864185c12.576374-12.416396 12.672705-32.671738 0.25631-45.248112s-32.704421-12.672705-45.248112-0.25631l-138.560301 137.024163-136.447897-136.864185c-12.512727-12.512727-32.735385-12.576374-45.248112-0.063647-12.512727 12.480043-12.54369 32.735385-0.063647 45.248112l136.255235 136.671523-137.376804 135.904314c-12.576374 12.447359-12.672705 32.671738-0.25631 45.248112 6.271845 6.335493 14.496116 9.504099 22.751351 9.504099 8.12794 0 16.25588-3.103239 22.496761-9.247789l137.567746-136.064292 138.687596 139.136568c6.240882 6.271845 14.432469 9.407768 22.65674 9.407768 8.191587 0 16.352211-3.135923 22.591372-9.34412 12.512727-12.480043 12.54369-32.704421 0.063647-45.248112L557.05545 513.376159z" fill="#8a8a8a" /></svg>
+    </div>
+    <div class="gobottom">
+        <svg class="icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M231.424 346.208a32 32 0 0 0-46.848 43.584l297.696 320a32 32 0 0 0 46.4 0.48l310.304-320a32 32 0 1 0-45.952-44.544l-286.848 295.808-274.752-295.36z" fill="#8a8a8a" /></svg>
+    </div>
 </div>
-</footer>
-    <script src="/js/jquery-2.0.3.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+<div class="toc-main" style="right: -100%">
+    <div class="post-toc">
+        <span>TOC</span>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思路"><span class="toc-text">思路</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-API"><span class="toc-text">1.API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-实现思路"><span class="toc-text">2.实现思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#封装动画工具类"><span class="toc-text">封装动画工具类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-获取共享元素的初始信息"><span class="toc-text">1.获取共享元素的初始信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-封装动画执行接口"><span class="toc-text">2.封装动画执行接口</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现-Activity-转场动画"><span class="toc-text">实现 Activity 转场动画</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-进入动画"><span class="toc-text">1.进入动画</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-退出动画"><span class="toc-text">2.退出动画</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#坑"><span class="toc-text">坑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关资料"><span class="toc-text">相关资料</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Activity-共享元素转场动画实践-Joe"><span class="toc-text">Activity 共享元素转场动画实践 @Joe</span></a>
+    </div>
+</div>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.navbar').click(function(){
-    $('header nav').toggleClass('shownav');
-  });
-  var myWidth = 0;
-  function getSize(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-  };
-  var m = $('#main'),
-      a = $('#asidepart'),
-      c = $('.closeaside'),
-      o = $('.openaside');
-  c.click(function(){
-    a.addClass('fadeOut').css('display', 'none');
-    o.css('display', 'block').addClass('fadeIn');
-    m.addClass('moveMain');
-  });
-  o.click(function(){
-    o.css('display', 'none').removeClass('beforeFadeIn');
-    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
-    m.removeClass('moveMain');
-  });
-  $(window).scroll(function(){
-    o.css("top",Math.max(80,260-$(this).scrollTop()));
-  });
-  
-        getSize();
-        if (myWidth >= 1024) {
-          c.click();
-        }
-  
-  $(window).resize(function(){
-    getSize(); 
-    if (myWidth >= 1024) {
-      $('header nav').removeClass('shownav');
-    }else{
-      m.removeClass('moveMain');
-      a.css('display', 'block').removeClass('fadeOut');
-      o.css('display', 'none');
+
+
         
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+            
+            
+
+<article class="read-next-card"  style="background-image: url(../../img/cover.png)"  >
+  <header class="read-next-card-header">
+    <small class="read-next-card-header-sitetitle">&mdash; Joe is a thin man &mdash;</small>
+    <h3 class="read-next-card-header-title">Recent Posts</h3>
+  </header>
+  <div class="read-next-divider">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/>
+    </svg>
+  </div>
+  <div class="read-next-card-content">
+    <ul>
+      
+      
+      
+      <li>
+        <a href="/android_long_picture_process/">Android 中的长图片处理</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/shared_preferences_source/">对 SharedPreferences 再多一点了解</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/zoom-up-animation/">Activity 共享元素转场动画实践</a>
+      </li>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    </ul>
+  </div>
+  <footer class="read-next-card-footer">
+    <a href="/archives">  MORE  → </a>
+  </footer>
+</article>
+
+            
+            
+            
+
+<article class="read-next-card"  style="background-image: url(../../img/cover.png)"  >
+    <header class="read-next-card-header" style="padding-bottom: 20px">
+        <h3 class="read-next-card-header-title">Categories</h3>
+    </header>
+    <div class="read-next-card-content">
+        <ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Android源码学习/">Android源码学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/">Tools</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/杂谈/">杂谈</a></li></ul>
+        </ul>
+    </div>
+</article>
+
+
+            
+            
+            
+
+            
+        </div>
+    </div>
+</aside>
+
+<footer class="site-footer outer">
+	<div class="site-footer-content inner">
+		<section class="copyright">
+			<a href="/" title="Joe is a thin man">Joe is a thin man</a>
+			&copy; 2018
+		</section>
+		<nav class="site-footer-nav">
+			
+            <a href="https://hexo.io" title="Hexo" target="_blank" rel="external">Hexo</a>
+            <a href="https://github.com/xzhih/hexo-theme-casper" title="Casper" target="_blank" rel="external">Casper</a>
+        </nav>
+    </div>
+</footer>
+
+
+
+
+
+
+<div class="floating-header" >
+	<div class="floating-header-logo">
+        <a href="/" title="Joe is a thin man">
+			
+                <img src="img/avatar.png" alt="Joe is a thin man icon" />
+			
+            <span>Joe is a thin man</span>
+        </a>
+    </div>
+    <span class="floating-header-divider">&mdash;</span>
+    <div class="floating-header-title">Activity 共享元素转场动画实践</div>
+    <progress class="progress" value="0">
+        <div class="progress-container">
+            <span class="progress-bar"></span>
+        </div>
+    </progress>
+</div>
+<script>
+   $(document).ready(function () {
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
     }
-  });
-});
-</script>
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+    function update() {
+        var rect = title.getBoundingClientRect();
+        var trigger = rect.top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+            // show/hide floating header
+            if (lastScrollY >= trigger + triggerOffset) {
+                header.classList.add('floating-active');
+            } else {
+                header.classList.remove('floating-active');
+            }
+            progressBar.setAttribute('max', progressMax);
+            progressBar.setAttribute('value', lastScrollY);
+            ticking = false;
+        }
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
+        window.addEventListener('scroll', onScroll, {passive: true});
+        update();
 
+        // TOC
+        var width = $('.toc-main').width();
+        $('.toc-control').click(function () {
+            if ($('.t-g-control').css('width')=="50px") {
+                if ($('.t-g-control').css('right')=="0px") {
+                    $('.t-g-control').animate({right: width}, "slow");
+                    $('.toc-main').animate({right: 0}, "slow");
+                    toc_icon()
+                } else {
+                    $('.t-g-control').animate({right: 0}, "slow");
+                    $('.toc-main').animate({right: -width}, "slow");
+                    toc_icon()
+                }
+            } else {
+                if ($('.toc-main').css('right')=="0px") {
+                    $('.toc-main').slideToggle("fast", toc_icon());
+                } else {
+                    $('.toc-main').css('right', '0px');
+                    toc_icon()
+                }
+            }
+        })
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
+        function toc_icon() {
+            if ($('.toc-icon').css('display')=="none") {
+                $('.toc-close').hide();
+                $('.toc-icon').show();
+            } else {
+                $('.toc-icon').hide();
+                $('.toc-close').show();
+            }
+        }
 
-  $('.hoverqrcode').hide();
+        $('.gotop').click(function(){
+            $('html,body').animate({scrollTop:$('.post-full-header').offset().top}, 800);
+        });
+        $('.gobottom').click(function () {
+            $('html,body').animate({scrollTop:$('.pagination').offset().top}, 800);
+        });
 
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
+        // highlight
+        // https://highlightjs.org
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+        $('td.code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
 
-
-
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:"extremej"};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0] 
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script> 
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.article-content').each(function(i){
-    $(this).find('img').each(function(){
-      if ($(this).parent().hasClass('fancybox')) return;
-      var alt = this.alt;
-      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
-      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+        console.log("this theme is from https://github.com/xzhih/hexo-theme-casper")
     });
-    $(this).find('.fancybox').each(function(){
-      $(this).attr('rel', 'article' + i);
-    });
-  });
-  if($.fancybox){
-    $('.fancybox').fancybox();
-  }
-}); 
 </script>
 
 
 
-<!-- Analytics Begin -->
+<link rel="stylesheet" href="https://cdn.staticfile.org/lightgallery/1.3.9/css/lightgallery.min.css">
 
-<script type="text/javascript">
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-81871291-1', 'http://extremej.itscoder.com/');  
-ga('send', 'pageview');
-</script>
 
+
+<script src="https://cdn.staticfile.org/lightgallery/1.3.9/js/lightgallery.min.js"></script>
 
 
 <script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?a7eee7d6f5059e0cebc1c797881c4f8f";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
+	$(function () {
+		var postImg = $('#lightgallery').find('img');
+		postImg.addClass('post-img');
+		postImg.each(function () {
+			var imgSrc = $(this).attr('src');
+			$(this).attr('data-src', imgSrc);
+		});
+		$('#lightgallery').lightGallery({selector: '.post-img'});
+	});
 </script>
 
 
 
-<!-- Analytics End -->
 
-<!-- Totop Begin -->
-
-	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
-	</div>
-	<script src="/js/totop.js"></script>
-
-<!-- Totop End -->
-
-<!-- MathJax Begin -->
-<!-- mathjax config similar to math.stackexchange -->
-
-
-<!-- MathJax End -->
-
-<!-- Tiny_search Begin -->
-
-<!-- Tiny_search End -->
-
-  </body>
+    </div>
+</body>
 </html>

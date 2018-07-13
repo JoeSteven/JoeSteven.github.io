@@ -1,545 +1,478 @@
+<!DOCTYPE html>
+<html zh>
 
- <!DOCTYPE HTML>
-<html lang="zh">
+
+
+
+
+
+
 <head>
-  <meta charset="UTF-8">
-  
-    <title>Handler源码学习（三）MessageQueue入队插队 | Joe is a thin man</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
-    
-    <meta name="author" content="Joe">
-    
+	
+	
+	<link rel="stylesheet" href="/css/allinone.min.css"> 
 
-    
-    <meta name="description" content="Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队
-1.消息入队消息队列与Message对象池的结构很像，也是通过对象之间通过next指向形成链表结构
-这时候加入一个msg消息，先来看如果消息队列为空的情况
-1234567891011//判断消息队列为空时，会直接将这个msg赋值给mMessage，并将p赋值">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Handler源码学习（三）MessageQueue入队插队">
-<meta property="og:url" content="https://joesteven.github.io/handler_source_3_MessageQueue/index.html">
-<meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:description" content="Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队
-1.消息入队消息队列与Message对象池的结构很像，也是通过对象之间通过next指向形成链表结构
-这时候加入一个msg消息，先来看如果消息队列为空的情况
-1234567891011//判断消息队列为空时，会直接将这个msg赋值给mMessage，并将p赋值">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-cf3917ec68d63362.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1473110-8d1085869f87c65b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
-<meta property="og:updated_time" content="2018-07-13T03:41:39.978Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Handler源码学习（三）MessageQueue入队插队">
-<meta name="twitter:description" content="Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队
-1.消息入队消息队列与Message对象池的结构很像，也是通过对象之间通过next指向形成链表结构
-这时候加入一个msg消息，先来看如果消息队列为空的情况
-1234567891011//判断消息队列为空时，会直接将这个msg赋值给mMessage，并将p赋值">
-<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1473110-cf3917ec68d63362.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+	
 
-    
-    <link rel="alternative" href="atom.xml" title="Joe is a thin man" type="application/atom+xml">
-    
-    
-    <link rel="icon" href="/img/avatar.png">
-    
-    
-    <link rel="apple-touch-icon" href="/img/profile.png">
-    <link rel="apple-touch-icon-precomposed" href="/img/profile.png">
-    
-    <link rel="stylesheet" href="/css/style.css">
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<title>Handler源码学习（三）MessageQueue入队插队 | Joe is a thin man</title>
+
+	<meta name="HandheldFriendly" content="True" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	<meta name="generator" content="hexo">
+	<meta name="author" content="Joe">
+	<meta name="description" content="">
+
+	
+	<meta name="keywords" content="">
+	
+
+	
+	<link rel="shortcut icon" href="/img/avatar.png">
+	
+
+	
+	<meta name="theme-color" content="#3c484e">
+	<meta name="msapplication-TileColor" content="#3c484e">
+	
+
+	
+
+	
+
+	<meta property="og:site_name" content="Joe is a thin man">
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="Handler源码学习（三）MessageQueue入队插队 | Joe is a thin man">
+	<meta property="og:description" content="">
+	<meta property="og:url" content="https://joesteven.github.io/handler_source_3_MessageQueue/">
+
+	
+	<meta property="article:published_time" content="2016-08-17T23:08:00+08:00"/> 
+	<meta property="article:author" content="Joe">
+	<meta property="article:published_first" content="Joe is a thin man, /handler_source_3_MessageQueue/" />
+	
+
+	
+	
+	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	
+
+	
+	<script src="https://cdn.staticfile.org/highlight.js/9.10.0/highlight.min.js"></script>
+	
+
+	
+	
 </head>
+<body class="post-template">
+    <div class="site-wrapper">
+        
 
-  <body>
-    <header>
-      
-<div>
-		
-			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
-				<h2 class="blog-motto">写代码的摇滚歌手</h2>
-			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
-			</a></div>
-			<nav class="animated">
-				<ul>
-					<ul>
-					 
-						<li><a href="/">Home</a></li>
-					
-						<li><a href="/archives">Archives</a></li>
-					
-						<li><a href="/categories">Categories</a></li>
-					
-						<li><a href="/about">About</a></li>
-					
-					<li>
- 					
-					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
-						<input type="hidden" name="q" value="site:joesteven.github.io">
-					</form>
-					
-					</li>
-				</ul>
-			</nav>			
+
+
+
+<header class="site-header outer" style="z-index: 999">
+    <div class="inner">
+        
+<nav class="site-nav"> 
+    <div class="site-nav-left">
+        <ul class="nav">
+            <li>
+                
+                
+                <a class="site-nav-logo" href="/"  title="Joe is a thin man">
+                    <img src="../../img/avatar.png" alt="Joe is a thin man" />
+                </a>
+                
+                
+            </li>
+            
+            
+            <li>
+                <a href="/" title="首页">首页</a>
+            </li>
+            
+            <li>
+                <a href="/about" title="关于我">关于我</a>
+            </li>
+            
+            <li>
+                <a href="/friends" title="友链">友链</a>
+            </li>
+            
+            
+        </ul> 
+    </div>
+    <div class="site-nav-right">
+        
+<div class="social-links" >
+    
+    <a class="social-link" title="weibo" href="https://weibo.com/u/2750146463?refer_flag=1001030201_" target="_blank" rel="noopener">
+        <svg viewBox="0 0 1141 1024" xmlns="http://www.w3.org/2000/svg"><path d="M916.48 518.144q27.648 21.504 38.912 51.712t9.216 62.976-14.336 65.536-31.744 59.392q-34.816 48.128-78.848 81.92t-91.136 56.32-94.72 35.328-89.6 18.944-75.264 7.68-51.712 1.536-49.152-2.56-68.096-10.24-78.336-21.504-79.872-36.352-74.24-55.296-59.904-78.848q-16.384-29.696-22.016-63.488t-5.632-86.016q0-22.528 7.68-51.2t27.136-63.488 53.248-75.776 86.016-90.112q51.2-48.128 105.984-85.504t117.248-57.856q28.672-10.24 63.488-11.264t57.344 11.264q10.24 11.264 19.456 23.04t12.288 29.184q3.072 14.336 0.512 27.648t-5.632 26.624-5.12 25.6 2.048 22.528q17.408 2.048 33.792-1.536t31.744-9.216 31.232-11.776 33.28-9.216q27.648-5.12 54.784-4.608t49.152 7.68 36.352 22.016 17.408 38.4q2.048 14.336-2.048 26.624t-8.704 23.04-7.168 22.016 1.536 23.552q3.072 7.168 14.848 13.312t27.136 12.288 32.256 13.312 29.184 16.384zM658.432 836.608q26.624-16.384 53.76-45.056t44.032-64 18.944-75.776-20.48-81.408q-19.456-33.792-47.616-57.344t-62.976-37.376-74.24-19.968-80.384-6.144q-78.848 0-139.776 16.384t-105.472 43.008-72.192 60.416-38.912 68.608q-11.264 33.792-6.656 67.072t20.992 62.976 42.496 53.248 57.856 37.888q58.368 25.6 119.296 32.256t116.224 0.512 100.864-21.504 74.24-33.792zM524.288 513.024q20.48 8.192 38.912 18.432t32.768 27.648q10.24 12.288 17.92 30.72t10.752 39.424 1.536 42.496-9.728 38.912q-8.192 18.432-19.968 37.376t-28.672 35.328-40.448 29.184-57.344 18.944q-61.44 11.264-117.76-11.264t-88.064-74.752q-12.288-39.936-13.312-70.656t16.384-66.56q13.312-27.648 40.448-51.712t62.464-38.912 75.264-17.408 78.848 12.8zM361.472 764.928q37.888 3.072 57.856-18.432t21.504-48.128-15.36-47.616-52.736-16.896q-27.648 3.072-43.008 23.552t-17.408 43.52 9.728 42.496 39.424 21.504zM780.288 6.144q74.752 0 139.776 19.968t113.664 57.856 76.288 92.16 27.648 122.88q0 33.792-16.384 50.688t-35.328 17.408-35.328-14.336-16.384-45.568q0-40.96-22.528-77.824t-59.392-64.512-84.48-43.52-96.768-15.872q-31.744 0-47.104-15.36t-14.336-34.304 18.944-34.304 51.712-15.36zM780.288 169.984q95.232 0 144.384 48.64t49.152 146.944q0 30.72-10.24 43.52t-22.528 11.264-22.528-14.848-10.24-35.84q0-60.416-34.816-96.256t-93.184-35.84q-19.456 0-28.672-10.752t-9.216-23.04 9.728-23.04 28.16-10.752z" /></svg>
+    </a>
+    
+    
+    <a class="social-link" title="github" href="https://github.com/JoeSteven" target="_blank" rel="noopener">
+        <svg viewBox="0 0 1049 1024" xmlns="http://www.w3.org/2000/svg"><path d="M524.979332 0C234.676191 0 0 234.676191 0 524.979332c0 232.068678 150.366597 428.501342 358.967656 498.035028 26.075132 5.215026 35.636014-11.299224 35.636014-25.205961 0-12.168395-0.869171-53.888607-0.869171-97.347161-146.020741 31.290159-176.441729-62.580318-176.441729-62.580318-23.467619-60.841976-58.234462-76.487055-58.234463-76.487055-47.804409-32.15933 3.476684-32.15933 3.476685-32.15933 53.019436 3.476684 80.83291 53.888607 80.83291 53.888607 46.935238 79.963739 122.553122 57.365291 152.97411 43.458554 4.345855-33.897672 18.252593-57.365291 33.028501-70.402857-116.468925-12.168395-239.022047-57.365291-239.022047-259.012982 0-57.365291 20.860106-104.300529 53.888607-140.805715-5.215026-13.037566-23.467619-66.926173 5.215027-139.067372 0 0 44.327725-13.906737 144.282399 53.888607 41.720212-11.299224 86.917108-17.383422 131.244833-17.383422s89.524621 6.084198 131.244833 17.383422C756.178839 203.386032 800.506564 217.29277 800.506564 217.29277c28.682646 72.1412 10.430053 126.029806 5.215026 139.067372 33.897672 36.505185 53.888607 83.440424 53.888607 140.805715 0 201.64769-122.553122 245.975415-239.891218 259.012982 19.121764 16.514251 35.636014 47.804409 35.636015 97.347161 0 70.402857-0.869171 126.898978-0.869172 144.282399 0 13.906737 9.560882 30.420988 35.636015 25.205961 208.601059-69.533686 358.967656-265.96635 358.967655-498.035028C1049.958663 234.676191 814.413301 0 524.979332 0z" /></svg>
+    </a>
+    
+    
+    
+    
 </div>
-    </header>
-    <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
-  
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/handler_source_3_MessageQueue/" title="Handler源码学习（三）MessageQueue入队插队" itemprop="url">Handler源码学习（三）MessageQueue入队插队</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
-		
-  <p class="article-time">
-    <time datetime="2016-08-17T15:25:27.000Z" itemprop="datePublished"> 发表于 2016-08-17</time>
-    
-  </p>
+    </div>
+</nav>
+    </div>
 </header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
-		
-			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-消息入队"><span class="toc-number">1.</span> <span class="toc-text">1.消息入队</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-取出消息"><span class="toc-number">2.</span> <span class="toc-text">2.取出消息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-消息插队"><span class="toc-number">3.</span> <span class="toc-text">3.消息插队</span></a></li></ol>
-		
-		</div>
-		
-		<p><a href="http://extremej.itscoder.com/handler_source_1/" target="_blank" rel="external">Handler源码学习（一）流程</a><br><a href="http://extremej.itscoder.com/handler_source_2_Message/" target="_blank" rel="external">Handler源码学习（二）Message对象池</a><br>Handler源码学习（三）MessageQueue入队插队</p>
+
+
+<main id="site-main" class="site-main outer" role="main">
+    <div class="inner">
+        <header class="post-full-header">
+            <section class="post-full-meta">
+                <time  class="post-full-meta-date" datetime="2016-08-17T15:25:27.000Z" itemprop="datePublished">
+                    2016-08-17
+                </time>
+                
+                <span class="date-divider">/</span>
+                
+                <a href="/categories/Android源码学习/">Android源码学习</a>&nbsp;&nbsp;
+                
+                
+            </section>
+            <h1 class="post-full-title">Handler源码学习（三）MessageQueue入队插队</h1>
+        </header>
+        <article class="post-full no-image">
+            
+            <section class="post-full-content">
+                <div id="lightgallery" class="markdown-body">
+                    <p><a href="http://extremej.itscoder.com/handler_source_1/" target="_blank" rel="external">Handler源码学习（一）流程</a><br><a href="http://extremej.itscoder.com/handler_source_2_Message/" target="_blank" rel="external">Handler源码学习（二）Message对象池</a><br>Handler源码学习（三）MessageQueue入队插队</p>
 <h4 id="1-消息入队"><a href="#1-消息入队" class="headerlink" title="1.消息入队"></a>1.消息入队</h4><p>消息队列与Message对象池的结构很像，也是通过对象之间通过next指向形成链表结构</p>
 <p>这时候加入一个msg消息，先来看如果消息队列为空的情况</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//判断消息队列为空时，会直接将这个msg赋值给mMessage，并将p赋值给msg.next，这时next当然时null</span></div><div class="line">msg.markInUse();</div><div class="line">msg.when = when;</div><div class="line">Message p = mMessages;</div><div class="line"><span class="keyword">boolean</span> needWake;</div><div class="line"><span class="keyword">if</span> (p == <span class="keyword">null</span> || when == <span class="number">0</span> || when &lt; p.when) &#123;</div><div class="line">    <span class="comment">// New head, wake up the event queue if blocked.</span></div><div class="line">    msg.next = p;</div><div class="line">    mMessages = msg;</div><div class="line">    needWake = mBlocked;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">//判断消息队列为空时，会直接将这个msg赋值给mMessage，并将p赋值给msg.next，这时next当然时null</span></div><div class="line">msg.markInUse();</div><div class="line">msg.when = when;</div><div class="line">Message p = mMessages;</div><div class="line"><span class="keyword">boolean</span> needWake;</div><div class="line"><span class="keyword">if</span> (p == <span class="keyword">null</span> || when == <span class="number">0</span> || when &lt; p.when) &#123;</div><div class="line">    <span class="comment">// New head, wake up the event queue if blocked.</span></div><div class="line">    msg.next = p;</div><div class="line">    mMessages = msg;</div><div class="line">    needWake = mBlocked;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>假设现在队列中已经有了两个消息，这两个消息的排练是按照执行时间，如果时间相同则是按照入队先后排列。来一步步分析，可以先看后面的图，把思路理清，再看源码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// Inserted within the middle of the queue.  Usually we don't have to wake</span></div><div class="line">    <span class="comment">// up the event queue unless there is a barrier at the head of the queue</span></div><div class="line">    <span class="comment">// and the message is the earliest asynchronous message in the queue.</span></div><div class="line">    needWake = mBlocked &amp;&amp; p.target == <span class="keyword">null</span> &amp;&amp; msg.isAsynchronous();</div><div class="line">  	<span class="comment">//首先声明了一个message对象prev，从字面意思理解是前一个message的意思</span></div><div class="line">    Message prev;</div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">      <span class="comment">//接着进入一个死循环，将p赋值给prev，看看前面的代码可以知道，p指向的是mMessages,所以这里</span></div><div class="line">      <span class="comment">//是将prev指向了mMessage，再下一次循环的时候，prev则是指向了第二个message，依次类推</span></div><div class="line">        prev = p;</div><div class="line">      <span class="comment">//接着将p指向p.next也就是mMessages.next,也就是消息链表中的第二个message</span></div><div class="line">        p = p.next;</div><div class="line">      <span class="comment">//接下来判断两件事</span></div><div class="line">      <span class="comment">//1.p==null，说明没有下一个消息了，跳出循环</span></div><div class="line">      <span class="comment">//2.p!=null，并且当前需要入队的这个message的执行时间是小于队列中这个任务的执行时间的</span></div><div class="line">      <span class="comment">//也就是说这个入队的message需要比队列中的这个message先执行，也跳出循环</span></div><div class="line">      <span class="comment">//3.如果这两个条件都不满足的话，则继续跟队列中的下一个消息进行对比，直到满足条件，或者到</span></div><div class="line">      <span class="comment">//队列的末尾</span></div><div class="line">        <span class="keyword">if</span> (p == <span class="keyword">null</span> || when &lt; p.when) &#123;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (needWake &amp;&amp; p.isAsynchronous()) &#123;</div><div class="line">            needWake = <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">  <span class="comment">//跳出循环后做了两件事情</span></div><div class="line">  <span class="comment">// 1.将入队的这个消息的next指向循环中获取到的应该排在这个消息之后的message</span></div><div class="line">    msg.next = p; <span class="comment">// invariant: p == prev.next</span></div><div class="line">  <span class="comment">//将msg前面那个message.next指向了msg</span></div><div class="line">    prev.next = msg;</div><div class="line">  <span class="comment">//到这里就将一个message完成了入队</span></div><div class="line">  <span class="comment">//入队的过程是线程安全的</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// Inserted within the middle of the queue.  Usually we don't have to wake</span></div><div class="line">    <span class="comment">// up the event queue unless there is a barrier at the head of the queue</span></div><div class="line">    <span class="comment">// and the message is the earliest asynchronous message in the queue.</span></div><div class="line">    needWake = mBlocked &amp;&amp; p.target == <span class="keyword">null</span> &amp;&amp; msg.isAsynchronous();</div><div class="line">  	<span class="comment">//首先声明了一个message对象prev，从字面意思理解是前一个message的意思</span></div><div class="line">    Message prev;</div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">      <span class="comment">//接着进入一个死循环，将p赋值给prev，看看前面的代码可以知道，p指向的是mMessages,所以这里</span></div><div class="line">      <span class="comment">//是将prev指向了mMessage，再下一次循环的时候，prev则是指向了第二个message，依次类推</span></div><div class="line">        prev = p;</div><div class="line">      <span class="comment">//接着将p指向p.next也就是mMessages.next,也就是消息链表中的第二个message</span></div><div class="line">        p = p.next;</div><div class="line">      <span class="comment">//接下来判断两件事</span></div><div class="line">      <span class="comment">//1.p==null，说明没有下一个消息了，跳出循环</span></div><div class="line">      <span class="comment">//2.p!=null，并且当前需要入队的这个message的执行时间是小于队列中这个任务的执行时间的</span></div><div class="line">      <span class="comment">//也就是说这个入队的message需要比队列中的这个message先执行，也跳出循环</span></div><div class="line">      <span class="comment">//3.如果这两个条件都不满足的话，则继续跟队列中的下一个消息进行对比，直到满足条件，或者到</span></div><div class="line">      <span class="comment">//队列的末尾</span></div><div class="line">        <span class="keyword">if</span> (p == <span class="keyword">null</span> || when &lt; p.when) &#123;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (needWake &amp;&amp; p.isAsynchronous()) &#123;</div><div class="line">            needWake = <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">  <span class="comment">//跳出循环后做了两件事情</span></div><div class="line">  <span class="comment">// 1.将入队的这个消息的next指向循环中获取到的应该排在这个消息之后的message</span></div><div class="line">    msg.next = p; <span class="comment">// invariant: p == prev.next</span></div><div class="line">  <span class="comment">//将msg前面那个message.next指向了msg</span></div><div class="line">    prev.next = msg;</div><div class="line">  <span class="comment">//到这里就将一个message完成了入队</span></div><div class="line">  <span class="comment">//入队的过程是线程安全的</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p><img src="http://upload-images.jianshu.io/upload_images/1473110-cf3917ec68d63362.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MessageQueue入队.jpg"></p>
 <p><img src="http://upload-images.jianshu.io/upload_images/1473110-8d1085869f87c65b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MessageQueue入队（2）.jpg"></p>
 <h4 id="2-取出消息"><a href="#2-取出消息" class="headerlink" title="2.取出消息"></a>2.取出消息</h4><p>这里贴的不是完整代码，而是取出message的核心逻辑代码，这里其实分了两个部分，第一个部分是消息插队，这个在第三节叙述，第二个部分是正常的消息，其实取出消息的部分比较简单，注释也比较清晰</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">    <span class="comment">// Try to retrieve the next message.  Return if found.</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">long</span> now = SystemClock.uptimeMillis();</div><div class="line">    Message prevMsg = <span class="keyword">null</span>;</div><div class="line">  <span class="comment">//队列的第一个message</span></div><div class="line">    Message msg = mMessages;</div><div class="line">  <span class="comment">//正常取出消息</span></div><div class="line">    <span class="keyword">if</span> (msg != <span class="keyword">null</span>) &#123;</div><div class="line">      <span class="comment">//1.首先判断当前时间是否小于了msg的执行时间，</span></div><div class="line">        <span class="keyword">if</span> (now &lt; msg.when) &#123;</div><div class="line">            <span class="comment">// Next message is not ready.  Set a timeout to wake up when it is ready.</span></div><div class="line">          <span class="comment">//(翻译)需要执行的消息还没有到执行时间，设置一个唤醒时间，当到了执行时间时唤醒</span></div><div class="line">            nextPollTimeoutMillis = (<span class="keyword">int</span>) Math.min(msg.when - now, Integer.MAX_VALUE);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// Got a message.正常取出消息，这里逻辑比较简单，不再赘述</span></div><div class="line">            mBlocked = <span class="keyword">false</span>;</div><div class="line">            <span class="keyword">if</span> (prevMsg != <span class="keyword">null</span>) &#123;</div><div class="line">                prevMsg.next = msg.next;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                mMessages = msg.next;</div><div class="line">            &#125;</div><div class="line">            msg.next = <span class="keyword">null</span>;</div><div class="line">            <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Returning message: "</span> + msg);</div><div class="line">            msg.markInUse();</div><div class="line">            <span class="keyword">return</span> msg;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">// No more messages.</span></div><div class="line">        nextPollTimeoutMillis = -<span class="number">1</span>;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">    <span class="comment">// Try to retrieve the next message.  Return if found.</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">long</span> now = SystemClock.uptimeMillis();</div><div class="line">    Message prevMsg = <span class="keyword">null</span>;</div><div class="line">  <span class="comment">//队列的第一个message</span></div><div class="line">    Message msg = mMessages;</div><div class="line">  <span class="comment">//正常取出消息</span></div><div class="line">    <span class="keyword">if</span> (msg != <span class="keyword">null</span>) &#123;</div><div class="line">      <span class="comment">//1.首先判断当前时间是否小于了msg的执行时间，</span></div><div class="line">        <span class="keyword">if</span> (now &lt; msg.when) &#123;</div><div class="line">            <span class="comment">// Next message is not ready.  Set a timeout to wake up when it is ready.</span></div><div class="line">          <span class="comment">//(翻译)需要执行的消息还没有到执行时间，设置一个唤醒时间，当到了执行时间时唤醒</span></div><div class="line">            nextPollTimeoutMillis = (<span class="keyword">int</span>) Math.min(msg.when - now, Integer.MAX_VALUE);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// Got a message.正常取出消息，这里逻辑比较简单，不再赘述</span></div><div class="line">            mBlocked = <span class="keyword">false</span>;</div><div class="line">            <span class="keyword">if</span> (prevMsg != <span class="keyword">null</span>) &#123;</div><div class="line">                prevMsg.next = msg.next;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                mMessages = msg.next;</div><div class="line">            &#125;</div><div class="line">            msg.next = <span class="keyword">null</span>;</div><div class="line">            <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Returning message: "</span> + msg);</div><div class="line">            msg.markInUse();</div><div class="line">            <span class="keyword">return</span> msg;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">// No more messages.</span></div><div class="line">        nextPollTimeoutMillis = -<span class="number">1</span>;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
 <h4 id="3-消息插队"><a href="#3-消息插队" class="headerlink" title="3.消息插队"></a>3.消息插队</h4><p>首先需要知道的是整个android系统其实主要是依赖消息机制来处理事件，比如说点击事件等等，都是通过handler发送消息进行处理，但是这些系统消息相较于程序自己发送的消息，应该要优先执行，所以就涉及到了消息插队</p>
 <ul>
 <li>isAsynchronous() — 如何将系统消息和程序发送的消息区分开来</li>
 </ul>
 <p>在阅读Hanlder的源码的时候，可以看到一个@hide的构造方法，传入一个布尔值，从字面意思理解是异步</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">(<span class="keyword">boolean</span> async)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>(<span class="keyword">null</span>, async);</div><div class="line">&#125;</div><div class="line">mAsynchronous = async;<span class="comment">//赋值给mAsychronous</span></div><div class="line"><span class="comment">//消息入队的时候，msg.setAsynchronous(true);将这个msg标记为异步</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(MessageQueue queue, Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">        msg.target = <span class="keyword">this</span>;</div><div class="line">        <span class="keyword">if</span> (mAsynchronous) &#123;</div><div class="line">            msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">(<span class="keyword">boolean</span> async)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>(<span class="keyword">null</span>, async);</div><div class="line">&#125;</div><div class="line">mAsynchronous = async;<span class="comment">//赋值给mAsychronous</span></div><div class="line"><span class="comment">//消息入队的时候，msg.setAsynchronous(true);将这个msg标记为异步</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(MessageQueue queue, Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">        msg.target = <span class="keyword">this</span>;</div><div class="line">        <span class="keyword">if</span> (mAsynchronous) &#123;</div><div class="line">            msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
 <p>为什么要标记为异步呢？是要新开一个线程来执行么？可是最后也是发送到looper所绑定的消息队列中啊，貌似这里并没有异步，接着看上一节提到的消息插队的源码，在这里看到调用了一个方法msg.isAsynchronous()，貌似这个布尔值并不是跟异步有关系，而是将这个消息做了一个标记而已</p>
 <p>前面的消息入队分析可以知道，虽然被标记了系统消息，但是还是按照消息队列的规则去入队，那么如何做到优先取出这个任务呢，一步步看</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">Message prevMsg = <span class="keyword">null</span>;</div><div class="line">Message msg = mMessages;</div><div class="line"><span class="comment">//1.判断当前第一个消息不为空</span></div><div class="line"><span class="comment">//2.重点来了,msg.target == null,如果这个消息的target为空，看过handler源码可以知道，</span></div><div class="line"><span class="comment">//只要是通过handler发送消息，就会将这个msg的target指向发送消息的handler，否则也无法处理这个消息</span></div><div class="line"><span class="comment">//那么为什么这里会出现target为空呢？先看if代码块里面的代码</span></div><div class="line"><span class="keyword">if</span> (msg != <span class="keyword">null</span> &amp;&amp; msg.target == <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="comment">// Stalled by a barrier.  Find the next asynchronous message in the queue.</span></div><div class="line">  	<span class="comment">//进入一个循环，注意while中的判断条件</span></div><div class="line">    do &#123;</div><div class="line">      </div><div class="line">      <span class="comment">//不断地取下一个消息来匹配判断条件</span></div><div class="line">        prevMsg = msg;</div><div class="line">        msg = msg.next;</div><div class="line">    &#125; <span class="keyword">while</span> (msg != <span class="keyword">null</span> &amp;&amp; !msg.isAsynchronous());</div><div class="line">  <span class="comment">//只有当msg不为空 并且当前的这个消息是异步的，也就是说是系统消息，则跳出循环。</span></div><div class="line">  <span class="comment">//跳出循环后就走到了正常取消息的代码中，取出的正是这个系统消息，发现插队就成功了</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line">Message prevMsg = <span class="keyword">null</span>;</div><div class="line">Message msg = mMessages;</div><div class="line"><span class="comment">//1.判断当前第一个消息不为空</span></div><div class="line"><span class="comment">//2.重点来了,msg.target == null,如果这个消息的target为空，看过handler源码可以知道，</span></div><div class="line"><span class="comment">//只要是通过handler发送消息，就会将这个msg的target指向发送消息的handler，否则也无法处理这个消息</span></div><div class="line"><span class="comment">//那么为什么这里会出现target为空呢？先看if代码块里面的代码</span></div><div class="line"><span class="keyword">if</span> (msg != <span class="keyword">null</span> &amp;&amp; msg.target == <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="comment">// Stalled by a barrier.  Find the next asynchronous message in the queue.</span></div><div class="line">  	<span class="comment">//进入一个循环，注意while中的判断条件</span></div><div class="line">    do &#123;</div><div class="line">      </div><div class="line">      <span class="comment">//不断地取下一个消息来匹配判断条件</span></div><div class="line">        prevMsg = msg;</div><div class="line">        msg = msg.next;</div><div class="line">    &#125; <span class="keyword">while</span> (msg != <span class="keyword">null</span> &amp;&amp; !msg.isAsynchronous());</div><div class="line">  <span class="comment">//只有当msg不为空 并且当前的这个消息是异步的，也就是说是系统消息，则跳出循环。</span></div><div class="line">  <span class="comment">//跳出循环后就走到了正常取消息的代码中，取出的正是这个系统消息，发现插队就成功了</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>上面的分析已经插队成功，但是还有疑点，到底是怎么进入到if代码块中的</p>
 <blockquote>
 <p>// Stalled by a barrier.  Find the next asynchronous message in the queue.</p>
 </blockquote>
 <p>作者在这里给了一条注释，通过一个阻塞块来停止正常的队列，找到队列中的第一个系统消息</p>
 <p>在MessageQueue中试图搜索barrier，发现一个方法，</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">postSyncBarrier</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> postSyncBarrier(SystemClock.uptimeMillis());</div><div class="line">    &#125;</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">postSyncBarrier</span><span class="params">(<span class="keyword">long</span> when)</span> </span>&#123;</div><div class="line">    <span class="comment">// Enqueue a new sync barrier token.</span></div><div class="line">    <span class="comment">// We don't need to wake the queue because the purpose of a barrier is to stall it.</span></div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> token = mNextBarrierToken++;</div><div class="line">        <span class="keyword">final</span> Message msg = Message.obtain();</div><div class="line">        msg.markInUse();</div><div class="line">        msg.when = when;</div><div class="line">        msg.arg1 = token;</div><div class="line"></div><div class="line">        Message prev = <span class="keyword">null</span>;</div><div class="line">        Message p = mMessages;</div><div class="line">      <span class="comment">//判断将这个消息插入到队列中的哪个位置</span></div><div class="line">        <span class="keyword">if</span> (when != <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">while</span> (p != <span class="keyword">null</span> &amp;&amp; p.when &lt;= when) &#123;</div><div class="line">                prev = p;</div><div class="line">                p = p.next;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (prev != <span class="keyword">null</span>) &#123; <span class="comment">// invariant: p == prev.next</span></div><div class="line">            msg.next = p;</div><div class="line">            prev.next = msg;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            msg.next = p;</div><div class="line">            mMessages = msg;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> token;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">postSyncBarrier</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> postSyncBarrier(SystemClock.uptimeMillis());</div><div class="line">    &#125;</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">postSyncBarrier</span><span class="params">(<span class="keyword">long</span> when)</span> </span>&#123;</div><div class="line">    <span class="comment">// Enqueue a new sync barrier token.</span></div><div class="line">    <span class="comment">// We don't need to wake the queue because the purpose of a barrier is to stall it.</span></div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> token = mNextBarrierToken++;</div><div class="line">        <span class="keyword">final</span> Message msg = Message.obtain();</div><div class="line">        msg.markInUse();</div><div class="line">        msg.when = when;</div><div class="line">        msg.arg1 = token;</div><div class="line"></div><div class="line">        Message prev = <span class="keyword">null</span>;</div><div class="line">        Message p = mMessages;</div><div class="line">      <span class="comment">//判断将这个消息插入到队列中的哪个位置</span></div><div class="line">        <span class="keyword">if</span> (when != <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">while</span> (p != <span class="keyword">null</span> &amp;&amp; p.when &lt;= when) &#123;</div><div class="line">                prev = p;</div><div class="line">                p = p.next;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (prev != <span class="keyword">null</span>) &#123; <span class="comment">// invariant: p == prev.next</span></div><div class="line">            msg.next = p;</div><div class="line">            prev.next = msg;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            msg.next = p;</div><div class="line">            mMessages = msg;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> token;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>加入队列的代码已经很熟悉了，可以看到在这段代码中其实入队了一个没有target的消息，而最上面那个public方法中可以看到传入的when是当前的系统时间，也就是说如果调用这个方法会在消息队列的头部插入一个没有target的message，到这里思路就比较清晰了，但是这个消息肯定不能一直在队列中，否则整个队列的正常消息就永远无法处理，所以相对应还有一个remove。注释中说明，这个方法应该跟插入的方法匹配使用。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeSyncBarrier</span><span class="params">(<span class="keyword">int</span> token)</span> </span>&#123;</div><div class="line">    <span class="comment">// Remove a sync barrier token from the queue.</span></div><div class="line">    <span class="comment">// If the queue is no longer stalled by a barrier then wake it.</span></div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        Message prev = <span class="keyword">null</span>;</div><div class="line">        Message p = mMessages;</div><div class="line">        <span class="keyword">while</span> (p != <span class="keyword">null</span> &amp;&amp; (p.target != <span class="keyword">null</span> || p.arg1 != token)) &#123;</div><div class="line">            prev = p;</div><div class="line">            p = p.next;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (p == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The specified message queue synchronization "</span></div><div class="line">                    + <span class="string">" barrier token has not been posted or has already been removed."</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> needWake;</div><div class="line">        <span class="keyword">if</span> (prev != <span class="keyword">null</span>) &#123;</div><div class="line">            prev.next = p.next;</div><div class="line">            needWake = <span class="keyword">false</span>;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            mMessages = p.next;</div><div class="line">            needWake = mMessages == <span class="keyword">null</span> || mMessages.target != <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">        p.recycleUnchecked();</div><div class="line"></div><div class="line">        <span class="comment">// If the loop is quitting then it is already awake.</span></div><div class="line">        <span class="comment">// We can assume mPtr != 0 when mQuitting is false.</span></div><div class="line">        <span class="keyword">if</span> (needWake &amp;&amp; !mQuitting) &#123;</div><div class="line">            nativeWake(mPtr);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeSyncBarrier</span><span class="params">(<span class="keyword">int</span> token)</span> </span>&#123;</div><div class="line">    <span class="comment">// Remove a sync barrier token from the queue.</span></div><div class="line">    <span class="comment">// If the queue is no longer stalled by a barrier then wake it.</span></div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        Message prev = <span class="keyword">null</span>;</div><div class="line">        Message p = mMessages;</div><div class="line">        <span class="keyword">while</span> (p != <span class="keyword">null</span> &amp;&amp; (p.target != <span class="keyword">null</span> || p.arg1 != token)) &#123;</div><div class="line">            prev = p;</div><div class="line">            p = p.next;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (p == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The specified message queue synchronization "</span></div><div class="line">                    + <span class="string">" barrier token has not been posted or has already been removed."</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> needWake;</div><div class="line">        <span class="keyword">if</span> (prev != <span class="keyword">null</span>) &#123;</div><div class="line">            prev.next = p.next;</div><div class="line">            needWake = <span class="keyword">false</span>;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            mMessages = p.next;</div><div class="line">            needWake = mMessages == <span class="keyword">null</span> || mMessages.target != <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">        p.recycleUnchecked();</div><div class="line"></div><div class="line">        <span class="comment">// If the loop is quitting then it is already awake.</span></div><div class="line">        <span class="comment">// We can assume mPtr != 0 when mQuitting is false.</span></div><div class="line">        <span class="keyword">if</span> (needWake &amp;&amp; !mQuitting) &#123;</div><div class="line">            nativeWake(mPtr);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>当发送系统消息时 会在消息队列中插入一个target为空的message，在取出消息时如果发现了这个消息，就跳过所有的正常消息，返回最近的一个系统消息，然后将这个标记消息从队列中remove。</p>
 <p>整个Handler源码学习系列笔记就完结了，当然现在也没有到特别深入的程度，但了解了整套Handler的消息机制后，相信对于源码的阅读能力和编程思路上也有挺大的提高。</p>
-  
-	</div>
-		<footer class="article-footer clearfix">
-<div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Android源码学习/">Android源码学习</a>
-</div>
-
-
-</div>
-
-
-
-</footer>
-
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/threadpoolexecutor_source/" title="ThreadPoolExecutor源码学习笔记">
-  <span>
-  ThreadPoolExecutor源码学习笔记</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/handler_source_2_Message/"  title="Handler源码学习（二）Message对象池">
- <span>Handler源码学习（二）Message对象池
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-<section id="comments" class="comment">
-	<div class="ds-thread" data-thread-key="handler_source_3_MessageQueue/" data-title="Handler源码学习（三）MessageQueue入队插队" data-url="https://joesteven.github.io/handler_source_3_MessageQueue/"></div>
-</section>
-
-
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
-
-<div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
-<aside class="clearfix">
-<div id="authorInfo">
-	
-		<div class="author-img"></div>		
-	
-	<div class="social-info" class="clearfix">
-		
-		<a href="http://weibo.com/2750146463" target="_blank" class="icon-weibo" title="微博"></a>
-		
-		
-		<a href="https://github.com/JoeSteven" target="_blank" class="icon-github" title="github"></a>
-		
-		
-		
-		
-		
-		
-		
-		<a href="http://www.zhihu.com/people/qiao-xi-28" target="_blank" class="icon-zhihu" title="知乎"></a>
-		
-		
-		
-		
-		<a href="mailto:qiaoxiaoxi621@gmail.com" target="_blank" class="icon-email" title="Email Me"></a>
-		
-
-	</div>
-</div>
-
-  
-<div class="categorieslist">
-	<p class="asidetitle">分类</p>
-		<ul>
-		
-		  
-			<li><a href="/categories/Android/" title="Android">Android<sup>3</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/Android源码学习/" title="Android源码学习">Android源码学习<sup>11</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/Tools/" title="Tools">Tools<sup>1</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/杂谈/" title="杂谈">杂谈<sup>1</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  <div class="linkslist">
-  <p class="asidetitle">链接</p>
-    <ul>
-        
-          <li>
-            
-            	<a href="http://itscoder.com/" target="_blank" title="itsCoder">itsCoder</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="https://cassieran.github.io/" target="_blank" title="FaFa">FaFa</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://laobie.github.io/" target="_blank" title="写代码的猴子">写代码的猴子</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://brucezz.github.io/" target="_blank" title="Brucezz">Brucezz</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://allenwu.itscoder.com/" target="_blank" title="allen">allen</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://manjusaka.itscoder.com/" target="_blank" title="Manjusaka">Manjusaka</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="http://solart.cc/" target="_blank" title="imilk">imilk</a>
-            
-          </li>
-        
-          <li>
-            
-            	<a href="https://yongyu0102.github.io/" target="_blank" title="用语">用语</a>
-            
-          </li>
-        
-    </ul>
-</div>
-
-</aside>
-</div>
+                </div>
+            </section>
+        </article>
     </div>
-    <footer><div id="footer" >
-		
-		
+    
+<nav class="pagination">
+    
+    
+    <a class="prev-post" title="ThreadPoolExecutor源码学习笔记" href="/threadpoolexecutor_source/">
+        ← ThreadPoolExecutor源码学习笔记
+    </a>
+    
+    <span class="prev-next-post">•</span>
+    
+    <a class="next-post" title="Handler源码学习（二）Message对象池" href="/handler_source_2_Message/">
+        Handler源码学习（二）Message对象池 →
+    </a>
+    
+    
+</nav>
+    
+</main>
 
-		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2018 
-		
-		<a href="/about" target="_blank" title="Joe">Joe</a>
-		
-		
-		</p>
+<div class="t-g-control">
+    <div class="gotop">
+        <svg class="icon" width="32px" height="32px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M793.024 710.272a32 32 0 1 0 45.952-44.544l-310.304-320a32 32 0 0 0-46.4 0.48l-297.696 320a32 32 0 0 0 46.848 43.584l274.752-295.328 286.848 295.808z" fill="#8a8a8a" /></svg>
+    </div>
+    <div class="toc-control">
+        <svg class="icon toc-icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M779.776 480h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M779.776 672h-387.2a32 32 0 0 0 0 64h387.2a32 32 0 0 0 0-64M256 288a32 32 0 1 0 0 64 32 32 0 0 0 0-64M392.576 352h387.2a32 32 0 0 0 0-64h-387.2a32 32 0 0 0 0 64M256 480a32 32 0 1 0 0 64 32 32 0 0 0 0-64M256 672a32 32 0 1 0 0 64 32 32 0 0 0 0-64" fill="#8a8a8a" /></svg>
+        <svg class="icon toc-close" style="display: none;" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M512 960c-247.039484 0-448-200.960516-448-448S264.960516 64 512 64 960 264.960516 960 512 759.039484 960 512 960zM512 128.287273c-211.584464 0-383.712727 172.128262-383.712727 383.712727 0 211.551781 172.128262 383.712727 383.712727 383.712727 211.551781 0 383.712727-172.159226 383.712727-383.712727C895.712727 300.415536 723.551781 128.287273 512 128.287273z" fill="#8a8a8a" /><path d="M557.05545 513.376159l138.367639-136.864185c12.576374-12.416396 12.672705-32.671738 0.25631-45.248112s-32.704421-12.672705-45.248112-0.25631l-138.560301 137.024163-136.447897-136.864185c-12.512727-12.512727-32.735385-12.576374-45.248112-0.063647-12.512727 12.480043-12.54369 32.735385-0.063647 45.248112l136.255235 136.671523-137.376804 135.904314c-12.576374 12.447359-12.672705 32.671738-0.25631 45.248112 6.271845 6.335493 14.496116 9.504099 22.751351 9.504099 8.12794 0 16.25588-3.103239 22.496761-9.247789l137.567746-136.064292 138.687596 139.136568c6.240882 6.271845 14.432469 9.407768 22.65674 9.407768 8.191587 0 16.352211-3.135923 22.591372-9.34412 12.512727-12.480043 12.54369-32.704421 0.063647-45.248112L557.05545 513.376159z" fill="#8a8a8a" /></svg>
+    </div>
+    <div class="gobottom">
+        <svg class="icon" width="32px" height="32.00px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M231.424 346.208a32 32 0 0 0-46.848 43.584l297.696 320a32 32 0 0 0 46.4 0.48l310.304-320a32 32 0 1 0-45.952-44.544l-286.848 295.808-274.752-295.36z" fill="#8a8a8a" /></svg>
+    </div>
 </div>
-</footer>
-    <script src="/js/jquery-2.0.3.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+<div class="toc-main" style="right: -100%">
+    <div class="post-toc">
+        <span>TOC</span>
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-消息入队"><span class="toc-text">1.消息入队</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-取出消息"><span class="toc-text">2.取出消息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-消息插队"><span class="toc-text">3.消息插队</span></a></li></ol>
+    </div>
+</div>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.navbar').click(function(){
-    $('header nav').toggleClass('shownav');
-  });
-  var myWidth = 0;
-  function getSize(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-  };
-  var m = $('#main'),
-      a = $('#asidepart'),
-      c = $('.closeaside'),
-      o = $('.openaside');
-  c.click(function(){
-    a.addClass('fadeOut').css('display', 'none');
-    o.css('display', 'block').addClass('fadeIn');
-    m.addClass('moveMain');
-  });
-  o.click(function(){
-    o.css('display', 'none').removeClass('beforeFadeIn');
-    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
-    m.removeClass('moveMain');
-  });
-  $(window).scroll(function(){
-    o.css("top",Math.max(80,260-$(this).scrollTop()));
-  });
-  
-        getSize();
-        if (myWidth >= 1024) {
-          c.click();
-        }
-  
-  $(window).resize(function(){
-    getSize(); 
-    if (myWidth >= 1024) {
-      $('header nav').removeClass('shownav');
-    }else{
-      m.removeClass('moveMain');
-      a.css('display', 'block').removeClass('fadeOut');
-      o.css('display', 'none');
+
+
         
+
+<aside class="read-next outer">
+    <div class="inner">
+        <div class="read-next-feed">
+            
+            
+
+<article class="read-next-card"  style="background-image: url(../../img/cover.png)"  >
+  <header class="read-next-card-header">
+    <small class="read-next-card-header-sitetitle">&mdash; Joe is a thin man &mdash;</small>
+    <h3 class="read-next-card-header-title">Recent Posts</h3>
+  </header>
+  <div class="read-next-divider">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M13 14.5s2 3 5 3 5.5-2.463 5.5-5.5S21 6.5 18 6.5c-5 0-7 11-12 11C2.962 17.5.5 15.037.5 12S3 6.5 6 6.5s4.5 3.5 4.5 3.5"/>
+    </svg>
+  </div>
+  <div class="read-next-card-content">
+    <ul>
+      
+      
+      
+      <li>
+        <a href="/android_long_picture_process/">Android 中的长图片处理</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/shared_preferences_source/">对 SharedPreferences 再多一点了解</a>
+      </li>
+      
+      
+      
+      <li>
+        <a href="/zoom-up-animation/">Activity 共享元素转场动画实践</a>
+      </li>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    </ul>
+  </div>
+  <footer class="read-next-card-footer">
+    <a href="/archives">  MORE  → </a>
+  </footer>
+</article>
+
+            
+            
+            
+
+<article class="read-next-card"  style="background-image: url(../../img/cover.png)"  >
+    <header class="read-next-card-header" style="padding-bottom: 20px">
+        <h3 class="read-next-card-header-title">Categories</h3>
+    </header>
+    <div class="read-next-card-content">
+        <ul>
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Android源码学习/">Android源码学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/">Tools</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/杂谈/">杂谈</a></li></ul>
+        </ul>
+    </div>
+</article>
+
+
+            
+            
+            
+
+            
+        </div>
+    </div>
+</aside>
+
+<footer class="site-footer outer">
+	<div class="site-footer-content inner">
+		<section class="copyright">
+			<a href="/" title="Joe is a thin man">Joe is a thin man</a>
+			&copy; 2018
+		</section>
+		<nav class="site-footer-nav">
+			
+            <a href="https://hexo.io" title="Hexo" target="_blank" rel="external">Hexo</a>
+            <a href="https://github.com/xzhih/hexo-theme-casper" title="Casper" target="_blank" rel="external">Casper</a>
+        </nav>
+    </div>
+</footer>
+
+
+
+
+
+
+<div class="floating-header" >
+	<div class="floating-header-logo">
+        <a href="/" title="Joe is a thin man">
+			
+                <img src="img/avatar.png" alt="Joe is a thin man icon" />
+			
+            <span>Joe is a thin man</span>
+        </a>
+    </div>
+    <span class="floating-header-divider">&mdash;</span>
+    <div class="floating-header-title">Handler源码学习（三）MessageQueue入队插队</div>
+    <progress class="progress" value="0">
+        <div class="progress-container">
+            <span class="progress-bar"></span>
+        </div>
+    </progress>
+</div>
+<script>
+   $(document).ready(function () {
+    var progressBar = document.querySelector('progress');
+    var header = document.querySelector('.floating-header');
+    var title = document.querySelector('.post-full-title');
+    var lastScrollY = window.scrollY;
+    var lastWindowHeight = window.innerHeight;
+    var lastDocumentHeight = $(document).height();
+    var ticking = false;
+
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
     }
-  });
-});
-</script>
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(update);
+        }
+        ticking = true;
+    }
+    function update() {
+        var rect = title.getBoundingClientRect();
+        var trigger = rect.top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+            // show/hide floating header
+            if (lastScrollY >= trigger + triggerOffset) {
+                header.classList.add('floating-active');
+            } else {
+                header.classList.remove('floating-active');
+            }
+            progressBar.setAttribute('max', progressMax);
+            progressBar.setAttribute('value', lastScrollY);
+            ticking = false;
+        }
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
+        window.addEventListener('scroll', onScroll, {passive: true});
+        update();
 
+        // TOC
+        var width = $('.toc-main').width();
+        $('.toc-control').click(function () {
+            if ($('.t-g-control').css('width')=="50px") {
+                if ($('.t-g-control').css('right')=="0px") {
+                    $('.t-g-control').animate({right: width}, "slow");
+                    $('.toc-main').animate({right: 0}, "slow");
+                    toc_icon()
+                } else {
+                    $('.t-g-control').animate({right: 0}, "slow");
+                    $('.toc-main').animate({right: -width}, "slow");
+                    toc_icon()
+                }
+            } else {
+                if ($('.toc-main').css('right')=="0px") {
+                    $('.toc-main').slideToggle("fast", toc_icon());
+                } else {
+                    $('.toc-main').css('right', '0px');
+                    toc_icon()
+                }
+            }
+        })
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
+        function toc_icon() {
+            if ($('.toc-icon').css('display')=="none") {
+                $('.toc-close').hide();
+                $('.toc-icon').show();
+            } else {
+                $('.toc-icon').hide();
+                $('.toc-close').show();
+            }
+        }
 
-  $('.hoverqrcode').hide();
+        $('.gotop').click(function(){
+            $('html,body').animate({scrollTop:$('.post-full-header').offset().top}, 800);
+        });
+        $('.gobottom').click(function () {
+            $('html,body').animate({scrollTop:$('.pagination').offset().top}, 800);
+        });
 
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
+        // highlight
+        // https://highlightjs.org
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+        $('td.code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
 
-
-
-<script type="text/javascript">
-  var duoshuoQuery = {short_name:"extremej"};
-  (function() {
-    var ds = document.createElement('script');
-    ds.type = 'text/javascript';ds.async = true;
-    ds.src = '//static.duoshuo.com/embed.js';
-    ds.charset = 'UTF-8';
-    (document.getElementsByTagName('head')[0] 
-    || document.getElementsByTagName('body')[0]).appendChild(ds);
-  })();
-</script> 
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.article-content').each(function(i){
-    $(this).find('img').each(function(){
-      if ($(this).parent().hasClass('fancybox')) return;
-      var alt = this.alt;
-      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
-      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+        console.log("this theme is from https://github.com/xzhih/hexo-theme-casper")
     });
-    $(this).find('.fancybox').each(function(){
-      $(this).attr('rel', 'article' + i);
-    });
-  });
-  if($.fancybox){
-    $('.fancybox').fancybox();
-  }
-}); 
 </script>
 
 
 
-<!-- Analytics Begin -->
+<link rel="stylesheet" href="https://cdn.staticfile.org/lightgallery/1.3.9/css/lightgallery.min.css">
 
-<script type="text/javascript">
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-81871291-1', 'http://extremej.itscoder.com/');  
-ga('send', 'pageview');
-</script>
 
+
+<script src="https://cdn.staticfile.org/lightgallery/1.3.9/js/lightgallery.min.js"></script>
 
 
 <script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?a7eee7d6f5059e0cebc1c797881c4f8f";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
+	$(function () {
+		var postImg = $('#lightgallery').find('img');
+		postImg.addClass('post-img');
+		postImg.each(function () {
+			var imgSrc = $(this).attr('src');
+			$(this).attr('data-src', imgSrc);
+		});
+		$('#lightgallery').lightGallery({selector: '.post-img'});
+	});
 </script>
 
 
 
-<!-- Analytics End -->
 
-<!-- Totop Begin -->
-
-	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
-	</div>
-	<script src="/js/totop.js"></script>
-
-<!-- Totop End -->
-
-<!-- MathJax Begin -->
-<!-- mathjax config similar to math.stackexchange -->
-
-
-<!-- MathJax End -->
-
-<!-- Tiny_search Begin -->
-
-<!-- Tiny_search End -->
-
-  </body>
+    </div>
+</body>
 </html>
