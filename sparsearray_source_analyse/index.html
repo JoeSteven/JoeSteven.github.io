@@ -11,40 +11,34 @@
     
 
     
-    <meta name="description" content="文章来源：itsCoder 的 WeeklyBolg 项目
-itsCoder主页：http://itscoder.com/
-作者：Joe
+    <meta name="description" content="作者：Joe
 审阅者：allenwu
 
 序言相信大家都用过HashMap用来存放键值对，最近在项目中使用HashMap的时候发现，有时候 IDE 会提示我这里的HashMap可以用SparseArray或者SparseIntArray等等来代替。
-细心的朋友可能也发现了这个">
+细心的朋友可能也发现了这个提示，并且会发现并不是所有的HashMap都会提示替换。今天就来一探究竟，到底SparseArray跟HaspMap相比有什">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SparseArray 的使用及实现原理">
 <meta property="og:url" content="https://joesteven.github.io/sparsearray_source_analyse/index.html">
 <meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:description" content="文章来源：itsCoder 的 WeeklyBolg 项目
-itsCoder主页：http://itscoder.com/
-作者：Joe
+<meta property="og:description" content="作者：Joe
 审阅者：allenwu
 
 序言相信大家都用过HashMap用来存放键值对，最近在项目中使用HashMap的时候发现，有时候 IDE 会提示我这里的HashMap可以用SparseArray或者SparseIntArray等等来代替。
-细心的朋友可能也发现了这个">
+细心的朋友可能也发现了这个提示，并且会发现并不是所有的HashMap都会提示替换。今天就来一探究竟，到底SparseArray跟HaspMap相比有什">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_one.jpg">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_two.jpg">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_three.jpg">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_four.jpg">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_remove.png">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_gc.png">
-<meta property="og:updated_time" content="2016-08-28T15:08:18.000Z">
+<meta property="og:updated_time" content="2018-07-13T03:55:34.134Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SparseArray 的使用及实现原理">
-<meta name="twitter:description" content="文章来源：itsCoder 的 WeeklyBolg 项目
-itsCoder主页：http://itscoder.com/
-作者：Joe
+<meta name="twitter:description" content="作者：Joe
 审阅者：allenwu
 
 序言相信大家都用过HashMap用来存放键值对，最近在项目中使用HashMap的时候发现，有时候 IDE 会提示我这里的HashMap可以用SparseArray或者SparseIntArray等等来代替。
-细心的朋友可能也发现了这个">
+细心的朋友可能也发现了这个提示，并且会发现并不是所有的HashMap都会提示替换。今天就来一探究竟，到底SparseArray跟HaspMap相比有什">
 <meta name="twitter:image" content="http://7xtakx.com1.z0.glb.clouddn.com/sparse_array_put_one.jpg">
 
     
@@ -67,7 +61,7 @@ itsCoder主页：http://itscoder.com/
 		
 			<div id="textlogo">
 				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
-				<h2 class="blog-motto">写代码的民谣歌手</h2>
+				<h2 class="blog-motto">写代码的摇滚歌手</h2>
 			</div>
 			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
 			</a></div>
@@ -110,7 +104,7 @@ itsCoder主页：http://itscoder.com/
 		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
 		
   <p class="article-time">
-    <time datetime="2016-08-24T09:00:12.000Z" itemprop="datePublished"> 发表于 2016-08-24</time>
+    <time datetime="2017-02-24T09:00:12.000Z" itemprop="datePublished"> 发表于 2017-02-24</time>
     
   </p>
 </header>
@@ -124,8 +118,6 @@ itsCoder主页：http://itscoder.com/
 		</div>
 		
 		<blockquote>
-<p>文章来源：itsCoder 的 <a href="https://github.com/itsCoder/weeklyblog" target="_blank" rel="external">WeeklyBolg</a> 项目</p>
-<p>itsCoder主页：<a href="http://itscoder.com/" target="_blank" rel="external">http://itscoder.com/</a></p>
 <p>作者：<a href="http://extremej.itscoder.com/about/" target="_blank" rel="external">Joe</a></p>
 <p>审阅者：<a href="http://allenwu.itscoder.com/" target="_blank" rel="external">allenwu</a></p>
 </blockquote>
@@ -241,16 +233,16 @@ itsCoder主页：http://itscoder.com/
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/do_what_ever_u_want/" title="我和自己">
+ <a href="/manage_your_paper_work_elegantly/" title="优雅的管理你的文稿">
   <span>
-  我和自己</span>
+  优雅的管理你的文稿</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/lrucache_source/"  title="LruCache 源码学习笔记">
- <span>LruCache 源码学习笔记
+<a href="/hi_2017/"  title="2016,在此别过">
+ <span>2016,在此别过
 </span>
 </a>
 </div>
@@ -334,6 +326,12 @@ itsCoder主页：http://itscoder.com/
         
           <li>
             
+            	<a href="https://cassieran.github.io/" target="_blank" title="FaFa">FaFa</a>
+            
+          </li>
+        
+          <li>
+            
             	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
             
           </li>
@@ -385,7 +383,7 @@ itsCoder主页：http://itscoder.com/
 		
 
 		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2016 
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2018 
 		
 		<a href="/about" target="_blank" title="Joe">Joe</a>
 		

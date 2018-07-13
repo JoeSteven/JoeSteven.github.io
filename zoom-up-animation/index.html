@@ -11,41 +11,35 @@
     
 
     
-    <meta name="description" content="文章来源：itsCoder 的 WeeklyBolg 项目
-itsCoder主页：http://itscoder.com/
-作者：Joe
+    <meta name="description" content="作者：Joe
 审阅者：Brucezz
 
 前言上次碰到个需求，要从 Feed 页以 item 放大的动画打开第二个页面，先来看一个效果：
 
 就是这样一个转场动画～有了思路后要实现起来还是不难
-思路1.API一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提">
+思路1.API一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提供了相关的 Api ，这样可以避免盲目的造轮子，尤其对于项目来说，时间成本还是很重要的，而且 Android 提供的 Api">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Activity 共享元素转场动画实践">
 <meta property="og:url" content="https://joesteven.github.io/zoom-up-animation/index.html">
 <meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:description" content="文章来源：itsCoder 的 WeeklyBolg 项目
-itsCoder主页：http://itscoder.com/
-作者：Joe
+<meta property="og:description" content="作者：Joe
 审阅者：Brucezz
 
 前言上次碰到个需求，要从 Feed 页以 item 放大的动画打开第二个页面，先来看一个效果：
 
 就是这样一个转场动画～有了思路后要实现起来还是不难
-思路1.API一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提">
+思路1.API一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提供了相关的 Api ，这样可以避免盲目的造轮子，尤其对于项目来说，时间成本还是很重要的，而且 Android 提供的 Api">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/zoom_up.gif">
-<meta property="og:updated_time" content="2016-12-12T14:42:15.000Z">
+<meta property="og:updated_time" content="2018-07-13T03:57:18.450Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Activity 共享元素转场动画实践">
-<meta name="twitter:description" content="文章来源：itsCoder 的 WeeklyBolg 项目
-itsCoder主页：http://itscoder.com/
-作者：Joe
+<meta name="twitter:description" content="作者：Joe
 审阅者：Brucezz
 
 前言上次碰到个需求，要从 Feed 页以 item 放大的动画打开第二个页面，先来看一个效果：
 
 就是这样一个转场动画～有了思路后要实现起来还是不难
-思路1.API一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提">
+思路1.API一般我在需要实现某个功能的时候，会首先寻找 Android 是否已经提供了相关的 Api ，这样可以避免盲目的造轮子，尤其对于项目来说，时间成本还是很重要的，而且 Android 提供的 Api">
 <meta name="twitter:image" content="http://7xtakx.com1.z0.glb.clouddn.com/zoom_up.gif">
 
     
@@ -68,7 +62,7 @@ itsCoder主页：http://itscoder.com/
 		
 			<div id="textlogo">
 				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
-				<h2 class="blog-motto">写代码的民谣歌手</h2>
+				<h2 class="blog-motto">写代码的摇滚歌手</h2>
 			</div>
 			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
 			</a></div>
@@ -111,7 +105,7 @@ itsCoder主页：http://itscoder.com/
 		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
 		
   <p class="article-time">
-    <time datetime="2016-12-12T14:40:27.000Z" itemprop="datePublished"> 发表于 2016-12-12</time>
+    <time datetime="2017-03-22T14:40:27.000Z" itemprop="datePublished"> 发表于 2017-03-22</time>
     
   </p>
 </header>
@@ -120,13 +114,11 @@ itsCoder主页：http://itscoder.com/
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思路"><span class="toc-number">2.</span> <span class="toc-text">思路</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-API"><span class="toc-number">2.1.</span> <span class="toc-text">1.API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-实现思路"><span class="toc-number">2.2.</span> <span class="toc-text">2.实现思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#封装动画工具类"><span class="toc-number">3.</span> <span class="toc-text">封装动画工具类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-获取共享元素的初始信息"><span class="toc-number">3.1.</span> <span class="toc-text">1.获取共享元素的初始信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-封装动画执行接口"><span class="toc-number">3.2.</span> <span class="toc-text">2.封装动画执行接口</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现-Activity-转场动画"><span class="toc-number">4.</span> <span class="toc-text">实现 Activity 转场动画</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-进入动画"><span class="toc-number">4.1.</span> <span class="toc-text">1.进入动画</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-退出动画"><span class="toc-number">4.2.</span> <span class="toc-text">2.退出动画</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#坑"><span class="toc-number">5.</span> <span class="toc-text">坑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关资料"><span class="toc-number">6.</span> <span class="toc-text">相关资料</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#思路"><span class="toc-number">2.</span> <span class="toc-text">思路</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-API"><span class="toc-number">2.1.</span> <span class="toc-text">1.API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-实现思路"><span class="toc-number">2.2.</span> <span class="toc-text">2.实现思路</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#封装动画工具类"><span class="toc-number">3.</span> <span class="toc-text">封装动画工具类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-获取共享元素的初始信息"><span class="toc-number">3.1.</span> <span class="toc-text">1.获取共享元素的初始信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-封装动画执行接口"><span class="toc-number">3.2.</span> <span class="toc-text">2.封装动画执行接口</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现-Activity-转场动画"><span class="toc-number">4.</span> <span class="toc-text">实现 Activity 转场动画</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-进入动画"><span class="toc-number">4.1.</span> <span class="toc-text">1.进入动画</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-退出动画"><span class="toc-number">4.2.</span> <span class="toc-text">2.退出动画</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#坑"><span class="toc-number">5.</span> <span class="toc-text">坑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关资料"><span class="toc-number">6.</span> <span class="toc-text">相关资料</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Activity-共享元素转场动画实践-Joe"><span class="toc-number"></span> <span class="toc-text">Activity 共享元素转场动画实践 @Joe</span></a>
 		
 		</div>
 		
 		<ul>
-<li>文章来源：itsCoder 的 <a href="https://github.com/itsCoder/weeklyblog" target="_blank" rel="external">WeeklyBolg</a> 项目</li>
-<li>itsCoder主页：<a href="http://itscoder.com/" target="_blank" rel="external">http://itscoder.com/</a></li>
 <li>作者：<a href="http://extremej.itscoder.com/" target="_blank" rel="external">Joe</a></li>
 <li>审阅者：<a href="http://brucezz.itscoder.com/" target="_blank" rel="external">Brucezz</a></li>
 </ul>
@@ -214,7 +206,7 @@ itsCoder主页：http://itscoder.com/
 <li><a href="https://www.kancloud.cn/qibin0506/android-md/117682" target="_blank" rel="external">你所不知道的Activity转场动画——ActivityOptions</a></li>
 <li><a href="http://cashow.github.io/android-get-keyboard-height.html" target="_blank" rel="external">Android - 监听软键盘状态以及获取软键盘的高度</a></li>
 </ul>
-  
+<h1 id="Activity-共享元素转场动画实践-Joe"><a href="#Activity-共享元素转场动画实践-Joe" class="headerlink" title="Activity 共享元素转场动画实践 @Joe"></a><a href="http://extremej.itscoder.com/zoom-up-animation/" target="_blank" rel="external">Activity 共享元素转场动画实践</a> <a href="http://extremej.itscoder.com/" target="_blank" rel="external">@Joe</a></h1>  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
@@ -236,10 +228,17 @@ itsCoder主页：http://itscoder.com/
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/shared_preferences_source/" title="对 SharedPreferences 再多一点了解">
+  <span>
+  对 SharedPreferences 再多一点了解</span>
+</a>
+</div>
+
 
 <div class="next">
-<a href="/android_long_picture_process/"  title="Android 中的长图片处理">
- <span>Android 中的长图片处理
+<a href="/manage_your_paper_work_elegantly/"  title="优雅的管理你的文稿">
+ <span>优雅的管理你的文稿
 </span>
 </a>
 </div>
@@ -323,6 +322,12 @@ itsCoder主页：http://itscoder.com/
         
           <li>
             
+            	<a href="https://cassieran.github.io/" target="_blank" title="FaFa">FaFa</a>
+            
+          </li>
+        
+          <li>
+            
             	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
             
           </li>
@@ -374,7 +379,7 @@ itsCoder主页：http://itscoder.com/
 		
 
 		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2016 
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2018 
 		
 		<a href="/about" target="_blank" title="Joe">Joe</a>
 		

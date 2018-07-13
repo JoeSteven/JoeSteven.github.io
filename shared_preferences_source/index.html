@@ -11,35 +11,32 @@
     
 
     
-    <meta name="description" content="文章来源：itsCoder 的 WeeklyBolg 项目
-itsCoder主页：http://itscoder.com/
-作者：Joe
+    <meta name="description" content="作者：Joe
 审阅者：HugoXie、 allen
 
-序言相信很多人面试的时候被问到过 Android 中的数据持久化，其中有一个方法就是使用 SharedPreferences 来保存一些简单的数据到本地。如果你对 SharedPreferences 还不了解，建议先阅读">
+序言相信很多人面试的时候被问到过 Android 中的数据持久化，其中有一个方法就是使用 SharedPreferences 来保存一些简单的数据到本地。如果你对 SharedPreferences 还不了解，建议先阅读官方文档，再写个小 demo 实践一下。
+SharedPreferences 用的比较多的同学可能知道，在 API9 以后加">
 <meta property="og:type" content="article">
 <meta property="og:title" content="对 SharedPreferences 再多一点了解">
 <meta property="og:url" content="https://joesteven.github.io/shared_preferences_source/index.html">
 <meta property="og:site_name" content="Joe is a thin man">
-<meta property="og:description" content="文章来源：itsCoder 的 WeeklyBolg 项目
-itsCoder主页：http://itscoder.com/
-作者：Joe
+<meta property="og:description" content="作者：Joe
 审阅者：HugoXie、 allen
 
-序言相信很多人面试的时候被问到过 Android 中的数据持久化，其中有一个方法就是使用 SharedPreferences 来保存一些简单的数据到本地。如果你对 SharedPreferences 还不了解，建议先阅读">
+序言相信很多人面试的时候被问到过 Android 中的数据持久化，其中有一个方法就是使用 SharedPreferences 来保存一些简单的数据到本地。如果你对 SharedPreferences 还不了解，建议先阅读官方文档，再写个小 demo 实践一下。
+SharedPreferences 用的比较多的同学可能知道，在 API9 以后加">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_1.png">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_perferences_2.png">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_3.png">
 <meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_5.png">
-<meta property="og:updated_time" content="2016-09-18T14:47:43.000Z">
+<meta property="og:updated_time" content="2018-07-13T03:55:58.660Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="对 SharedPreferences 再多一点了解">
-<meta name="twitter:description" content="文章来源：itsCoder 的 WeeklyBolg 项目
-itsCoder主页：http://itscoder.com/
-作者：Joe
+<meta name="twitter:description" content="作者：Joe
 审阅者：HugoXie、 allen
 
-序言相信很多人面试的时候被问到过 Android 中的数据持久化，其中有一个方法就是使用 SharedPreferences 来保存一些简单的数据到本地。如果你对 SharedPreferences 还不了解，建议先阅读">
+序言相信很多人面试的时候被问到过 Android 中的数据持久化，其中有一个方法就是使用 SharedPreferences 来保存一些简单的数据到本地。如果你对 SharedPreferences 还不了解，建议先阅读官方文档，再写个小 demo 实践一下。
+SharedPreferences 用的比较多的同学可能知道，在 API9 以后加">
 <meta name="twitter:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_1.png">
 
     
@@ -62,7 +59,7 @@ itsCoder主页：http://itscoder.com/
 		
 			<div id="textlogo">
 				<h1 class="site-name"><a href="/" title="Joe is a thin man">Joe is a thin man</a></h1>
-				<h2 class="blog-motto">写代码的民谣歌手</h2>
+				<h2 class="blog-motto">写代码的摇滚歌手</h2>
 			</div>
 			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
 			</a></div>
@@ -105,7 +102,7 @@ itsCoder主页：http://itscoder.com/
 		<a href="/about" title="Joe" target="_blank" itemprop="author">Joe</a>
 		
   <p class="article-time">
-    <time datetime="2016-09-18T14:41:01.000Z" itemprop="datePublished"> 发表于 2016-09-18</time>
+    <time datetime="2017-05-18T14:41:01.000Z" itemprop="datePublished"> 发表于 2017-05-18</time>
     
   </p>
 </header>
@@ -119,8 +116,6 @@ itsCoder主页：http://itscoder.com/
 		</div>
 		
 		<blockquote>
-<p>文章来源：itsCoder 的 <a href="https://github.com/itsCoder/weeklyblog" target="_blank" rel="external">WeeklyBolg</a> 项目</p>
-<p>itsCoder主页：<a href="http://itscoder.com/" target="_blank" rel="external">http://itscoder.com/</a></p>
 <p>作者：<a href="http://extremej.itscoder.com/about/" target="_blank" rel="external">Joe</a></p>
 <p>审阅者：<a href="http://imxie.cc/" target="_blank" rel="external">HugoXie</a>、 <a href="http://allenwu.itscoder.com/" target="_blank" rel="external">allen</a></p>
 </blockquote>
@@ -250,8 +245,8 @@ itsCoder主页：http://itscoder.com/
 
 
 <div class="next">
-<a href="/manage_your_paper_work_elegantly/"  title="优雅的管理你的文稿">
- <span>优雅的管理你的文稿
+<a href="/zoom-up-animation/"  title="Activity 共享元素转场动画实践">
+ <span>Activity 共享元素转场动画实践
 </span>
 </a>
 </div>
@@ -335,6 +330,12 @@ itsCoder主页：http://itscoder.com/
         
           <li>
             
+            	<a href="https://cassieran.github.io/" target="_blank" title="FaFa">FaFa</a>
+            
+          </li>
+        
+          <li>
+            
             	<a href="http://imxie.cc/" target="_blank" title="HugoXie">HugoXie</a>
             
           </li>
@@ -386,7 +387,7 @@ itsCoder主页：http://itscoder.com/
 		
 
 		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2016 
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/hsihohuang/kiddochan" target="_blank" title="Kiddochan">Kiddochan</a> © 2018 
 		
 		<a href="/about" target="_blank" title="Joe">Joe</a>
 		
