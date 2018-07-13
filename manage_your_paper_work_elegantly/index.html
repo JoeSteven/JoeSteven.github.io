@@ -180,45 +180,45 @@
 <p>现在开始，我们从新建一篇论文开始，为了方便，就新建 txt 文件作为我们的文稿测试。</p>
 <h3 id="新建论文"><a href="#新建论文" class="headerlink" title="新建论文"></a>新建论文</h3><p>前文我们提到了，Git 可以帮助你不被别人甩锅，所以每次的改动应该知道是谁来做的，那么我们需要先配置你的名称，打开命令行窗口，Mac 是终端，Windows 是 Git Bash ，大家记住，后面不会再提了～</p>
 <p>输入以下命令，输完一行就回车，再输入下一行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git config --global user.name &quot;Your Name&quot;</div><div class="line">git config --global user.email &quot;email@example.com&quot;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git config --global user.name &quot;Your Name&quot;</div><div class="line">git config --global user.email &quot;email@example.com&quot;</div></pre></td></tr></table></figure>
 <p>这两句命令的意思就是为这个电脑的版本管理配置了修改人的姓名和邮箱，这样每次修改就明确知道是谁修改的。</p>
 <p>废话不多说，我们先建一个文件夹：Demo，然后在这个文件夹下新建一个 txt 文件假装是我们的论文（对，假装，你非要用 word 也可以～）</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/create_file.png" alt="新建论文文件夹"></p>
 <p>注意了，现在文件夹有了，论文也有了，怎么用 Git 来管理呢？首先要将这个文件夹变成一个 Git 仓库，说仓库可能有点难理解，但是大家想想仓库，进货出货等等都会登记对吧？咱们就要吧咱们的论文文件夹变成一个严格管理的仓库。</p>
 <p>Mac 的同学打开终端，cd 到这个文件夹下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cd xxx/xxx/Demo</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">cd xxx/xxx/Demo</div></pre></td></tr></table></figure>
 <p>注意，这个 xxx/xxx/Demo 是这个文件夹的路径，可以通过右键查看。cd 到这个文件夹下就相当于在命令行中进入到了这个窗口下</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/cd_xxx.png" alt="cd 到文件夹下"></p>
 <p>Windows 的同学可以直接在 Demo 文件夹下面右键打开 Git Bash ，就默认进入到该文件夹下啦</p>
 <h4 id="初始化仓库"><a href="#初始化仓库" class="headerlink" title="初始化仓库"></a>初始化仓库</h4><p>现在已经到这个文件夹下了，我们先来看一下这个文件夹的状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
 <p>查看 Git 仓库的状态，不出意外你会发现报错了</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_failed.png" alt="git 仓库不存在"></p>
 <p>意思是这不是一个 Git 仓库，那么我们来把它变成一个仓库：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git init</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git init</div></pre></td></tr></table></figure>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_init.png" alt="初始化仓库"></p>
 <p>这句命令是初始化一个仓库，init 是 Initialized 的缩写，初始化后我们再来查看一下仓库的状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_1.png" alt="初始化仓库状态"></p>
 <p>看到了么，我们的仓库已经创建成功了，并且刚刚我们创建的这个论文也出现在了命令行中，并且是红色的～，咱们先不去管是什么意思，来写我们的论文</p>
 <h4 id="给论文加点东西"><a href="#给论文加点东西" class="headerlink" title="给论文加点东西"></a>给论文加点东西</h4><p>咱们打开论文，写点东西：</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/file_1.png" alt="第一次修改论文"></p>
 <p>好啦～简单的完成了第一次修改，我们需要保存这一次修改，还是先来查看下仓库的状态：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git status</div></pre></td></tr></table></figure>
 <p>记住这个命令，你会经常用到的～</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_2.png" alt="第一次修改后的状态"></p>
 <p>发现跟刚刚初始化的时候的状态一样，好了，我们要来记录这一次修改了，首先将要修改的文件加入到本次纪录中：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git add xxx</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git add xxx</div></pre></td></tr></table></figure>
 <p>xxx 是被修改的文件，这里就是我们的 初版.txt，注意是相对路径（相对这个文件夹的）,比如说这个文件夹下面还有一个文件夹 test，test 下面有个文件 xxx，那么 xxx 就应该是 test/xxx。</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_add.png" alt="add 修改文件"></p>
 <p>add 之后好像什么都没发生哈，再来查看下 status：</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_3.png" alt="add 后状态"></p>
 <p>喏～变绿了有没有，而且有一行字提示你有修改等着被提交，那么我们就来提交吧：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git commit -m &apos;这里是本次修改的描述信息&apos;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git commit -m &apos;这里是本次修改的描述信息&apos;</div></pre></td></tr></table></figure>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_commit_1.png" alt="commit 修改"></p>
 <p>ok~提示我们完成了提交，并且提交的内容是什么也显示了出来。</p>
 <h4 id="查看修改"><a href="#查看修改" class="headerlink" title="查看修改"></a>查看修改</h4><p>我们提交了第一次修改，那么在哪里查看呢？用下面这个命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git log</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git log</div></pre></td></tr></table></figure>
 <p>这个命令会以流水线的形式来展示我们的每一次修改</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_log_1.png" alt="git log"></p>
 <p>注意一下，这里f移动查看log 是 h j k l ，而不是方向键，如果要退出查看 log 按一下 q （quit）</p>
@@ -230,14 +230,14 @@
 <li>查看这次修改的日志</li>
 </ul>
 <p>用到的命令有</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">git init //初始化</div><div class="line">git status //查看状态</div><div class="line">git add xxx //添加某个文件</div><div class="line">git commit -m &apos;xxx&apos; // 提交这次纪录</div><div class="line">git log // 查看日志</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git init //初始化</div><div class="line">git status //查看状态</div><div class="line">git add xxx //添加某个文件</div><div class="line">git commit -m &apos;xxx&apos; // 提交这次纪录</div><div class="line">git log // 查看日志</div></pre></td></tr></table></figure>
 <p>好了～，说到这里，是不是感觉干了好多并不明白的事情？貌似并没有什么卵用啊？？？别着急，进入下一步</p>
 <h3 id="修改论文"><a href="#修改论文" class="headerlink" title="修改论文"></a>修改论文</h3><p>上面我们只是刚刚新建了一篇论文，简单的写了个开头而已，现在我们要真正的去写我们的出版了，打开初版，疯狂的输出～</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/file_2.png" alt="修改正文"></p>
 <p>ok~正文写完了。。。虽然我这里写的很少，但是假装我们写的很多～我们来查看下仓库的状态</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_status_4.png" alt="修改正文后的状态"></p>
 <p>看到没～又变红了，我们先不急着像上面一样提交修改，假如我们现在想看看我们到底修改了写什么，跟我们修改前的文件对比一下呢？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git diff</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git diff</div></pre></td></tr></table></figure>
 <p>diff 是 different 的缩写</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_diff.png" alt="diff"></p>
 <p>－号代表了修改前的文件，＋号代表了修改后的文件～</p>
@@ -245,7 +245,7 @@
 <p>注意下命令行中用到的符号都必须是英文符号噢</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_log_2.png" alt="添加正文后的log"></p>
 <h3 id="在不同版本间切换"><a href="#在不同版本间切换" class="headerlink" title="在不同版本间切换"></a>在不同版本间切换</h3><p>前面的一切都在为后面的操作铺路～上面的功能好像除了纪录下每次的修改并没有其他的卵用啊，假设现在我们有个需求，是要看最开始创建的那个版本，也就是只写了一行字的那个，怎么办？下面教一个流弊的命令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git checkout xxx</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git checkout xxx</div></pre></td></tr></table></figure>
 <p>xxx 具体是什么呢？先不提，因为 checkout 有很多种用法，还记得前面讲  git log 的那张图里面，每一个纪录都有一个独一无二的 id 么？</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_log_2.png" alt="两次修改的日志"></p>
 <p>找到第一次提交的纪录的 id，复制下来，将 xxx 换成这个 id</p>
@@ -256,14 +256,14 @@
 <p>有没有看到一行红字，<code>HEAD detached at 3d6fe3c</code>，后面的那个乱码其实是这个纪录的 id 的前几位，不信你去看 log，HEAD 就像是一个指针，这个指针指到哪儿，文件就变成那个时候的样子，怎么样，是不是很流弊？这时候你再查看 log 会发现第二次的提交不见了，不要惊慌，因为在当前的这个提交上面还没有第二个提交纪录呢</p>
 <p>那么怎么切换回第二次，也就是最新的那个版本呢？</p>
 <p>这里就要引入一个分支的概念了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git branch</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git branch</div></pre></td></tr></table></figure>
 <p>输入这个命令查看当前仓库中的分支</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_branch_1.png" alt="分支查看"></p>
 <p>绿色的，前面有 ＊ 号的，就是我们当前所在的分支，另外我们还看到还有一个 master 分支，在没有进行分支指定的情况下是默认在 master 分支上，可以把这个分支看成是主分支，而我们目前所在的这个分支只是一个临时分支，供我们切换到某个版本上面而不影响主分支上的内容，那么现在就让我们切换到主分支上：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git checkout master</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git checkout master</div></pre></td></tr></table></figure>
 <p>然后再查看我们的 log ，发现第二次提交的纪录也回来了，打开初版可以看到恢复到最新的版本了。</p>
 <p>这时候再来查看下分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git branch</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git branch</div></pre></td></tr></table></figure>
 <p>会发现我们已经到 master 分支上面了，并且之前的那个临时分支已经不见了～</p>
 <h3 id="分支开发"><a href="#分支开发" class="headerlink" title="分支开发"></a>分支开发</h3><p>前面引入了一个分支的概念，现在要好好讲讲分支的作用，这是 Git 比较精华的部分。先举个在程序开发中的例子</p>
 <p><strong>通常在程序开发中会有三个主要的分支，分别是 master ，develop，test，从字面理解就是主分支，开发分支，和测试分支。什么意思呢？</strong></p>
@@ -278,7 +278,7 @@
 <p>有好事的同学问了，master 上同时可以保存 1.0，1.1，1.2 等等不同的版本么？当然可以，还记得前面我们任意切换到一个 commit 上吧？不过 当你写到 1.3 版本的时候，可能就已经有非常多的 commit 了，如何精确的跳到一个完成版上面，后面会教大家。</p>
 <p>首先查看分支的命令还记得是什么？</p>
 <h4 id="新建分支，切换"><a href="#新建分支，切换" class="headerlink" title="新建分支，切换"></a>新建分支，切换</h4><p>现在来创建一个新的分支</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git branch develop</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git branch develop</div></pre></td></tr></table></figure>
 <p>后面的 develop 是分支名，这个名字由你来定，需要注意的是，我们当前在 master 分支上去切一个新的分支，这个分支是基于 master 分支的，也就是 master 分支上有的东西，它都有。</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_branch_2.png" alt="新建分支"></p>
 <p>可以看到已经创建了一个新的分支，现在 checkout 到这个分支上去吧</p>
@@ -291,27 +291,27 @@
 <p>现在问题来了，我怎么把 develop 上面的修改弄到 master 上面去呢？</p>
 <h4 id="分支合并"><a href="#分支合并" class="headerlink" title="分支合并"></a>分支合并</h4><p>很简单，一个分支要想更新到另一个分支所在的版本，合并下这个分支就好了</p>
 <p>所以，首先我们要切换到 master 分支上面</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git checkout master</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git checkout master</div></pre></td></tr></table></figure>
 <p>然后合并 develop 分支上面的改动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git merge develop</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git merge develop</div></pre></td></tr></table></figure>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_checkout_branch_2.png" alt="合并分支"></p>
 <p>git 会提示我有一个文件发生了改变，这时候再看看log，是不是有了第三次提交的纪录呢？</p>
 <h3 id="版本标注"><a href="#版本标注" class="headerlink" title="版本标注"></a>版本标注</h3><p>前面说了，会教大家如何表明一个版本，比如现在我们有了三次修改纪录，但第三次提交时才完成了我们的 1.0，当我们写到 5.0 的时候，可能有上百个提交，我怎么能精确的记住 1.0 在哪次提交纪录上呢？</p>
 <p>很简单我们在完成了 1.0 的这次纪录上添加一个标记，来标明它是 1.0 的版本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git tag xxx</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git tag xxx</div></pre></td></tr></table></figure>
 <p>xxx 即是你要的标记</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_tag_1.png" alt="tag 标记"></p>
 <p>OK～添加完成，怎么看呢？简单</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git tag</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git tag</div></pre></td></tr></table></figure>
 <p>就可以看到你当前有多少个 tag 了。有同学问了，我可以在这一次纪录上多打几个标记么？当然可以，只要你开心～</p>
 <p>如果要删除某个 tag</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git tag -d xxx</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git tag -d xxx</div></pre></td></tr></table></figure>
 <p>来实操一下，咱们已经添加了一个 1.0 的 tag 了。现在来多提交几次，看看能不能回到 1.0 版本。</p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/file_4.png" alt="完成了多个版本"></p>
 <p><img src="http://7xtakx.com1.z0.glb.clouddn.com/git_log_5.png" alt="多个版本的 log"></p>
 <p>现在我们已经提交了两次，完成了两个版本，这里为了方便我们都是直接在 master 上提交的哈。</p>
 <p>来看看怎么切换回 1.0，有的同学可能已经猜到了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git checkout 1.0</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">git checkout 1.0</div></pre></td></tr></table></figure>
 <p>这个 checkout 是不是很流弊啊。</p>
 <p>再打开初版.txt看看，是不是回到了 1.0 版本呢？</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>到这里已经教给了大家 git 常用的这些操作，当然 git 的操作远不止这些，本篇文章的目的只是带你入门，当你入门了以后就可以通过看官方文档或者专业一点的  git 介绍来深入学习，对了～目标里面的最后一条，我会放到下一篇文章中来单独讲解，如果你特别感兴趣可以自行 Google  Github～</p>

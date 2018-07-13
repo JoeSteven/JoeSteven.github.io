@@ -158,7 +158,7 @@
 								Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队
 1.消息入队消息队列与Message对象池的结构很像，也是通过对象之间通过next指向形成链表结构
 这时候加入一个msg消息，先来看如果消息队列为空的情况
-1234567891011//判断消息队列为空时，会直接将这个msg赋值给mMessage，并将p赋值给msg.next，这时next当然时nullmsg.markInUse();m
+//判断消息队列为空时，会直接将这个msg赋值给mMessage，并将p赋值给msg.next，这时next当然时nullmsg.markInUse();msg.when = whe
 								...
 							</p>
 						</section>
@@ -207,8 +207,8 @@
 								
 								
 								Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队消息池是全系统共用，上限为50个
-1private static final int MAX_POOL_SIZE = 50;
-12345678910111213141516171819202122232425262728293031323334353637383940// sometimes we store linked lists o
+private static final int MAX_POOL_SIZE = 50;
+// sometimes we store linked lists of these things/*package*/ Message next;private static Message sPool;//假设
 								...
 							</p>
 						</section>
@@ -225,7 +225,7 @@
 							</li>
 						</ul>
 						<span class="reading-time">
-							5
+							4
 							 min read
 						</span>
 					</footer>
@@ -257,7 +257,7 @@
 								
 								
 								本系列笔记是我阅读Handler及相关类的源码时所记录的一些之前所不知道的知识点，该系列分为三部分，整体流程，Message对象回收原理，MessageQueue管理队列Handler源码学习（一）流程Handler源码学习（二）Message对象池Handler源码学习（三）MessageQueue入队插队
-1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的looper12345678910111213141516171819202122
+1.创建handler — 默认构造方法会获取当前线程的looper，也可以传入指定的looper/** * Default constructor associate
 								...
 							</p>
 						</section>
@@ -274,7 +274,7 @@
 							</li>
 						</ul>
 						<span class="reading-time">
-							18
+							17
 							 min read
 						</span>
 					</footer>
