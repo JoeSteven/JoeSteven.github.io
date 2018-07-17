@@ -64,6 +64,9 @@
 	
 
 	
+	<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+	<script src='//cdn.jsdelivr.net/npm/valine/dist/Valine.min.js '></script>
+	
 	
 </head>
 <body class="post-template">
@@ -226,6 +229,10 @@
     
     
 </nav>
+    
+    <div class="inner">
+        <div id="comment"></div>
+    </div>
     
 </main>
 
@@ -491,6 +498,19 @@
 	});
 </script>
 
+
+<script>
+	new Valine({
+		el: '#comment' ,
+		verify: true,
+		notify: true,
+		appId: 'IjFwNF3r68Ha9PQAB1QIYDvm-gzGzoHsz',
+		appKey: 'HLCaTDz0YEsLvBcFtr0YG6CW',
+		placeholder: 'Say something ...',
+		pageSize: 10,
+		avatar:'mm',
+	});
+</script>
 
 
 
