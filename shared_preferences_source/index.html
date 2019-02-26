@@ -29,11 +29,11 @@ SharedPreferences 用的比较多的同学可能知道，在 API9 以后加入">
 
 序言相信很多人面试的时候被问到过 Android 中的数据持久化，其中有一个方法就是使用 SharedPreferences 来保存一些简单的数据到本地。如果你对 SharedPreferences 还不了解，建议先阅读官方文档，再写个小 demo 实践一下。
 SharedPreferences 用的比较多的同学可能知道，在 API9 以后加入">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_1.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_perferences_2.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_3.png">
-<meta property="og:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_5.png">
-<meta property="og:updated_time" content="2018-09-12T11:45:14.208Z">
+<meta property="og:image" content="https://joesteven.github.io/img/shared_preferences_1.png">
+<meta property="og:image" content="https://joesteven.github.io/img/shared_perferences_2.png">
+<meta property="og:image" content="https://joesteven.github.io/img/shared_preferences_3.png">
+<meta property="og:image" content="https://joesteven.github.io/img/shared_preferences_5.png">
+<meta property="og:updated_time" content="2019-02-26T14:04:34.483Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="对 SharedPreferences 再多一点了解">
 <meta name="twitter:description" content="作者：阿风
@@ -41,7 +41,7 @@ SharedPreferences 用的比较多的同学可能知道，在 API9 以后加入">
 
 序言相信很多人面试的时候被问到过 Android 中的数据持久化，其中有一个方法就是使用 SharedPreferences 来保存一些简单的数据到本地。如果你对 SharedPreferences 还不了解，建议先阅读官方文档，再写个小 demo 实践一下。
 SharedPreferences 用的比较多的同学可能知道，在 API9 以后加入">
-<meta name="twitter:image" content="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_1.png">
+<meta name="twitter:image" content="https://joesteven.github.io/img/shared_preferences_1.png">
 
   
 
@@ -216,7 +216,7 @@ SharedPreferences 用的比较多的同学可能知道，在 API9 以后加入">
 <p><code>SharedPreferences</code> 用的比较多的同学可能知道，在 API9 以后加入了一个新的方法 <code>apply()</code> ，官方文档中可以看到在不关心返回值的情况下尽量使用 <code>apply()</code> 。另外 <code>SharedPreferences</code> 对于多进程的数据分享会出现不同步的情况，推荐阅读<a href="http://melodyxxx.com/2016/08/04/%E5%A4%9A%E8%BF%9B%E7%A8%8B%E4%B8%AD%E5%AE%89%E5%85%A8%E7%9A%84%E4%BD%BF%E7%94%A8SharedPreferences/" target="_blank" rel="external">多进程中安全的使用SharedPreferences</a> 。以上的问题是为什么呢？作为一个时刻保持好奇心的码农，今天就来学习一下 <code>SharedPreferences</code> 的源码。</p>
 <h3 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h3><p>本篇文章的解析思路主要是 <code>SharedPreferences</code> 的工作流程，重点分析 <code>commit()</code> 和<code>apply()</code> 的区别。 </p>
 <p><code>SharedPreferences</code> (以下简称 <code>SP</code>)是一个接口，贴一张图来看看他的结构：</p>
-<p><img src="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_1.png" alt="SP 结构"></p>
+<p><img src="/img/shared_preferences_1.png" alt="SP 结构"></p>
 <p>可以看到这个接口的结构本身不复杂，所有对数据进行改动的操作都在 <code>Editor</code> 接口内，另外还有一个 <code>SP</code> 操作的监听接口，好了，接下来就看看他的实现类 － <code>SharedPreferencesImpl</code> (以下简称 <code>SPI</code>)。</p>
 <h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> File mFile;</div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> File mBackupFile;</div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> mMode;</div><div class="line"></div><div class="line"><span class="keyword">private</span> Map&lt;String, Object&gt; mMap;     <span class="comment">// guarded by 'this'</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">int</span> mDiskWritesInFlight = <span class="number">0</span>;  <span class="comment">// guarded by 'this'</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">boolean</span> mLoaded = <span class="keyword">false</span>;      <span class="comment">// guarded by 'this'</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">long</span> mStatTimestamp;          <span class="comment">// guarded by 'this'</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">long</span> mStatSize;               <span class="comment">// guarded by 'this'</span></div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> Object mWritingToDiskLock = <span class="keyword">new</span> Object();</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object mContent = <span class="keyword">new</span> Object();</div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> WeakHashMap&lt;OnSharedPreferenceChangeListener, Object&gt; mListeners =</div><div class="line">        <span class="keyword">new</span> WeakHashMap&lt;OnSharedPreferenceChangeListener, Object&gt;();</div><div class="line"></div><div class="line">SharedPreferencesImpl(File file, <span class="keyword">int</span> mode) &#123;</div><div class="line">    mFile = file; <span class="comment">// 保存数据的文件</span></div><div class="line">    mBackupFile = makeBackupFile(file); <span class="comment">// 备份文件</span></div><div class="line">    mMode = mode;</div><div class="line">    mLoaded = <span class="keyword">false</span>; <span class="comment">// 导入文件标记</span></div><div class="line">    mMap = <span class="keyword">null</span>;</div><div class="line">    startLoadFromDisk();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> File <span class="title">makeBackupFile</span><span class="params">(File prefsFile)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> File(prefsFile.getPath() + <span class="string">".bak"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>构造方法中初始化了一些成员变量，首先是保存数据用的文件，熟悉 <code>SP</code> 的同学应该都知道这是个 xml 文件，事实上是在 Context 中指定的，后面会讲到。接着就是初始化了一个备份文件，当数据写入失败时用于恢复数据，后面也会讲到。另外就是文件的访问权限，还初始化了一个 <code>Map</code> ，先来看看 <code>startLoadFromDisk()</code> 方法，代码比较长，省略了一些异常捕获的代码。</p>
@@ -257,14 +257,14 @@ SharedPreferences 用的比较多的同学可能知道，在 API9 以后加入">
 <ul>
 <li>首先是写数据，磁盘上没有备份文件：</li>
 </ul>
-<p><img src="http://7xtakx.com1.z0.glb.clouddn.com/shared_perferences_2.png" alt="写数据_1"></p>
+<p><img src="/img/shared_perferences_2.png" alt="写数据_1"></p>
 <p>首先会把旧的文件作为备份（重命名为 .bak)，然后创建一个新的文件来写数据，如果成功就删除备份，如果失败就删除新文件，保留备份文件</p>
 <ul>
 <li><p>写数据，磁盘上有旧文件，也有备份文件</p>
 <p>刚刚说了正常情况下不会两个文件同时存在，这种情况通常是新文件写入失败，删除也失败了导致</p>
 </li>
 </ul>
-<p><img src="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_3.png" alt="写文件_2"></p>
+<p><img src="/img/shared_preferences_3.png" alt="写文件_2"></p>
 <p>这种情况下会直接把旧文件干掉，其他流程同上。</p>
 <ul>
 <li><p>读数据</p>
@@ -277,7 +277,7 @@ SharedPreferences 用的比较多的同学可能知道，在 API9 以后加入">
 <p>前两种情况就不说了，反正只有一个可以读，第三种情况会优先读取备份文件，原因是写数据时失败，并且干掉脏数据文件也失败了。这段代码在 <code>loadFromDiskLocked()</code> 中。</p>
 </li>
 </ul>
-<p><img src="http://7xtakx.com1.z0.glb.clouddn.com/shared_preferences_5.png" alt="读文件"></p>
+<p><img src="/img/shared_preferences_5.png" alt="读文件"></p>
 <p>有没有发现还有一种情况？</p>
 <p><strong>写文件成功，删除备份失败，第二次加载文件的时候会出现什么情况？</strong></p>
 <h4 id="apply"><a href="#apply" class="headerlink" title="apply()"></a>apply()</h4><p>分析 <code>commit()</code> 的时候基本已经把写数据的核心逻辑理出来了 </p>
