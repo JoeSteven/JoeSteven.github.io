@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Gson 反序列化 Kotlin 数据类默认值失效 | 迷猫/阿风</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Joey,Android,Java,迷猫,ExtremeJ,JoeSteven,写代码的摇滚歌手" />
+  
+
+  <meta name="description" content="背景最近开发的时候遇到一个问题，服务端的一个接口返回的 Json 中去掉了一个字段，客户端在使用 Gson 解析出的这个数据类的时候报空崩溃了。我在排查这个问题的时候发现这个数据类的这个字段是给了默认值的，但是解析的时候却赋值为 null，而另外一个接口也有少了几个字段的情况，但是这个接口的数据类的这些变量默认值却是生效的。
+为什么呢？
+找不同不知道有多少工程师在碰到问题时候会使用这个办法，努力的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gson 反序列化 Kotlin 数据类默认值失效">
+<meta property="og:url" content="https://joesteven.github.io/gson_kotlin_data_class/index.html">
+<meta property="og:site_name" content="迷猫/阿风">
+<meta property="og:description" content="背景最近开发的时候遇到一个问题，服务端的一个接口返回的 Json 中去掉了一个字段，客户端在使用 Gson 解析出的这个数据类的时候报空崩溃了。我在排查这个问题的时候发现这个数据类的这个字段是给了默认值的，但是解析的时候却赋值为 null，而另外一个接口也有少了几个字段的情况，但是这个接口的数据类的这些变量默认值却是生效的。
+为什么呢？
+找不同不知道有多少工程师在碰到问题时候会使用这个办法，努力的">
+<meta property="og:updated_time" content="2019-02-26T12:51:24.235Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gson 反序列化 Kotlin 数据类默认值失效">
+<meta name="twitter:description" content="背景最近开发的时候遇到一个问题，服务端的一个接口返回的 Json 中去掉了一个字段，客户端在使用 Gson 解析出的这个数据类的时候报空崩溃了。我在排查这个问题的时候发现这个数据类的这个字段是给了默认值的，但是解析的时候却赋值为 null，而另外一个接口也有少了几个字段的情况，但是这个接口的数据类的这些变量默认值却是生效的。
+为什么呢？
+找不同不知道有多少工程师在碰到问题时候会使用这个办法，努力的">
+
+  
+
+  
+    <link rel="icon" href="/img/avatar.png">
+  
+
+  <link href="/css/styles.css?v=c114cben" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">O_o</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">O_o</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            文章
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/friends/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/studio"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            工作室
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#找不同"><span class="toc-text">找不同</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么"><span class="toc-text">为什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么问题来了"><span class="toc-text">那么问题来了</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解决方案"><span class="toc-text">解决方案</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-gson_kotlin_data_class" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Gson 反序列化 Kotlin 数据类默认值失效</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.02.26</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>阿风</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/Android/">Android</a>
+  </span>
+
+
+
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近开发的时候遇到一个问题，服务端的一个接口返回的 Json 中去掉了一个字段，客户端在使用 <code>Gson</code> 解析出的这个数据类的时候报空崩溃了。我在排查这个问题的时候发现这个数据类的这个字段是给了默认值的，但是解析的时候却赋值为 <code>null</code>，而另外一个接口也有少了几个字段的情况，但是这个接口的数据类的这些变量默认值却是生效的。</p>
+<p>为什么呢？</p>
+<h3 id="找不同"><a href="#找不同" class="headerlink" title="找不同"></a>找不同</h3><p>不知道有多少工程师在碰到问题时候会使用这个办法，努力的去对比一个运行正常的代码和出现bug的代码到底哪里不同？</p>
+<p>然后，我真的发现了不同，如下示例：</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><div class="line"><span class="comment">// 默认值生效</span></div><div class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span></span>(<span class="meta">@SerializedName(<span class="meta-string">"name"</span>)</span><span class="keyword">val</span> name:String = <span class="string">"no_name"</span>,</div><div class="line">                    <span class="meta">@SerializedName(<span class="meta-string">"age"</span>)</span><span class="keyword">val</span> age:<span class="built_in">Int</span> = <span class="number">-1</span>)</div><div class="line"></div><div class="line"><span class="comment">// 默认值不生效</span></div><div class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span></span>(<span class="meta">@SerializedName(<span class="meta-string">"name"</span>)</span><span class="keyword">val</span> name:String = <span class="string">"no_name"</span>,</div><div class="line">                    <span class="meta">@SerializedName(<span class="meta-string">"age"</span>)</span><span class="keyword">val</span> age:<span class="built_in">Int</span>)</div></pre></td></tr></table></figure>
+<p>上面的两个数据类，当服务端下发的 Json 中没有 <code>name</code> 字段时，解析出的 <code>Person</code> 对象的 <code>name</code> 值是<code>&quot;no_name&quot;</code> ， 而同样的情况下，<code>Dog</code> 的 <code>name</code> 为 <code>null</code>。</p>
+<p>有什么不同呢？你应该也发现了，<code>Person</code> 类的 <code>age</code> 也设置了默认值，而 <code>Dog</code> 类只有 <code>name</code> 设置了默认值，会是这个原因吗？</p>
+<p>经过修改，给 <code>age</code> 也设置上默认值，结果符合预期。</p>
+<h3 id="为什么"><a href="#为什么" class="headerlink" title="为什么"></a>为什么</h3><p>现在我们已经知道是什么地方导致了这个问题，那么深究一下为什么会出现这个问题。 </p>
+<p>如何深究？看源码。</p>
+<p>看谁的源码？既然是用 <code>Gson</code> 解析的，那就先看看 <code>Gson</code> 是怎么解析的吧。</p>
+<p>Gson 反序列化最后都会调用这个函数 <code>fromJson()</code> ，为了方便阅读省略了很多代码，关键点在于 typeAdapter.read(reader) 这行代码。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">fromJson</span><span class="params">(JsonReader reader, Type typeOfT)</span> <span class="keyword">throws</span> JsonIOException, JsonSyntaxException </span>&#123;</div><div class="line">  <span class="comment">//.... 省略</span></div><div class="line">    reader.peek();</div><div class="line">    isEmpty = <span class="keyword">false</span>;</div><div class="line">    TypeToken&lt;T&gt; typeToken = (TypeToken&lt;T&gt;) TypeToken.get(typeOfT);</div><div class="line">    TypeAdapter&lt;T&gt; typeAdapter = getAdapter(typeToken);</div><div class="line">    T object = typeAdapter.read(reader);</div><div class="line">    <span class="keyword">return</span> object;</div><div class="line">  <span class="comment">//...省略</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>点进去一看，是个接口，再一看，这个接口的子类贼多…</p>
+<p>咋整？ 很简单，我们可以依靠断点调试来帮我们找到此刻执行的是哪个子类中的代码，这也是一种阅读源码的技巧，在不清楚下游逻辑的情况下，断点跑一遍，把相关的类和方法理清楚。</p>
+<p>断点可以发现这个类是：<code>ReflectiveTypeAdapterFactory</code> ，这段代码不复杂，也就分为两个部分</p>
+<ul>
+<li>创建对象</li>
+<li>为对象的成员变量赋值</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> T <span class="title">read</span><span class="params">(JsonReader in)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">  <span class="keyword">if</span> (in.peek() == JsonToken.NULL) &#123;</div><div class="line">    in.nextNull();</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// 构造对象</span></div><div class="line">  T instance = constructor.construct();</div><div class="line"></div><div class="line">  <span class="keyword">try</span> &#123;</div><div class="line">    in.beginObject();</div><div class="line">    <span class="comment">// 变量赋值</span></div><div class="line">    <span class="keyword">while</span> (in.hasNext()) &#123;</div><div class="line">      String name = in.nextName();</div><div class="line">      BoundField field = boundFields.get(name);</div><div class="line">      <span class="keyword">if</span> (field == <span class="keyword">null</span> || !field.deserialized) &#123;</div><div class="line">        in.skipValue();</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        field.read(in, instance);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">catch</span> (IllegalStateException e) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> JsonSyntaxException(e);</div><div class="line">  &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> AssertionError(e);</div><div class="line">  &#125;</div><div class="line">  in.endObject();</div><div class="line">  <span class="keyword">return</span> instance;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>到这里该怎么继续查呢？也可以利用断点，断点可以发现，两种数据类，在构造 <code>instance</code> 实例的时候，<code>Person</code> 对象每个变量都有默认值，而<code>Dog</code> 对象的每个变量的值都是 <code>null</code> 或者 <code>0</code>(基本数据类型)。</p>
+<p>所以问题出在构造对象的时候！继续追可以追到一个类<code>ConstructorConstructor</code> 中，找到<code>get</code>方法，同样省略掉了从缓存中获取的代码，只看第一次构造这个对象的代码。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function">ObjectConstructor&lt;T&gt; <span class="title">get</span><span class="params">(TypeToken&lt;T&gt; typeToken)</span> </span>&#123;</div><div class="line">  <span class="keyword">final</span> Type type = typeToken.getType();</div><div class="line">  <span class="keyword">final</span> Class&lt;? <span class="keyword">super</span> T&gt; rawType = typeToken.getRawType();</div><div class="line"></div><div class="line">  <span class="comment">// .. 省略..</span></div><div class="line">  </div><div class="line">  <span class="comment">// 获取无参构造函数构造对象</span></div><div class="line">  ObjectConstructor&lt;T&gt; defaultConstructor = newDefaultConstructor(rawType);</div><div class="line">  <span class="keyword">if</span> (defaultConstructor != <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="keyword">return</span> defaultConstructor;</div><div class="line">  &#125;</div><div class="line">  <span class="comment">//...省略集合构造...</span></div><div class="line"></div><div class="line">  <span class="comment">// unsafe 方式去构造对象</span></div><div class="line">  <span class="keyword">return</span> newUnsafeAllocator(type, rawType);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>有意思，所以在构造对象的时候会先获取无参构造函数来构造对象，否则用 unSafe 的方式去构造对象。</p>
+<p><strong>反射小知识：unSafe 方式去构造对象，会绕过构造函数，只会在堆中去分配一个对象实例</strong></p>
+<p>那么我们大胆预测一下：<code>Person</code> 类通过无参构造函数来构造对象，执行了对象的初始化代码，给变量设置了默认值，而<code>Dog</code>类是通过 unSafe 的方式来构造的对象，没有给变量进行默认值设置，回到 adapter 解析json字段进行赋值的时候，json中有的字段就会覆盖变量的原始值，而没有的字段则不会覆盖，因此<code>Dog</code> 中的<code>name</code> 变量的值依然是<code>null</code> !</p>
+<p>经过断点验证推理是正确的。</p>
+<h3 id="那么问题来了"><a href="#那么问题来了" class="headerlink" title="那么问题来了"></a>那么问题来了</h3><p>为什么 <code>Person</code> 和 <code>Dog</code> 的构造方式不一样呢？我们利用 Android Studio 的工具来把这两个类变成 java 文件</p>
+<blockquote>
+<p>Tools &gt; Kotlin &gt; show kotlin byte code &gt; Decompile</p>
+</blockquote>
+<p>省略掉其他的代码，先看 <code>Dog</code>:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@SerializedName</span>(<span class="string">"name"</span>)</div><div class="line"> <span class="meta">@NotNull</span></div><div class="line"> <span class="keyword">private</span> <span class="keyword">final</span> String name;</div><div class="line"></div><div class="line"> <span class="meta">@SerializedName</span>(<span class="string">"age"</span>)</div><div class="line"> <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="title">Dog</span><span class="params">(@NotNull String name, <span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">    Intrinsics.checkParameterIsNotNull(name, <span class="string">"name"</span>);</div><div class="line">    <span class="keyword">super</span>();</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">    <span class="keyword">this</span>.age = age;</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> <span class="comment">// $FF: synthetic method</span></div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="title">Dog</span><span class="params">(String var1, <span class="keyword">int</span> var2, <span class="keyword">int</span> var3, DefaultConstructorMarker var4)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> ((var3 &amp; <span class="number">1</span>) != <span class="number">0</span>) &#123;</div><div class="line">       var1 = <span class="string">"no_name"</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">this</span>(var1, var2);</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>再看 <code>Person</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@SerializedName</span>(<span class="string">"name"</span>)</div><div class="line"><span class="meta">@NotNull</span></div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> String name;</div><div class="line"><span class="meta">@SerializedName</span>(<span class="string">"age"</span>)</div><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;</div><div class="line">   <span class="keyword">this</span>((String)<span class="keyword">null</span>, <span class="number">0</span>, <span class="number">3</span>, (DefaultConstructorMarker)<span class="keyword">null</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(@NotNull String name, <span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">   Intrinsics.checkParameterIsNotNull(name, <span class="string">"name"</span>);</div><div class="line">   <span class="keyword">super</span>();</div><div class="line">   <span class="keyword">this</span>.name = name;</div><div class="line">   <span class="keyword">this</span>.age = age;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// $FF: synthetic method</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String var1, <span class="keyword">int</span> var2, <span class="keyword">int</span> var3, DefaultConstructorMarker var4)</span> </span>&#123;</div><div class="line">   <span class="keyword">if</span> ((var3 &amp; <span class="number">1</span>) != <span class="number">0</span>) &#123;</div><div class="line">      var1 = <span class="string">"no_name"</span>;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="keyword">if</span> ((var3 &amp; <span class="number">2</span>) != <span class="number">0</span>) &#123;</div><div class="line">      var2 = -<span class="number">1</span>;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="keyword">this</span>(var1, var2);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>Person</code> 比 <code>Dog</code> 多一个无参的构造函数，这个构造函数调用的是 synthetic constructor， 即为变量赋上默认的值。而 <code>Dog</code> 因为有一个变量没有默认值，因此无法生成无参构造函数（必须要在构造的时候给它赋值）。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>到这里就真相大白了。所以这种默认值应该怎么去处理，简单的说就是要想办法让这个类能有一个无参构造函数。我们已经知道第一种方案了：</p>
+<ul>
+<li>构造函数中的所有变量都设置默认值</li>
+</ul>
+<p>还有一种方案</p>
+<ul>
+<li>就是像Java一样去写：</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span></span>&#123;</div><div class="line">  <span class="meta">@SerializedName(<span class="meta-string">"name"</span>)</span><span class="keyword">var</span> name:String = <span class="string">"no_name"</span></div><div class="line">  <span class="meta">@SerializedName(<span class="meta-string">"age"</span>)</span><span class="keyword">var</span> age:<span class="built_in">Int</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样，即便没有给 <code>age</code> 默认值，<code>name</code> 的默认值也一样会生效的。</p>
+
+    
+  </div>
+
+</article>
+
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">如果对你有帮助，也可以支持下小站</div>
+        <ul>
+        
+          <li class="item">
+            
+            <img src="/img/wechat_qr.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            
+            <img src="/img/alipay_qr.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/the_end_of_2018/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="hide pull-right" href="/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+
+   
+      <div class="git"></div>
+   
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              文章
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/friends/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/studio"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              工作室
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <div id="comment" class="vcomment" ></div>
+    <script>
+        var notify = 'false' == true ? true : false;
+        var verify = 'false' == true ? true : false;
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+            return GUEST_INFO.indexOf(item) > -1
+        });
+        guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+        window.valine = new Valine({
+            el: '.vcomment',
+            notify: notify,
+            verify: verify,
+            appId: "IjFwNF3r68Ha9PQAB1QIYDvm-gzGzoHsz",
+            appKey: "HLCaTDz0YEsLvBcFtr0YG6CW",
+            avatar:'mm',
+            placeholder: "say something...",
+            guest_info:guest_info,
+            pageSize:'10'
+        });
+    </script>
+  
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
