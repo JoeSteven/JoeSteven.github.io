@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>What&#39;s inside?-KAE | 迷猫/阿风</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Joey,Android,Java,迷猫,ExtremeJ,JoeSteven,写代码的摇滚歌手" />
+  
+
+  <meta name="description" content="前言前不久和小曾聊天得知KAE:kotlin-android-extension 被废弃了，取而代之的是 ViewBinding，淦，我好像之前完全不知道这件事情，也突然想起用KAE用得这么爽好像还从没真的去了解过它的原理呢。
+Activity 中的KAE通常像这种类型的框架归根结底都是帮助你去写了一些额外的代码，通常在编译期，比如以前常用的 butterKnife 利用 APT 在编译期生成一些">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What's inside?-KAE">
+<meta property="og:url" content="https://joesteven.github.io/What-s-inside-KAE/index.html">
+<meta property="og:site_name" content="迷猫/阿风">
+<meta property="og:description" content="前言前不久和小曾聊天得知KAE:kotlin-android-extension 被废弃了，取而代之的是 ViewBinding，淦，我好像之前完全不知道这件事情，也突然想起用KAE用得这么爽好像还从没真的去了解过它的原理呢。
+Activity 中的KAE通常像这种类型的框架归根结底都是帮助你去写了一些额外的代码，通常在编译期，比如以前常用的 butterKnife 利用 APT 在编译期生成一些">
+<meta property="og:updated_time" content="2021-03-18T04:25:50.467Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="What's inside?-KAE">
+<meta name="twitter:description" content="前言前不久和小曾聊天得知KAE:kotlin-android-extension 被废弃了，取而代之的是 ViewBinding，淦，我好像之前完全不知道这件事情，也突然想起用KAE用得这么爽好像还从没真的去了解过它的原理呢。
+Activity 中的KAE通常像这种类型的框架归根结底都是帮助你去写了一些额外的代码，通常在编译期，比如以前常用的 butterKnife 利用 APT 在编译期生成一些">
+
+  
+
+  
+    <link rel="icon" href="/img/avatar_new.jpeg">
+  
+
+  <link href="/css/styles.css?v=c114cben" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">O_o</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">O_o</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            文章
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/friends/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/studio"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            工作室
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Activity-中的KAE"><span class="toc-text">Activity 中的KAE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fragment-中的KAE"><span class="toc-text">Fragment 中的KAE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ViewHolder-中使用-KAE"><span class="toc-text">ViewHolder 中使用 KAE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KAE-的反思"><span class="toc-text">KAE 的反思</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ViewBinding"><span class="toc-text">ViewBinding</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-What-s-inside-KAE" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">What&#39;s inside?-KAE</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2021.03.18</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>阿风</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/Android源码学习/">Android源码学习</a>
+  </span>
+
+
+
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前不久和小曾聊天得知KAE:<code>kotlin-android-extension</code> 被废弃了，取而代之的是 ViewBinding，淦，我好像之前完全不知道这件事情，也突然想起用KAE用得这么爽好像还从没真的去了解过它的原理呢。</p>
+<h3 id="Activity-中的KAE"><a href="#Activity-中的KAE" class="headerlink" title="Activity 中的KAE"></a>Activity 中的KAE</h3><p>通常像这种类型的框架归根结底都是帮助你去写了一些额外的代码，通常在编译期，比如以前常用的 <code>butterKnife</code> 利用 APT 在编译期生成一些辅助类。同样的思路来拆 KAE，Kotlin 文件最终都会编译成 jvm 的字节码，而这个字节码文件又可以转成Java的class文件，Android Studio 就可以帮我们快速的实现这个转换，具体怎么操作请自行 Google 吧。</p>
+<p>首先我们写一个demo文件，在 layout 中定义一个 id 为 btnDemo 的 Button ，然后在activity中用KAE的方式来使用它</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</div><div class="line"></div><div class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</div><div class="line">        setContentView(R.layout.activity_main)</div><div class="line">        btnDemo.setOnClickListener &#123;</div><div class="line">            <span class="comment">// do nothing</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接着看它编译成Java文件的样子， emm…简单明了，好像没什么可讲的了。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line">   <span class="keyword">private</span> HashMap _$_findViewCache;</div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(@Nullable Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">      <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">      <span class="keyword">this</span>.setContentView(<span class="number">1300009</span>);</div><div class="line">     <span class="comment">// 通过 findCachedViewById 来获取button的实例</span></div><div class="line">      ((Button)<span class="keyword">this</span>._$_findCachedViewById(id.btnDemo)).setOnClickListener((OnClickListener)<span class="keyword">null</span>.INSTANCE);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="keyword">public</span> View _$_findCachedViewById(<span class="keyword">int</span> var1) &#123;</div><div class="line">     <span class="comment">// 创建缓存map，如果之前没有创建的话</span></div><div class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>._$_findViewCache == <span class="keyword">null</span>) &#123;</div><div class="line">         <span class="keyword">this</span>._$_findViewCache = <span class="keyword">new</span> HashMap();</div><div class="line">      &#125;</div><div class="line"></div><div class="line">     <span class="comment">// 尝试获取之前缓存的对象</span></div><div class="line">      View var2 = (View)<span class="keyword">this</span>._$_findViewCache.get(var1);</div><div class="line">      <span class="keyword">if</span> (var2 == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// 没取到缓存，通过 findViewById 来获取</span></div><div class="line">         var2 = <span class="keyword">this</span>.findViewById(var1);</div><div class="line">        <span class="comment">// id-实例 的方式存入缓存map中去</span></div><div class="line">         <span class="keyword">this</span>._$_findViewCache.put(var1, var2);</div><div class="line">      &#125;</div><div class="line"></div><div class="line">     <span class="comment">// 返回view</span></div><div class="line">      <span class="keyword">return</span> var2;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">  <span class="comment">// 清除缓存</span></div><div class="line">   <span class="keyword">public</span> <span class="keyword">void</span> _$_clearFindViewByIdCache() &#123;</div><div class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>._$_findViewCache != <span class="keyword">null</span>) &#123;</div><div class="line">         <span class="keyword">this</span>._$_findViewCache.clear();</div><div class="line">      &#125;</div><div class="line"></div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>嗯？<code>_$_clearFindViewByIdCache()</code> 好像没有被调用呢？</p>
+<h3 id="Fragment-中的KAE"><a href="#Fragment-中的KAE" class="headerlink" title="Fragment 中的KAE"></a>Fragment 中的KAE</h3><p>再来写一个简单的fragment的demo</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">KaeFragment</span>: <span class="type">Fragment</span></span>() &#123;</div><div class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateView</span><span class="params">(</span></span></div><div class="line">        inflater: <span class="type">LayoutInflater</span>,</div><div class="line">        container: <span class="type">ViewGroup</span>?,</div><div class="line">        savedInstanceState: <span class="type">Bundle</span>?</div><div class="line">    ): View? &#123;</div><div class="line">      <span class="comment">// 偷懒直接用activity的布局文件</span></div><div class="line">        <span class="keyword">return</span> inflater.inflate(R.layout.activity_main, container, <span class="literal">false</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onViewCreated</span><span class="params">(view: <span class="type">View</span>, savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</div><div class="line">        <span class="keyword">super</span>.onViewCreated(view, savedInstanceState)</div><div class="line">        btnDemo.setOnClickListener &#123;  &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再看对应的Java文件，省略掉和activity相同的代码，可以看到它帮我们重写了 <code>onDestroyView</code> 并且在里面调用了 <code>_$_clearFindViewByIdCache()</code>，清除掉当前的 view 缓存</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// $FF: synthetic method</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroyView</span><span class="params">()</span> </span>&#123;</div><div class="line">   <span class="keyword">super</span>.onDestroyView();</div><div class="line">   <span class="keyword">this</span>._$_clearFindViewByIdCache();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>为什么 Fragment 中需要调用而Activity 中不需要呢？不理解请自行Google生命周期。</p>
+<h3 id="ViewHolder-中使用-KAE"><a href="#ViewHolder-中使用-KAE" class="headerlink" title="ViewHolder 中使用 KAE"></a>ViewHolder 中使用 KAE</h3><p>KAE 直接支持 Activity 和 Fragment ，而 ViewHolder 中要怎么使用呢？然而就在我今天看了 KAE 生成的代码后才发现，一直以来我的用法都是错误的，我相信有很多同学也跟我一样，在不了解原理的情况下很容易误用。</p>
+<p>首先按照我们错误的方式来写（省略掉不重要的代码）：</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><div class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onBindViewHolder</span><span class="params">(holder: <span class="type">DemoViewHolder</span>, position: <span class="type">Int</span>)</span></span> &#123;</div><div class="line">    holder.itemView.tvMovieName.text = <span class="string">"text"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这段代码看起来没什么问题，实际运行也没什么问题，看似也解决了传统写法中需要定义变量，然后findviewbyid的方式，<strong>但是事实真的是这样吗？</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBindViewHolder</span><span class="params">(@NotNull DemoAdapter.DemoViewHolder holder, <span class="keyword">int</span> position)</span> </span>&#123;</div><div class="line">  <span class="comment">// ...省略掉了检查变量非空的代码</span></div><div class="line">  <span class="comment">// 首先获取到 itemView </span></div><div class="line">   View var10000 = holder.itemView;</div><div class="line">  <span class="comment">// 然后通过 itemView findViewById 获取到 TextView</span></div><div class="line">   TextView var3 = (TextView)var10000.findViewById(id.tvMovieName);</div><div class="line">  <span class="comment">// 最后使用</span></div><div class="line">   var3.setText((CharSequence)<span class="string">"text"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>看出问题了吗？没有？ 那我们再改一下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function">override fun <span class="title">onBindViewHolder</span><span class="params">(holder: DemoViewHolder, position: Int)</span> </span>&#123;</div><div class="line">		holder.itemView.tvMovieName.text = <span class="string">"text1"</span></div><div class="line">		holder.itemView.tvMovieName.text = <span class="string">"text2"</span></div><div class="line">&#125;</div><div class="line">    </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBindViewHolder</span><span class="params">(@NotNull DemoAdapter.DemoViewHolder holder, <span class="keyword">int</span> position)</span> </span>&#123;</div><div class="line"></div><div class="line">   View var10000 = holder.itemView;</div><div class="line">   TextView var3 = (TextView)var10000.findViewById(id.tvMovieName);</div><div class="line">   var3.setText((CharSequence)<span class="string">"text1"</span>);</div><div class="line">  </div><div class="line">   var10000 = holder.itemView;</div><div class="line">   var3 = (TextView)var10000.findViewById(id.tvMovieName);</div><div class="line">   var3.setText((CharSequence)<span class="string">"text2"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>看出问题了吗？淦，我们每次用 itemView.xxx 这种写法的时候，它都会通过itemView findViewById 来获取对象，根本都没有用到缓存。</p>
+<p>现在我们来看正确的写法</p>
+<ul>
+<li>首先开启kae的实验功能</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><div class="line">androidExtensions &#123; experimental = <span class="literal">true</span> &#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>让 ViewHolder 实现 LayoutContainer 接口</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><div class="line">inner <span class="class"><span class="keyword">class</span> <span class="title">DemoViewHolder</span></span>(<span class="keyword">override</span> <span class="keyword">val</span> containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer</div></pre></td></tr></table></figure>
+<ul>
+<li>最后直接通过 viewHolder.xxx 来调用</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><div class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onBindViewHolder</span><span class="params">(holder: <span class="type">DemoViewHolder</span>, position: <span class="type">Int</span>)</span></span> &#123;</div><div class="line">    holder.tvMovieName.text = <span class="string">"text"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再来看对应的Java 文件：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBindViewHolder</span><span class="params">(@NotNull DemoAdapter.DemoViewHolder holder, <span class="keyword">int</span> position)</span> </span>&#123;</div><div class="line">   TextView var10000 = (TextView)holder._$_findCachedViewById(id.tvMovieName);</div><div class="line">   var10000.setText((CharSequence)<span class="string">"text"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>熟悉的 <code>_$_findCachedViewById</code> 出现了。</p>
+<p><strong>ViewHolder 的分析暴露出来一个问题，当我们在使用一个框架的时候应该聚焦在它所解决的问题本身上面，还是应该聚焦在原理层面以便于更加正确的使用它？</strong></p>
+<p>对于这个问题，对于开发者自身的提高来说当然去了解原理是最好的。</p>
+<h3 id="KAE-的反思"><a href="#KAE-的反思" class="headerlink" title="KAE 的反思"></a>KAE 的反思</h3><p>那么另外一个问题，如果一个框架很容易被误用，那这个框架本身的设计是否也存在问题呢？</p>
+<p>开篇的时候说了 KAE 已经被废弃了，废弃总要有个理由吧，优点我们都知道，原理也看了，要不然总结下缺点？</p>
+<ul>
+<li>本质上是通过findViewById来获取，由于id是公共访问的，可能会因为导入了不同的layout导致出错<ul>
+<li>emm…用传统的方式一样存在这个问题吧</li>
+</ul>
+</li>
+<li>用了一个 HashMap 来做view的缓存，会无形中增加内存成本？</li>
+<li>通过HashMap 来访问，理论上没有直接用引用的方式快？</li>
+</ul>
+<p>以上的理由在理论上当然都成立，但实际上有多少项目对于内存的压榨已经到了要考虑一个map缓存的程度呢？又有多少应用对于性能的要求高到计较map的读取速度呢？事实上，大部分程序员们写的狗屎代码所带来的内存和时间的消耗远远超过了KAE，另外有些文章还提到 KAE 只支持kotlin，可是现在Google主推的就是kotlin，很多库甚至都只有kotlin版本，所以我觉得也不成立。</p>
+<p>KAE 有一个目前解决不了的问题就是无法跨模块，而Google现在似乎又在推广模块化，似乎这才是真正的原因？</p>
+<h3 id="ViewBinding"><a href="#ViewBinding" class="headerlink" title="ViewBinding"></a>ViewBinding</h3><p>对于KAE的替代品，它又是怎么工作的，又是如何解决KAE没有解决的问题呢？我还没开始用。。。等我用一段时间再来分析 ViewBinding 的原理。</p>
+
+    
+  </div>
+
+</article>
+
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">如果对你有帮助，也可以支持下小站</div>
+        <ul>
+        
+          <li class="item">
+            
+            <img src="/img/wechat_qr.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            
+            <img src="/img/alipay_qr_new.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/what-s-inside-livedata/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="hide pull-right" href="/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+
+   
+      <div class="git"></div>
+   
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              文章
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/friends/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/studio"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              工作室
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <div id="comment" class="vcomment" ></div>
+    <script>
+        var notify = 'false' == true ? true : false;
+        var verify = 'false' == true ? true : false;
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+            return GUEST_INFO.indexOf(item) > -1
+        });
+        guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+        window.valine = new Valine({
+            el: '.vcomment',
+            notify: notify,
+            verify: verify,
+            appId: "IjFwNF3r68Ha9PQAB1QIYDvm-gzGzoHsz",
+            appKey: "HLCaTDz0YEsLvBcFtr0YG6CW",
+            avatar:'mm',
+            placeholder: "say something...",
+            guest_info:guest_info,
+            pageSize:'10'
+        });
+    </script>
+  
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
