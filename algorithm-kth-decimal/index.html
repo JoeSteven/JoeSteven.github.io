@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>算法-数组中位数/第k小数 | 迷猫/阿风</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Joey,Android,Java,迷猫,ExtremeJ,JoeSteven,写代码的摇滚歌手" />
+  
+
+  <meta name="description" content="最近打算把家里装修一下，上周都在忙搬家的事情，说好的每周一更鸽了一周，这周续上。之前几年除了面试外几乎很少刷算法题，二月底和几个朋友开始了个人周报制度，在周计划中也加入了每日一道算法题。截止到目前还是刷了不少题，逐渐找到了算法的乐趣，开了一个分类来记录这些题目和解决办法。
+题目给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的中位数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法-数组中位数/第k小数">
+<meta property="og:url" content="https://joesteven.github.io/algorithm-kth-decimal/index.html">
+<meta property="og:site_name" content="迷猫/阿风">
+<meta property="og:description" content="最近打算把家里装修一下，上周都在忙搬家的事情，说好的每周一更鸽了一周，这周续上。之前几年除了面试外几乎很少刷算法题，二月底和几个朋友开始了个人周报制度，在周计划中也加入了每日一道算法题。截止到目前还是刷了不少题，逐渐找到了算法的乐趣，开了一个分类来记录这些题目和解决办法。
+题目给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的中位数">
+<meta property="og:updated_time" content="2021-04-02T10:00:35.596Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="算法-数组中位数/第k小数">
+<meta name="twitter:description" content="最近打算把家里装修一下，上周都在忙搬家的事情，说好的每周一更鸽了一周，这周续上。之前几年除了面试外几乎很少刷算法题，二月底和几个朋友开始了个人周报制度，在周计划中也加入了每日一道算法题。截止到目前还是刷了不少题，逐渐找到了算法的乐趣，开了一个分类来记录这些题目和解决办法。
+题目给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的中位数">
+
+  
+
+  
+    <link rel="icon" href="/img/avatar_new.jpeg">
+  
+
+  <link href="/css/styles.css?v=c114cben" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">O_o</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">O_o</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            文章
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/friends/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/studio"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            工作室
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="ROUND_RECT"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#题目"><span class="toc-text">题目</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-合并数组"><span class="toc-text">1.合并数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-两个指针"><span class="toc-text">2.两个指针</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-第k小数"><span class="toc-text">3.第k小数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#第一次对比"><span class="toc-text">第一次对比</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#第二次对比"><span class="toc-text">第二次对比</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#第三次对比"><span class="toc-text">第三次对比</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#第四次对比"><span class="toc-text">第四次对比</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#时间复杂度"><span class="toc-text">时间复杂度</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#问题和边界条件"><span class="toc-text">问题和边界条件</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-Show-me-ur-code"><span class="toc-text">4.Show me ur code</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-思考"><span class="toc-text">5.思考</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-algorithm-kth-decimal" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">算法-数组中位数/第k小数</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2021.04.02</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>阿风</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/算法/">算法</a>
+  </span>
+
+
+
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>最近打算把家里装修一下，上周都在忙搬家的事情，说好的每周一更鸽了一周，这周续上。之前几年除了面试外几乎很少刷算法题，二月底和几个朋友开始了个人周报制度，在周计划中也加入了每日一道算法题。截止到目前还是刷了不少题，逐渐找到了算法的乐趣，开了一个分类来记录这些题目和解决办法。</p>
+<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的中位数 。</div></pre></td></tr></table></figure>
+<h3 id="1-合并数组"><a href="#1-合并数组" class="headerlink" title="1.合并数组"></a>1.合并数组</h3><p>一开始看到这个题的思路很简单，合并两个数组，然后找到中位数就行了。不过因为最近面试了很多算法，我并没有真的去搞一条数组来合并这两个数组，那样的话内存的消耗就太高了。</p>
+<h3 id="2-两个指针"><a href="#2-两个指针" class="headerlink" title="2.两个指针"></a>2.两个指针</h3><p>思路和合并数组其实是完全一样的，只是稍微思考一下就可以想到我们并不需要真的去合并两条数组，如果设置两个指针，分别在数组a和数组b上移动，根据正序的特点可以很容易的像处理一条数组一样来进行遍历。这样就优化了解法1中的空间复杂度变为O(1)。而且说实话这个解法很容易想到，通过代码实现的难度也比较低，如果面试的话我可能一开始还是会选用这种方式吧，因为第三种我一开始写了好几次都没过…</p>
+<h3 id="3-第k小数"><a href="#3-第k小数" class="headerlink" title="3.第k小数"></a>3.第k小数</h3><p>这道题要求时间复杂度为<em>O</em>(log(<em>m</em>+<em>n</em>))， 而第2种解法虽然优化了空间复杂度，但是时间复杂度依然是O(m+n)</p>
+<p>这个才是本文要记录的解法，事实上数组中位数这个题目本质是从正序数组中找第k小数。只不过k=( m+n)/2 而已。</p>
+<p>这个解法的基本逻辑是：沿用1和2的思路，先看作一个大数组，那么这个大数组的第K个数之前的所有数一定都比k位置上的数小。（这个不理解就不用往后看了）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">A = [1,3,5,7,9]</div><div class="line">B = [2,4,6,8,10]</div></pre></td></tr></table></figure>
+<p>假设K=6，我们可以从数组a上取第 k/2 位置的数和数组b上第k/2的数来进行比较，较小的那个值一定小于我们要找的第k个数，在这个例子中k/2 == 3：</p>
+<h4 id="第一次对比"><a href="#第一次对比" class="headerlink" title="第一次对比"></a>第一次对比</h4><figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">// 注意：我们要取的是第三个位置，而数组是从0开始的，所以索引应该是2，这个写代码的时候也要注意</div><div class="line">A[2] == 5</div><div class="line">B[2] == 6</div><div class="line"></div><div class="line">// 显然5小于6</div><div class="line">A[2] &lt; B[2]</div></pre></td></tr></table></figure>
+<p>A数组前三个数都应该被扔掉</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">A = [7, 9]</div><div class="line">B = [2,4,6,8,10]</div></pre></td></tr></table></figure>
+<p>在我们继续往下之前，我们思考一个问题，为什么 A[2] &lt; B[2] ，就可以断定 A数组中的前三个数字都可以安全的被扔掉呢？我们试着来证伪这个结论：</p>
+<p>还是以这个例子来看，假如我们要找的第6小的那个数在数组A中：</p>
+<ul>
+<li>那么可以得出数组A的第3个位置就是大数组的第六个位置</li>
+<li>也就是说，大数组的前5个位置中一定有3个数在B数组中</li>
+<li>并且一定是B数组的前三个数。</li>
+<li>既然这样的话，那B数组的第3个数一定是小于A数组的第3个数的，对吧？（k位置之前的数一定都比k位置的数小）</li>
+<li>而事实是 A[2] &lt; B[2]，所以这个假设是不成立的！</li>
+</ul>
+<p>因此可以判定数组A中的前3个数都一定比K小。</p>
+<h4 id="第二次对比"><a href="#第二次对比" class="headerlink" title="第二次对比"></a>第二次对比</h4><p>第一次对比后，我们之前要找的第 6 个位置，现在就变成了第3个位置，即 k = 3。k/2 = 1</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">A = [7, 9]</div><div class="line">B = [2,4,6,8,10]</div><div class="line"></div><div class="line">A[0] = 7// 原始数组中其实是A[3]</div><div class="line">B[0] = 2</div><div class="line"></div><div class="line">// 7&gt;2</div><div class="line">A[0] &gt; B[0]</div></pre></td></tr></table></figure>
+<p>扔掉B数组的第一个数</p>
+<h4 id="第三次对比"><a href="#第三次对比" class="headerlink" title="第三次对比"></a>第三次对比</h4><p>k = 2， k/2 = 1</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">A = [7, 9]</div><div class="line">B = [4, 6, 8, 10]</div><div class="line"></div><div class="line">A[0] = 7// 原始数组中其实是A[3]</div><div class="line">B[0] = 4</div><div class="line"></div><div class="line">// 7&gt;4</div><div class="line">A[0] &gt; B[0]</div></pre></td></tr></table></figure>
+<h5 id="第四次对比"><a href="#第四次对比" class="headerlink" title="第四次对比"></a>第四次对比</h5><p>k = 1， 当k=1 就意味着我们在找这个大数组的第一个数对吧？<strong>hold up， hold up！ 注意了，这里需要取更小的那个数字，不再是和前面一样扔掉小的数字了</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">A[0] = 7</div><div class="line">B[0] = 6</div><div class="line">显然我们的答案是6</div></pre></td></tr></table></figure>
+<p>所以K=1是这个解法一个重要的递归完结条件。</p>
+<h5 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h5><p>发现了么，这种做法其实就是二分查找啊，这不就完成了 <em>O</em>(log(<em>m</em>+<em>n</em>)) 的时间复杂度要求了么。</p>
+<h5 id="问题和边界条件"><a href="#问题和边界条件" class="headerlink" title="问题和边界条件"></a>问题和边界条件</h5><ul>
+<li><p>假如一条数组的长度不够k/2怎么办？</p>
+<p>用这条数组的最后一个数字来比较就好了，如果刚好又更小，那就可以直接在另一条数组上找到答案了</p>
+</li>
+<li><p>假如数组A 和数组B k/2 上的值相同怎么办？</p>
+<p>随便扔一个，一样的，不信你去证伪</p>
+</li>
+<li><p>为什么是 k/2?</p>
+<p>…因为题目给的是两条数组，如果是3条那就是k/3</p>
+</li>
+<li><p>如果两个数组加起来的长度是偶数怎么办？</p>
+<p>那就是求第K 和第K+1 个数</p>
+</li>
+</ul>
+<h4 id="4-Show-me-ur-code"><a href="#4-Show-me-ur-code" class="headerlink" title="4.Show me ur code"></a>4.Show me ur code</h4><figure class="highlight kotlin"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">findMedianSortedArrays</span><span class="params">(nums1: <span class="type">IntArray</span>, nums2: <span class="type">IntArray</span>)</span></span>: <span class="built_in">Double</span> &#123;</div><div class="line">        <span class="keyword">val</span> totalSize = nums1.size + nums2.size</div><div class="line">      <span class="comment">// 区分奇偶</span></div><div class="line">        <span class="keyword">if</span> (totalSize % <span class="number">2</span> == <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">return</span> (findMedianSortedExec(nums1, nums2, <span class="number">0</span>, <span class="number">0</span>, totalSize / <span class="number">2</span> + <span class="number">1</span>) + findMedianSortedExec(nums1, nums2, <span class="number">0</span>, <span class="number">0</span>, totalSize / <span class="number">2</span>)) / <span class="number">2</span></div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> findMedianSortedExec(nums1, nums2, <span class="number">0</span>, <span class="number">0</span>, totalSize / <span class="number">2</span> + <span class="number">1</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">findMedianSortedExec</span><span class="params">(nums1: <span class="type">IntArray</span>, nums2: <span class="type">IntArray</span>, nums1Start: <span class="type">Int</span>, nums2Start: <span class="type">Int</span>, medianPos: <span class="type">Int</span>)</span></span>: <span class="built_in">Double</span> &#123;</div><div class="line">      	<span class="comment">// 保证数组1的长度始终是较短的那个，这样可以减少边界</span></div><div class="line">        <span class="keyword">if</span> (nums1.size - nums1Start &gt; nums2.size - nums2Start) &#123;</div><div class="line">            <span class="keyword">return</span> findMedianSortedArraysBetter(nums2, nums1, nums2Start, nums1Start, medianPos)</div><div class="line">        &#125;</div><div class="line">      <span class="comment">// 计算当前数组的长度（我们不是真正的去操作数组扔掉数据，而是通过计算位置来实现）</span></div><div class="line">        <span class="keyword">val</span> len1 = nums1.size - nums1Start</div><div class="line">        <span class="keyword">val</span> len2 = nums2.size - nums2Start</div><div class="line">      </div><div class="line">      <span class="comment">// 当数组1的长度已经为0了，直接从数组2中获取结果</span></div><div class="line">        <span class="keyword">if</span> (len1 &lt;= <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">return</span> nums2[nums2Start + medianPos - <span class="number">1</span>].toDouble()</div><div class="line">        &#125;</div><div class="line"></div><div class="line">      <span class="comment">// k == 1，结束递归</span></div><div class="line">        <span class="keyword">if</span> (medianPos == <span class="number">1</span>) &#123;</div><div class="line">            <span class="comment">// 可以给出中位数了</span></div><div class="line">            <span class="keyword">return</span> Math.min(nums1[nums1Start], nums2[nums2Start]).toDouble()</div><div class="line">        &#125;</div><div class="line">      <span class="comment">// 获取两个数组k/2位置的值</span></div><div class="line">        <span class="keyword">var</span> comparePos1 = nums1Start + Math.min(len1, medianPos / <span class="number">2</span>) - <span class="number">1</span></div><div class="line">        <span class="keyword">var</span> comparePos2 = nums2Start + Math.min(len2, medianPos / <span class="number">2</span>) - <span class="number">1</span></div><div class="line">        </div><div class="line">      <span class="comment">// 比较大小，扔掉较小的那一边</span></div><div class="line">        <span class="keyword">val</span> newMedianPos: <span class="built_in">Int</span></div><div class="line">        <span class="keyword">if</span> (nums1[comparePos1] &gt; nums2[comparePos2]) &#123;</div><div class="line">            newMedianPos = medianPos - (comparePos2 - nums2Start) - <span class="number">1</span></div><div class="line">            comparePos1 = nums1Start</div><div class="line">            comparePos2 += <span class="number">1</span></div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            newMedianPos = medianPos - (comparePos1 - nums1Start) - <span class="number">1</span></div><div class="line">            comparePos2 = nums2Start</div><div class="line">            comparePos1 += <span class="number">1</span></div><div class="line">        &#125;</div><div class="line">        <span class="comment">//递归求解</span></div><div class="line">        <span class="keyword">return</span> findMedianSortedArraysBetter(nums1, nums2, comparePos1, comparePos2, newMedianPos)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="5-思考"><a href="#5-思考" class="headerlink" title="5.思考"></a>5.思考</h4><ul>
+<li>当遇到时间复杂度为O(log (m+n))，基本就可以确定是二分查找的思路</li>
+<li>多次算法题我发现一定要学会去证伪自己的思路，只有当自己的思路是不会被证伪的时候才能确定它的正确性，否则在实现过程中会发现有无数的边界条件要处理</li>
+<li>对于边界的处理，首先当然是要思考边界条件，同时要学会去简化代码中对边界的处理，这道题我一开始写代码的时候发现要处理的边界太多太多了，因为我并没有收敛好代码，导致无数测试因为边界问题falied。</li>
+<li>事实上代码越少反而会越健壮，因此实现的时候也要仔细思考代码结构和执行过程</li>
+</ul>
+
+    
+  </div>
+
+</article>
+
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">如果对你有帮助，也可以支持下小站</div>
+        <ul>
+        
+          <li class="item">
+            
+            <img src="/img/wechat_qr.jpeg" alt="">
+          </li>
+        
+          <li class="item">
+            
+            <img src="/img/alipay_qr_new.jpeg" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/What-s-inside-KAE/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="hide pull-right" href="/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+
+   
+      <div class="git"></div>
+   
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              文章
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/friends/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/studio"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              工作室
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="ROUND_RECT"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+    <script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script>
+    <div id="comment" class="vcomment" ></div>
+    <script>
+        var notify = 'false' == true ? true : false;
+        var verify = 'false' == true ? true : false;
+        var GUEST_INFO = ['nick','mail','link'];
+        var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+            return GUEST_INFO.indexOf(item) > -1
+        });
+        guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+        window.valine = new Valine({
+            el: '.vcomment',
+            notify: notify,
+            verify: verify,
+            appId: "IjFwNF3r68Ha9PQAB1QIYDvm-gzGzoHsz",
+            appKey: "HLCaTDz0YEsLvBcFtr0YG6CW",
+            avatar:'mm',
+            placeholder: "say something...",
+            guest_info:guest_info,
+            pageSize:'10'
+        });
+    </script>
+  
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
